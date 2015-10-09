@@ -1,13 +1,14 @@
 DROP TABLE IF EXISTS dw_prestage.error_log CASCADE;
 
-CREATE TABLE dw_prestage.error_log
+CREATE TABLE dw_prestage.message_log
 (
-   error_id      bigint           DEFAULT "identity"(144597, 0, '0,1'::text),
+   message_id      bigint           DEFAULT "identity"(144597, 0, '0,1'::text),
    runid         integer,
-   error_desc    varchar(4000),
+   message_desc    varchar(4000),
    target_table  varchar(100),
-   error_stage   varchar(100),
-   error_timestamp timestamp
+   message_stage   varchar(100),  
+   message_type  varchar(50)     /* can be information , warning , error */
+   message_timestamp timestamp
 );
 
 COMMIT;
