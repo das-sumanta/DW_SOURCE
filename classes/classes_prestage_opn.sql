@@ -75,7 +75,7 @@ insert into dw_stage.classes
 ,PARENT_ID
 )
 select
-(ACCPAC_LOB_CODES
+ ACCPAC_LOB_CODES
 ,CLASS_EXTID
 ,CLASS_ID
 ,DATE_LAST_MODIFIED
@@ -85,7 +85,6 @@ select
 ,LINE_OF_BUSINESS_CODE
 ,NAME
 ,PARENT_ID
-)
 from dw_prestage.classes_insert;
 
 /* insert into stage records which have been updated */
@@ -102,7 +101,7 @@ insert into dw_stage.classes
 ,PARENT_ID
 )
 select
-(ACCPAC_LOB_CODES
+ ACCPAC_LOB_CODES
 ,CLASS_EXTID
 ,CLASS_ID
 ,DATE_LAST_MODIFIED
@@ -112,7 +111,6 @@ select
 ,LINE_OF_BUSINESS_CODE
 ,NAME
 ,PARENT_ID
-)
 from dw_prestage.classes
 where exists ( select 1 from 
 dw_prestage.classes_update
