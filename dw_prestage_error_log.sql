@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS dw_prestage.error_log CASCADE;
 
 CREATE TABLE dw_prestage.message_log
 (
-   message_id      bigint           DEFAULT "identity"(144597, 0, '0,1'::text),
+   message_id      bigint           DEFAULT identity(0,1),
    runid         integer,
    message_desc    varchar(4000),
    target_table  varchar(100),
