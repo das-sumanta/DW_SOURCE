@@ -1,0 +1,1 @@
+copy dw.dwdate from 's3://kol-kd/date_extract.csv' credentials 'aws_access_key_id=AKIAIV5OYYAGFGTEELSA;aws_secret_access_key=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' dateformat 'mm/dd/yyyy' delimiter as ',' IGNOREHEADER 1 ;
