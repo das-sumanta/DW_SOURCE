@@ -65,7 +65,7 @@ delete from dw_stage.employees
 using dw_prestage.employees_update
 where dw_stage.employees.employee_id = dw_prestage.employees_update.employee_id;
 
-/* delete from stage records which have been deleted */
+/* stage -> delete from stage records which have been deleted */
 delete from dw_stage.employees 
 using dw_prestage.employees_delete
 where dw_stage.employees.employee_id = dw_prestage.employees_delete.employee_id;
