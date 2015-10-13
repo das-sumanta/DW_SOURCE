@@ -4,7 +4,8 @@ drop table if exists dw_prestage.subsidiaries;
 
 create table dw_prestage.subsidiaries
 (
- BASE_CURRENCY_ID 	INTEGER
+ RUNID                  INTEGER
+,BASE_CURRENCY_ID 	INTEGER
 ,BRANCH_ID 	VARCHAR(4000)
 ,BRN 	VARCHAR(16)
 ,DATE_LAST_MODIFIED 	TIMESTAMP
