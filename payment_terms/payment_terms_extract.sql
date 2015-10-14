@@ -1,0 +1,1056 @@
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2013-12-17 01:55:05',
+  15.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'Net 15',
+  NULL,
+  '1',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  30.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '30 days',
+  NULL,
+  '2',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  60.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '60 days',
+  NULL,
+  '3',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'Due on receipt',
+  NULL,
+  '4',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2013-12-17 01:55:05',
+  30.0,
+  10.0,
+  'No',
+  'F',
+  NULL,
+  '1% 10 Net 30',
+  NULL,
+  '5',
+  1.0
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2013-12-17 01:55:05',
+  30.0,
+  10.0,
+  'No',
+  'F',
+  NULL,
+  '2% 10 Net 30',
+  NULL,
+  '6',
+  2.0
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-11-19 04:24:35',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '31 days',
+  NULL,
+  '7',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  90.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '90 days',
+  NULL,
+  '8',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  120.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '120 days',
+  NULL,
+  '9',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  150.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '150 days',
+  NULL,
+  '10',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'Yes',
+  '2014-07-19 06:36:39',
+  31.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'End Of February',
+  NULL,
+  '11',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  180.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '180 days',
+  NULL,
+  '12',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'AO Term',
+  NULL,
+  '13',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'COD',
+  NULL,
+  '14',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'Prepayment',
+  NULL,
+  '15',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-07-19 06:36:39',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'End of Month (EOM)',
+  NULL,
+  '16',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-12-18 09:54:03',
+  7.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '7 days',
+  NULL,
+  '17',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2014-12-19 01:57:13',
+  15.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '15 Days',
+  NULL,
+  '18',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'Yes',
+  '2014-12-19 03:44:48',
+  5.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'On 5 Every Month',
+  NULL,
+  '19',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'Yes',
+  '2014-12-19 03:46:38',
+  15.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'On 15 every month',
+  NULL,
+  '20',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'Yes',
+  '2015-06-27 05:49:21',
+  20.0,
+  NULL,
+  'No',
+  'F',
+  20.0,
+  '20th of the Following Month',
+  NULL,
+  '22',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-27 05:49:45',
+  7.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '7 Days',
+  NULL,
+  '23',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-27 05:50:07',
+  45.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '45 Days',
+  NULL,
+  '24',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:20:54',
+  120.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '120 DAYS FROM STATEMENT',
+  NULL,
+  '25',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:21:04',
+  120.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '120 DAYS FROM INVOICE',
+  NULL,
+  '26',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:21:22',
+  14.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '14 DAYS FROM INVOICE',
+  NULL,
+  '27',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:21:31',
+  20.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '20 DAYS FROM INVOICE',
+  NULL,
+  '28',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:21:52',
+  30.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '30 DAYS FROM STATEMENT',
+  NULL,
+  '29',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:22:05',
+  30.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '30 DAYS FROM INVOICE',
+  NULL,
+  '30',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:22:14',
+  60.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '60 DAYS FROM INVOICE',
+  NULL,
+  '31',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:22:27',
+  7.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '7 DAYS FROM INVOICE',
+  NULL,
+  '32',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:22:35',
+  90.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '90 DAYS FROM INVOICE',
+  NULL,
+  '33',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-29 01:23:17',
+  7.0,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  '7 DAYS FROM STATEMENT',
+  NULL,
+  '34',
+  NULL
+);
+
+INSERT INTO dw_prestage.payment_terms
+(
+  runid,
+  DATE_DRIVEN,
+  DATE_LAST_MODIFIED,
+  DAYS_UNTIL_DUE,
+  DISCOUNT_DAYS,
+  ISINACTIVE,
+  IS_PREFERRED,
+  MINIMUM_DAYS,
+  NAME,
+  PAYMENT_TERMS_EXTID,
+  PAYMENT_TERMS_ID,
+  PERCENTAGE_DISCOUNT
+)
+VALUES
+(
+  1,
+  'No',
+  '2015-06-30 07:29:16',
+  NULL,
+  NULL,
+  'No',
+  'F',
+  NULL,
+  'DUE UPON RECEIPT',
+  NULL,
+  '35',
+  NULL
+);
+
+
+COMMIT;
