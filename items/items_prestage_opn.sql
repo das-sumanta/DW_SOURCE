@@ -4,7 +4,14 @@ CREATE TABLE dw_prestage.items_insert
 AS
 SELECT *
 FROM dw_prestage.items
-WHERE EXISTS (SELECT 1 FROM (SELECT item_id FROM (SELECT item_id FROM dw_prestage.items MINUS SELECT item_id FROM dw_stage.items)) a WHERE dw_prestage.items.item_id = a.item_id);
+WHERE EXISTS (SELECT 1
+              FROM (SELECT item_id
+                    FROM (SELECT item_id
+                          FROM dw_prestage.items
+                          MINUS
+                          SELECT item_id
+                          FROM dw_stage.items)) a
+              WHERE dw_prestage.items.item_id = a.item_id);
 
 DROP TABLE if exists dw_prestage.items_update;
 
@@ -19,9 +26,25 @@ FROM (SELECT item_id,
              CH_TYPE
       FROM (
       --SCD2 columns
-      
-           SELECT item_id,CLASS_ID,LINE_OF_BUSINESS,DEPARTMENT_ID,COST_CENTER,LOCATION_ID,LOCATIONS,'2' CH_TYPE 
-           FROM dw_prestage.items
+          SELECT item_id,
+			       CLASS_ID,
+			       LINE_OF_BUSINESS,
+			       DEPARTMENT_ID,
+			       COST_CENTER,
+			       LOCATION_ID,
+			       LOCATIONS,
+			       PRODUCT_CATEGORY_ID,
+			       PRODUCT_CATEGORY,
+			       ITEM_TYPE_ID,
+			       ITEM_TYPE,
+			       PRODUCT_CLASSIFICATION_ID,
+			       PRODUCT_CLASSIFICATION,
+			       PRODUCT_TYPE_ANZ_ID,
+			       PRODUCT_TYPE,
+			       PRODUCT_SERIESFAMILY_ID,
+			       PRODUCT_SERIESFAMILY,
+			       '2' CH_TYPE
+FROM dw_prestage.items
       MINUS
       SELECT item_id,
              CLASS_ID,
@@ -30,6 +53,16 @@ FROM (SELECT item_id,
              COST_CENTER,
              LOCATION_ID,
              LOCATIONS,
+             PRODUCT_CATEGORY_ID,
+             PRODUCT_CATEGORY,
+             ITEM_TYPE_ID,
+             ITEM_TYPE,
+             PRODUCT_CLASSIFICATION_ID,
+             PRODUCT_CLASSIFICATION,
+             PRODUCT_TYPE_ANZ_ID,
+             PRODUCT_TYPE,
+             PRODUCT_SERIESFAMILY_ID,
+             PRODUCT_SERIESFAMILY,
              '2' CH_TYPE
       FROM dw_stage.items)
       UNION ALL
@@ -38,8 +71,57 @@ FROM (SELECT item_id,
       FROM (
       --SCD1 columns
       
-           SELECT item_id,NAME,ALLOW_DROP_SHIP,APPLY_FRIEGHT,ASSET_ACCOUNT_ID,ASSET_ACCOUNT_NUMBER,ATP_METHOD,AVAILABLE_TO_PARTNERS,BACKORDERABLE,BILL_EXCH_RATE_VAR_ACCOUNT_ID,BILL_EXCH_RATE_VAR_ACCOUNT_NUMBER,BILL_PRICE_VARIANCE_ACCOUNT_ID,BILL_PRICE_VARIANCE_ACCOUNT_NUMBER,BILL_QTY_VARIANCE_ACCOUNT_ID,BILL_QTY_VARIANCE_ACCOUNT_NUMBER,CARTON_DEPTH,CARTON_HEIGHT,CARTON_QUANTITY,CARTON_WIDTH,COSTING_METHOD,DISPLAYNAME,EXPENSE_ACCOUNT_ID,EXPENSE_ACCOUNT_NUMBER,FEATUREDITEM,FULL_NAME,INCOME_ACCOUNT_ID,INCOME_ACCOUNT_NUMBER,ISBN_ANZ_ID,ISBN_NAME,ISINACTIVE,ITEM_EXTID,ITEM_JDE_CODE_ID,ISBN10,ITEM_TYPE_ID,JDE_ITEM_CODE,PARENT_ID,PARENT_NAME,PRODUCT_CALSSIFICATION_ANZ_ID,PRODUCT_CATEGORY_ID,PRODUCT_TYPE_ANZ_ID,PUBLISHER_ID,PURCHASEDESCRIPTION,SALESDESCRIPTION,SELLING_RIGHTS_ID,SERIAL_NUMBER,TYPE_NAME,VENDOR_ID,VENDOR_NAME,VENDRETURN_VARIANCE_ACCOUNT_ID,/*VENDRETURN_VARIANCE_ACCOUNT_NUMBER,WANG_ITEM_CODE,*/'1' CH_TYPE 
-           FROM dw_prestage.items
+           SELECT item_id,
+			       NAME,
+			       ALLOW_DROP_SHIP,
+			       APPLY_FRIEGHT,
+			       ASSET_ACCOUNT_ID,
+			       ASSET_ACCOUNT_NUMBER,
+			       ATP_METHOD,
+			       AVAILABLE_TO_PARTNERS,
+			       BACKORDERABLE,
+			       BILL_EXCH_RATE_VAR_ACCOUNT_ID,
+			       BILL_EXCH_RATE_VAR_ACCOUNT_NUMBER,
+			       BILL_PRICE_VARIANCE_ACCOUNT_ID,
+			       BILL_PRICE_VARIANCE_ACCOUNT_NUMBER,
+			       BILL_QTY_VARIANCE_ACCOUNT_ID,
+			       BILL_QTY_VARIANCE_ACCOUNT_NUMBER,
+			       CARTON_DEPTH,
+			       CARTON_HEIGHT,
+			       CARTON_QUANTITY,
+			       CARTON_WIDTH,
+			       COSTING_METHOD,
+			       DISPLAYNAME,
+			       EXPENSE_ACCOUNT_ID,
+			       EXPENSE_ACCOUNT_NUMBER,
+			       FEATUREDITEM,
+			       FULL_NAME,
+			       INCOME_ACCOUNT_ID,
+			       INCOME_ACCOUNT_NUMBER,
+			       ISBN_ANZ_ID,
+			       ISBN_NAME,
+			       ISINACTIVE,
+			       ITEM_EXTID,
+			       ITEM_JDE_CODE_ID,
+			       ISBN10,
+			       ITEM_TYPE_ID,
+			       JDE_ITEM_CODE,
+			       PARENT_ID,
+			       PARENT_NAME,
+			       PRODUCT_CALSSIFICATION_ANZ_ID,
+			       PRODUCT_CATEGORY_ID,
+			       PRODUCT_TYPE_ANZ_ID,
+			       PUBLISHER_ID,
+			       PURCHASEDESCRIPTION,
+			       SALESDESCRIPTION,
+			       SELLING_RIGHTS_ID,
+			       SERIAL_NUMBER,
+			       TYPE_NAME,
+			       VENDOR_ID,
+			       VENDOR_NAME,
+			       VENDRETURN_VARIANCE_ACCOUNT_ID,
+       /*VENDRETURN_VARIANCE_ACCOUNT_NUMBER,WANG_ITEM_CODE,*/  '1' CH_TYPE
+FROM dw_prestage.items
       MINUS
       SELECT item_id,
              NAME,
@@ -90,11 +172,11 @@ FROM (SELECT item_id,
              VENDOR_ID,
              VENDOR_NAME,
              VENDRETURN_VARIANCE_ACCOUNT_ID,
-             /*VENDRETURN_VARIANCE_ACCOUNT_NUMBER,*/
-            /* WANG_ITEM_CODE,*/
-             '1' CH_TYPE
+             /*VENDRETURN_VARIANCE_ACCOUNT_NUMBER,*/ /* WANG_ITEM_CODE,*/  '1' CH_TYPE
       FROM dw_stage.items)) a
-WHERE NOT EXISTS (SELECT 1 FROM dw_prestage.items_insert WHERE dw_prestage.items_insert.item_id = a.item_id)
+WHERE NOT EXISTS (SELECT 1
+                  FROM dw_prestage.items_insert
+                  WHERE dw_prestage.items_insert.item_id = a.item_id)
 GROUP BY item_id;
 
 DROP TABLE if exists dw_prestage.items_delete;
@@ -103,7 +185,14 @@ CREATE TABLE dw_prestage.items_delete
 AS
 SELECT *
 FROM dw_stage.items
-WHERE EXISTS (SELECT 1 FROM (SELECT item_id FROM (SELECT item_id FROM dw_stage.items MINUS SELECT item_id FROM dw_prestage.items)) a WHERE dw_stage.items.item_id = a.item_id);
+WHERE EXISTS (SELECT 1
+              FROM (SELECT item_id
+                    FROM (SELECT item_id
+                          FROM dw_stage.items
+                          MINUS
+                          SELECT item_id
+                          FROM dw_prestage.items)) a
+              WHERE dw_stage.items.item_id = a.item_id);
 
 SELECT 'no of prestage item records identified to inserted -->' ||count(1)
 FROM dw_prestage.items_insert;
@@ -125,71 +214,79 @@ FROM dw_stage.items USING dw_prestage.items_delete
 WHERE dw_stage.items.item_id = dw_prestage.items_delete.item_id;
 
 /* insert into stage records which have been created */ 
-INSERT INTO dw_stage.items (ALLOW_DROP_SHIP,
-       APPLY_FRIEGHT,
-       ASSET_ACCOUNT_ID,
-       ASSET_ACCOUNT_NUMBER,
-       ATP_METHOD,
-       AVAILABLE_TO_PARTNERS,
-       BACKORDERABLE,
-       BILL_EXCH_RATE_VAR_ACCOUNT_ID,
-       BILL_EXCH_RATE_VAR_ACCOUNT_NUMBER,
-       BILL_PRICE_VARIANCE_ACCOUNT_ID,
-       BILL_PRICE_VARIANCE_ACCOUNT_NUMBER,
-       BILL_QTY_VARIANCE_ACCOUNT_ID,
-       BILL_QTY_VARIANCE_ACCOUNT_NUMBER,
-       CARTON_DEPTH,
-       CARTON_HEIGHT,
-       CARTON_QUANTITY,
-       CARTON_WIDTH,
-       CLASS_ID,
-       LINE_OF_BUSINESS,
-       COSTING_METHOD,
-       CREATED,
-       DATE_LAST_MODIFIED,
-       DEPARTMENT_ID,
-       COST_CENTER,
-       DISPLAYNAME,
-       EXPENSE_ACCOUNT_ID,
-       EXPENSE_ACCOUNT_NUMBER,
-       FEATUREDITEM,
-       FULL_NAME,
-       INCOME_ACCOUNT_ID,
-       INCOME_ACCOUNT_NUMBER,
-       ISBN10,
-       ISBN_ANZ_ID,
-       ISBN_NAME,
-       ISINACTIVE,
-       ITEM_EXTID,
-       ITEM_ID,
-       ITEM_JDE_CODE_ID,
-       ITEM_TYPE_ID,
-       JDE_ITEM_CODE,
-       LOCATION_ID,
-       LOCATIONS,
-       NAME,
-       PARENT_ID,
-       PARENT_NAME,
-       PRODUCT_CALSSIFICATION_ANZ_ID,
-       PRODUCT_CATEGORY_ID,
-       PRODUCT_CLASSIFICATION_ID,
-       PRODUCT_SERIESFAMILY_ID,
-       PRODUCT_TYPE_ANZ_ID,
-       PRODUCT_TYPE_ID,
-       PROD_PRICE_VAR_ACCOUNT_ID,
-       PROD_PRICE_VAR_ACCOUNT_NUMBER,
-       PROD_QTY_VAR_ACCOUNT_ID,
-       PROD_QTY_VAR_ACCOUNT_NUMBER,
-       PUBLISHER_ID,
-       PURCHASEDESCRIPTION,
-       SALESDESCRIPTION,
-       SELLING_RIGHTS_ID,
-       SERIAL_NUMBER,
-       SPECIALSDESCRIPTION,
-       TYPE_NAME,
-       VENDOR_ID,
-       VENDOR_NAME,
-       VENDRETURN_VARIANCE_ACCOUNT_ID)
+INSERT INTO dw_stage.items
+(
+  ALLOW_DROP_SHIP,
+  APPLY_FRIEGHT,
+  ASSET_ACCOUNT_ID,
+  ASSET_ACCOUNT_NUMBER,
+  ATP_METHOD,
+  AVAILABLE_TO_PARTNERS,
+  BACKORDERABLE,
+  BILL_EXCH_RATE_VAR_ACCOUNT_ID,
+  BILL_EXCH_RATE_VAR_ACCOUNT_NUMBER,
+  BILL_PRICE_VARIANCE_ACCOUNT_ID,
+  BILL_PRICE_VARIANCE_ACCOUNT_NUMBER,
+  BILL_QTY_VARIANCE_ACCOUNT_ID,
+  BILL_QTY_VARIANCE_ACCOUNT_NUMBER,
+  CARTON_DEPTH,
+  CARTON_HEIGHT,
+  CARTON_QUANTITY,
+  CARTON_WIDTH,
+  CLASS_ID,
+  LINE_OF_BUSINESS,
+  COSTING_METHOD,
+  CREATED,
+  DATE_LAST_MODIFIED,
+  DEPARTMENT_ID,
+  COST_CENTER,
+  DISPLAYNAME,
+  EXPENSE_ACCOUNT_ID,
+  EXPENSE_ACCOUNT_NUMBER,
+  FEATUREDITEM,
+  FULL_NAME,
+  INCOME_ACCOUNT_ID,
+  INCOME_ACCOUNT_NUMBER,
+  ISBN10,
+  ISBN_ANZ_ID,
+  ISBN_NAME,
+  ISINACTIVE,
+  ITEM_EXTID,
+  ITEM_ID,
+  ITEM_JDE_CODE_ID,
+  ITEM_TYPE_ID,
+  JDE_ITEM_CODE,
+  LOCATION_ID,
+  LOCATIONS,
+  NAME,
+  PARENT_ID,
+  PARENT_NAME,
+  PRODUCT_CALSSIFICATION_ANZ_ID,
+  PRODUCT_CATEGORY_ID,
+  PRODUCT_CLASSIFICATION_ID,
+  PRODUCT_SERIESFAMILY_ID,
+  PRODUCT_TYPE_ANZ_ID,
+  PRODUCT_TYPE_ID,
+  PROD_PRICE_VAR_ACCOUNT_ID,
+  PROD_PRICE_VAR_ACCOUNT_NUMBER,
+  PROD_QTY_VAR_ACCOUNT_ID,
+  PROD_QTY_VAR_ACCOUNT_NUMBER,
+  PUBLISHER_ID,
+  PURCHASEDESCRIPTION,
+  SALESDESCRIPTION,
+  SELLING_RIGHTS_ID,
+  SERIAL_NUMBER,
+  SPECIALSDESCRIPTION,
+  TYPE_NAME,
+  VENDOR_ID,
+  VENDOR_NAME,
+  VENDRETURN_VARIANCE_ACCOUNT_ID,
+  PRODUCT_CATEGORY,
+	ITEM_TYPE,
+	PRODUCT_CLASSIFICATION,
+	PRODUCT_TYPE,
+	PRODUCT_SERIESFAMILY
+)
 SELECT ALLOW_DROP_SHIP,
        APPLY_FRIEGHT,
        ASSET_ACCOUNT_ID,
@@ -254,75 +351,88 @@ SELECT ALLOW_DROP_SHIP,
        TYPE_NAME,
        VENDOR_ID,
        VENDOR_NAME,
-       VENDRETURN_VARIANCE_ACCOUNT_ID
+       VENDRETURN_VARIANCE_ACCOUNT_ID,
+       PRODUCT_CATEGORY,
+				ITEM_TYPE,
+				PRODUCT_CLASSIFICATION,
+				PRODUCT_TYPE,
+				PRODUCT_SERIESFAMILY
 FROM dw_prestage.items_insert;
 
 /* insert into stage records which have been updated */ 
-INSERT INTO dw_stage.items (ALLOW_DROP_SHIP,
-       APPLY_FRIEGHT,
-       ASSET_ACCOUNT_ID,
-       ASSET_ACCOUNT_NUMBER,
-       ATP_METHOD,
-       AVAILABLE_TO_PARTNERS,
-       BACKORDERABLE,
-       BILL_EXCH_RATE_VAR_ACCOUNT_ID,
-       BILL_EXCH_RATE_VAR_ACCOUNT_NUMBER,
-       BILL_PRICE_VARIANCE_ACCOUNT_ID,
-       BILL_PRICE_VARIANCE_ACCOUNT_NUMBER,
-       BILL_QTY_VARIANCE_ACCOUNT_ID,
-       BILL_QTY_VARIANCE_ACCOUNT_NUMBER,
-       CARTON_DEPTH,
-       CARTON_HEIGHT,
-       CARTON_QUANTITY,
-       CARTON_WIDTH,
-       CLASS_ID,
-       LINE_OF_BUSINESS,
-       COSTING_METHOD,
-       CREATED,
-       DATE_LAST_MODIFIED,
-       DEPARTMENT_ID,
-       COST_CENTER,
-       DISPLAYNAME,
-       EXPENSE_ACCOUNT_ID,
-       EXPENSE_ACCOUNT_NUMBER,
-       FEATUREDITEM,
-       FULL_NAME,
-       INCOME_ACCOUNT_ID,
-       INCOME_ACCOUNT_NUMBER,
-       ISBN10,
-       ISBN_ANZ_ID,
-       ISBN_NAME,
-       ISINACTIVE,
-       ITEM_EXTID,
-       ITEM_ID,
-       ITEM_JDE_CODE_ID,
-       ITEM_TYPE_ID,
-       JDE_ITEM_CODE,
-       LOCATION_ID,
-       LOCATIONS,
-       NAME,
-       PARENT_ID,
-       PARENT_NAME,
-       PRODUCT_CALSSIFICATION_ANZ_ID,
-       PRODUCT_CATEGORY_ID,
-       PRODUCT_CLASSIFICATION_ID,
-       PRODUCT_SERIESFAMILY_ID,
-       PRODUCT_TYPE_ANZ_ID,
-       PRODUCT_TYPE_ID,
-       PROD_PRICE_VAR_ACCOUNT_ID,
-       PROD_PRICE_VAR_ACCOUNT_NUMBER,
-       PROD_QTY_VAR_ACCOUNT_ID,
-       PROD_QTY_VAR_ACCOUNT_NUMBER,
-       PUBLISHER_ID,
-       PURCHASEDESCRIPTION,
-       SALESDESCRIPTION,
-       SELLING_RIGHTS_ID,
-       SERIAL_NUMBER,
-       SPECIALSDESCRIPTION,
-       TYPE_NAME,
-       VENDOR_ID,
-       VENDOR_NAME,
-       VENDRETURN_VARIANCE_ACCOUNT_ID)
+INSERT INTO dw_stage.items
+(
+  ALLOW_DROP_SHIP,
+  APPLY_FRIEGHT,
+  ASSET_ACCOUNT_ID,
+  ASSET_ACCOUNT_NUMBER,
+  ATP_METHOD,
+  AVAILABLE_TO_PARTNERS,
+  BACKORDERABLE,
+  BILL_EXCH_RATE_VAR_ACCOUNT_ID,
+  BILL_EXCH_RATE_VAR_ACCOUNT_NUMBER,
+  BILL_PRICE_VARIANCE_ACCOUNT_ID,
+  BILL_PRICE_VARIANCE_ACCOUNT_NUMBER,
+  BILL_QTY_VARIANCE_ACCOUNT_ID,
+  BILL_QTY_VARIANCE_ACCOUNT_NUMBER,
+  CARTON_DEPTH,
+  CARTON_HEIGHT,
+  CARTON_QUANTITY,
+  CARTON_WIDTH,
+  CLASS_ID,
+  LINE_OF_BUSINESS,
+  COSTING_METHOD,
+  CREATED,
+  DATE_LAST_MODIFIED,
+  DEPARTMENT_ID,
+  COST_CENTER,
+  DISPLAYNAME,
+  EXPENSE_ACCOUNT_ID,
+  EXPENSE_ACCOUNT_NUMBER,
+  FEATUREDITEM,
+  FULL_NAME,
+  INCOME_ACCOUNT_ID,
+  INCOME_ACCOUNT_NUMBER,
+  ISBN10,
+  ISBN_ANZ_ID,
+  ISBN_NAME,
+  ISINACTIVE,
+  ITEM_EXTID,
+  ITEM_ID,
+  ITEM_JDE_CODE_ID,
+  ITEM_TYPE_ID,
+  JDE_ITEM_CODE,
+  LOCATION_ID,
+  LOCATIONS,
+  NAME,
+  PARENT_ID,
+  PARENT_NAME,
+  PRODUCT_CALSSIFICATION_ANZ_ID,
+  PRODUCT_CATEGORY_ID,
+  PRODUCT_CLASSIFICATION_ID,
+  PRODUCT_SERIESFAMILY_ID,
+  PRODUCT_TYPE_ANZ_ID,
+  PRODUCT_TYPE_ID,
+  PROD_PRICE_VAR_ACCOUNT_ID,
+  PROD_PRICE_VAR_ACCOUNT_NUMBER,
+  PROD_QTY_VAR_ACCOUNT_ID,
+  PROD_QTY_VAR_ACCOUNT_NUMBER,
+  PUBLISHER_ID,
+  PURCHASEDESCRIPTION,
+  SALESDESCRIPTION,
+  SELLING_RIGHTS_ID,
+  SERIAL_NUMBER,
+  SPECIALSDESCRIPTION,
+  TYPE_NAME,
+  VENDOR_ID,
+  VENDOR_NAME,
+  VENDRETURN_VARIANCE_ACCOUNT_ID,
+  PRODUCT_CATEGORY,
+	ITEM_TYPE,
+	PRODUCT_CLASSIFICATION,
+	PRODUCT_TYPE,
+	PRODUCT_SERIESFAMILY
+)
 SELECT ALLOW_DROP_SHIP,
        APPLY_FRIEGHT,
        ASSET_ACCOUNT_ID,
@@ -387,9 +497,16 @@ SELECT ALLOW_DROP_SHIP,
        TYPE_NAME,
        VENDOR_ID,
        VENDOR_NAME,
-       VENDRETURN_VARIANCE_ACCOUNT_ID
+       VENDRETURN_VARIANCE_ACCOUNT_ID,
+       PRODUCT_CATEGORY,
+				ITEM_TYPE,
+				PRODUCT_CLASSIFICATION,
+				PRODUCT_TYPE,
+				PRODUCT_SERIESFAMILY
 FROM dw_prestage.items
-WHERE EXISTS (SELECT 1 FROM dw_prestage.items_update WHERE dw_prestage.items_update.item_id = dw_prestage.items.item_id);
+WHERE EXISTS (SELECT 1
+              FROM dw_prestage.items_update
+              WHERE dw_prestage.items_update.item_id = dw_prestage.items.item_id);
 
 COMMIT;
 
@@ -451,8 +568,13 @@ INSERT INTO dw.items
   VENDOR_ID,
   VENDOR_NAME,
   VENDRETURN_VARIANCE_ACCOUNT_ID,
- /* VENDRETURN_VARIANCE_ACCOUNT_NUMBER,
-  WANG_ITEM_CODE, */
+  /* VENDRETURN_VARIANCE_ACCOUNT_NUMBER,
+  WANG_ITEM_CODE, */  
+  PRODUCT_CATEGORY,
+	ITEM_TYPE,
+	PRODUCT_CLASSIFICATION,
+	PRODUCT_TYPE,
+	PRODUCT_SERIESFAMILY,  
   DATE_ACTIVE_FROM,
   DATE_ACTIVE_TO,
   DW_ACTIVE
@@ -512,9 +634,14 @@ SELECT ITEM_ID,
        NVL(VENDOR_ID,-99),
        NVL(VENDOR_NAME,'NA_GDW'),
        NVL(VENDRETURN_VARIANCE_ACCOUNT_ID,-99),
- /*      NVL(VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'),
-       NVL(WANG_ITEM_CODE,'NA_GDW'), */
-       sysdate,
+       /*      NVL(VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'),
+       NVL(WANG_ITEM_CODE,'NA_GDW'), */  
+      NVL(PRODUCT_CATEGORY,'NA_GDW'),
+			NVL(ITEM_TYPE,'NA_GDW'),
+			NVL(PRODUCT_CLASSIFICATION,'NA_GDW'),
+			NVL(PRODUCT_TYPE,'NA_GDW'),
+			NVL(PRODUCT_SERIESFAMILY,'NA_GDW'),  
+			sysdate,
        '9999-12-31 23:59:59',
        'A'
 FROM dw_prestage.items_insert A;
@@ -526,7 +653,10 @@ UPDATE dw.items
 WHERE dw_active = 'A'
 AND   sysdate>= date_active_from
 AND   sysdate< date_active_to
-AND   EXISTS (SELECT 1 FROM dw_prestage.items_update WHERE dw.items.item_id = dw_prestage.items_update.item_id AND   dw_prestage.items_update.ch_type = 2);
+AND   EXISTS (SELECT 1
+              FROM dw_prestage.items_update
+              WHERE dw.items.item_id = dw_prestage.items_update.item_id
+              AND   dw_prestage.items_update.ch_type = 2);
 
 /* insert the new records as part of SCD2 maintenance*/ 
 INSERT INTO dw.items
@@ -586,9 +716,14 @@ INSERT INTO dw.items
   VENDOR_ID,
   VENDOR_NAME,
   VENDRETURN_VARIANCE_ACCOUNT_ID,
- /* VENDRETURN_VARIANCE_ACCOUNT_NUMBER,
-  WANG_ITEM_CODE, */
-  DATE_ACTIVE_FROM,
+  /* VENDRETURN_VARIANCE_ACCOUNT_NUMBER,
+  WANG_ITEM_CODE, */  
+  PRODUCT_CATEGORY,
+	ITEM_TYPE,
+	PRODUCT_CLASSIFICATION,
+	PRODUCT_TYPE,
+	PRODUCT_SERIESFAMILY,  
+	DATE_ACTIVE_FROM,
   DATE_ACTIVE_TO,
   DW_ACTIVE
 )
@@ -647,13 +782,21 @@ SELECT ITEM_ID,
        NVL(VENDOR_ID,-99),
        NVL(VENDOR_NAME,'NA_GDW'),
        NVL(VENDRETURN_VARIANCE_ACCOUNT_ID,-99),
-   /*    NVL(VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'),
-       NVL(WANG_ITEM_CODE,'NA_GDW'), */
-       sysdate,
+       /*    NVL(VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'),
+       NVL(WANG_ITEM_CODE,'NA_GDW'), */  
+      NVL(PRODUCT_CATEGORY,'NA_GDW'),
+			NVL(ITEM_TYPE,'NA_GDW'),
+			NVL(PRODUCT_CLASSIFICATION,'NA_GDW'),
+			NVL(PRODUCT_TYPE,'NA_GDW'),
+			NVL(PRODUCT_SERIESFAMILY,'NA_GDW'),  
+			sysdate,
        '9999-12-31 23:59:59',
        'A'
 FROM dw_prestage.items A
-WHERE EXISTS (SELECT 1 FROM dw_prestage.items_update WHERE a.item_id = dw_prestage.items_update.item_id AND   dw_prestage.items_update.ch_type = 2);
+WHERE EXISTS (SELECT 1
+              FROM dw_prestage.items_update
+              WHERE a.item_id = dw_prestage.items_update.item_id
+              AND   dw_prestage.items_update.ch_type = 2);
 
 /* update SCD1 */ 
 UPDATE dw.items
@@ -710,12 +853,18 @@ UPDATE dw.items
        TYPE_NAME = NVL(dw_prestage.items.TYPE_NAME,'NA_GDW'),
        VENDOR_ID = NVL(dw_prestage.items.VENDOR_ID,-99),
        VENDOR_NAME = NVL(dw_prestage.items.VENDOR_NAME,'NA_GDW'),
-       VENDRETURN_VARIANCE_ACCOUNT_ID = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_ID,-99)
-    /*   VENDRETURN_VARIANCE_ACCOUNT_NUMBER = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'), */
-    /*   WANG_ITEM_CODE = NVL(dw_prestage.items.WANG_ITEM_CODE,'NA_GDW') */
+       VENDRETURN_VARIANCE_ACCOUNT_ID = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_ID,-99), /*   VENDRETURN_VARIANCE_ACCOUNT_NUMBER = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'), */ /*   WANG_ITEM_CODE = NVL(dw_prestage.items.WANG_ITEM_CODE,'NA_GDW') */ 
+			 PRODUCT_CATEGORY	=  NVL(dw_prestage.items.PRODUCT_CATEGORY,'NA_GDW'),
+			 ITEM_TYPE =	NVL(dw_prestage.items.ITEM_TYPE,'NA_GDW'),
+			 PRODUCT_CLASSIFICATION = NVL(dw_prestage.items.PRODUCT_CLASSIFICATION,'NA_GDW'),
+			 PRODUCT_TYPE =	NVL(dw_prestage.items.PRODUCT_TYPE,'NA_GDW'),
+			 PRODUCT_SERIESFAMILY =	NVL(dw_prestage.items.PRODUCT_SERIESFAMILY,'NA_GDW')  
 FROM dw_prestage.items
 WHERE dw.items.item_id = dw_prestage.items.item_id
-AND   EXISTS (SELECT 1 FROM dw_prestage.items_update WHERE dw_prestage.items.item_id = dw_prestage.items_update.item_id AND   dw_prestage.items_update.ch_type = 1);
+AND   EXISTS (SELECT 1
+              FROM dw_prestage.items_update
+              WHERE dw_prestage.items.item_id = dw_prestage.items_update.item_id
+              AND   dw_prestage.items_update.ch_type = 1);
 
 /* logically delete dw records */ 
 UPDATE dw.items
@@ -725,5 +874,6 @@ FROM dw_prestage.items_delete
 WHERE dw.items.item_id = dw_prestage.items_delete.item_id;
 
 COMMIT;
+
 
 
