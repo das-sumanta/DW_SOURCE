@@ -50,7 +50,8 @@ CREATE TABLE dw.po_fact
   APPROVAL_STATUS               VARCHAR(4000),
   CREATION_DATE                 TIMESTAMP,
   LAST_MODIFIED_DATE            TIMESTAMP,
-  VALID_TILL_DATE               DATE,
+  DATE_ACTIVE_FROM              DATE,
+  DATE_ACTIVE_TO             DATE,
   ACTIVE                        VARCHAR(10),
   CURRENCY_KEY                  INTEGER,
   PRIMARY KEY (PO_KEY,PO_NUMBER))
