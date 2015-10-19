@@ -62,7 +62,8 @@ SELECT 1 as runid,
        /* custom fields for po lines */  Decode(b.name,
              'Purchase Orders','PO_HDR',
              decode(c.transaction_line_id,NULL,'PO_TAX','PO_LINE')
-       )  AS line_type
+       )  AS line_type,
+       TRANSACTION_LINES.CLASS_ID
 FROM TRANSACTION_LINES
   LEFT OUTER JOIN accounts b ON (TRANSACTION_LINES.account_id = accounts.account_id)
   LEFT OUTER JOIN transaction_tax_detail c
