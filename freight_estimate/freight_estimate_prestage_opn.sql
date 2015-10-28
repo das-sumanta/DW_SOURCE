@@ -1,5 +1,7 @@
+/* prestage - drop intermediate insert table */
 DROP TABLE if exists dw_prestage.freight_estimate_insert;
 
+/* prestage - create intermediate insert table*/
 CREATE TABLE dw_prestage.freight_estimate_insert 
 AS
 SELECT *
@@ -13,8 +15,10 @@ WHERE EXISTS (SELECT 1
                           FROM dw_stage.freight_estimate)) a
               WHERE dw_prestage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = a.LANDED_COST_RULE_MATRIX_NZ_ID);
 
+/* prestage - drop intermediate update table*/
 DROP TABLE if exists dw_prestage.freight_estimate_update;
 
+/* prestage - create intermediate update table*/
 CREATE TABLE dw_prestage.freight_estimate_update 
 AS
 SELECT decode(SUM(ch_type),
@@ -25,7 +29,7 @@ SELECT decode(SUM(ch_type),
 FROM (SELECT LANDED_COST_RULE_MATRIX_NZ_ID,
              CH_TYPE
       FROM (
-      --SCD2 columns
+     
       
            SELECT LANDED_COST_RULE_MATRIX_NZ_ID,SUBSIDIARY,SUBSIDIARY_ID,'2' CH_TYPE 
            FROM dw_prestage.freight_estimate
@@ -39,7 +43,7 @@ FROM (SELECT LANDED_COST_RULE_MATRIX_NZ_ID,
       SELECT LANDED_COST_RULE_MATRIX_NZ_ID,
              CH_TYPE
       FROM (
-      --SCD1 columns
+      
       
            SELECT LANDED_COST_RULE_MATRIX_NZ_ID,LANDED_COST_RULE_MATRIX_NZ_NAM,DESCRIPTION,IS_INACTIVE,PERCENT_OF_COST,PLUS_AMOUNT,'1' CH_TYPE 
            FROM dw_prestage.freight_estimate
@@ -57,8 +61,10 @@ WHERE NOT EXISTS (SELECT 1
                   WHERE dw_prestage.freight_estimate_insert.LANDED_COST_RULE_MATRIX_NZ_ID = a.LANDED_COST_RULE_MATRIX_NZ_ID)
 GROUP BY LANDED_COST_RULE_MATRIX_NZ_ID;
 
+/* prestage - drop intermediate delete table*/
 DROP TABLE if exists dw_prestage.freight_estimate_delete;
 
+/* prestage - create intermediate delete table*/
 CREATE TABLE dw_prestage.freight_estimate_delete 
 AS
 SELECT *
@@ -72,26 +78,29 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.freight_estimate)) a
               WHERE dw_stage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = a.LANDED_COST_RULE_MATRIX_NZ_ID);
 
+/* prestage-> stage*/
 SELECT 'no of prestage freight estimate records identified to inserted -->' ||count(1)
 FROM dw_prestage.freight_estimate_insert;
 
+/* prestage-> stage*/
 SELECT 'no of prestage freight estimate records identified to updated -->' ||count(1)
 FROM dw_prestage.freight_estimate_update;
 
+/* prestage-> stage*/
 SELECT 'no of prestage freight estimate records identified to deleted -->' ||count(1)
 FROM dw_prestage.freight_estimate_delete;
 
-/* delete from stage records to be updated */ 
+/* stage->delete from stage records to be updated */ 
 DELETE
 FROM dw_stage.freight_estimate USING dw_prestage.freight_estimate_update
 WHERE dw_stage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_update.LANDED_COST_RULE_MATRIX_NZ_ID;
 
-/* delete from stage records which have been deleted */ 
+/* stage->delete from stage records which have been deleted */ 
 DELETE
 FROM dw_stage.freight_estimate USING dw_prestage.freight_estimate_delete
 WHERE dw_stage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_delete.LANDED_COST_RULE_MATRIX_NZ_ID;
 
-/* insert into stage records which have been created */ 
+/* stage->insert into stage records which have been created */ 
 INSERT INTO dw_stage.freight_estimate
 (
   LANDED_COST_RULE_MATRIX_NZ_ID,
@@ -117,7 +126,7 @@ SELECT LANDED_COST_RULE_MATRIX_NZ_ID,
        LAST_MODIFIED_DATE
 FROM dw_prestage.freight_estimate_insert;
 
-/* insert into stage records which have been updated */ 
+/* stage->insert into stage records which have been updated */ 
 INSERT INTO dw_stage.freight_estimate
 (
   LANDED_COST_RULE_MATRIX_NZ_ID,
@@ -148,7 +157,7 @@ WHERE EXISTS (SELECT 1
 
 COMMIT;
 
-/* insert new records in dim freight_estimate */ /*==========================assumed that dimensions will be full extraction and hence dw_prestage.freight_estimate will have all the records  =====*/ /*==========================for the first run. =====================================================================================================================================*/ 
+/* dimention->insert new records in dim freight_estimate */  
 INSERT INTO dw.freight_estimate
 (
   LANDED_COST_RULE_MATRIX_NZ_ID,
@@ -176,7 +185,7 @@ SELECT LANDED_COST_RULE_MATRIX_NZ_ID,
        'A'
 FROM dw_prestage.freight_estimate_insert A;
 
-/*==============================================assumed since this is an update the record/s already exists in dim table===========================================================*/ /*===============================================only one record will be there with dw_active column as 'A'========================================================================*/ /* update old record as part of SCD2 maintenance*/ 
+ /* dimention->update old record as part of SCD2 maintenance*/ 
 UPDATE dw.freight_estimate
    SET dw_active = 'I',
        DATE_ACTIVE_TO = (sysdate -1)
@@ -188,7 +197,7 @@ AND   EXISTS (SELECT 1
               WHERE dw.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_update.LANDED_COST_RULE_MATRIX_NZ_ID
               AND   dw_prestage.freight_estimate_update.ch_type = 2);
 
-/* insert the new records as part of SCD2 maintenance*/ 
+/* dimention->insert the new records as part of SCD2 maintenance*/ 
 INSERT INTO dw.freight_estimate
 (
   LANDED_COST_RULE_MATRIX_NZ_ID,
@@ -220,7 +229,7 @@ WHERE EXISTS (SELECT 1
               WHERE a.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_update.LANDED_COST_RULE_MATRIX_NZ_ID
               AND   dw_prestage.freight_estimate_update.ch_type = 2);
 
-/* update SCD1 */ 
+/* dimention->update SCD1 */ 
 UPDATE dw.freight_estimate
    SET SHIP_METHOD_NAME = NVL(dw_prestage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_NAM,'NA_GDW'),
        SHIP_METHOD_DESCRIPTION = NVL(dw_prestage.freight_estimate.DESCRIPTION,'NA_GDW'),
@@ -236,7 +245,7 @@ AND   EXISTS (SELECT 1
               WHERE dw_prestage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_update.LANDED_COST_RULE_MATRIX_NZ_ID
               AND   dw_prestage.freight_estimate_update.ch_type = 1);
 
-/* logically delete dw records */ 
+/* dimention->logically delete dw records */ 
 UPDATE dw.freight_estimate
    SET DATE_ACTIVE_TO = sysdate -1,
        dw_active = 'I'
