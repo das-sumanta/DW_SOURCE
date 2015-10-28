@@ -1,5 +1,7 @@
+/* prestage - drop intermediate insert table */
 DROP TABLE if exists dw_prestage.locations_insert;
 
+/* prestage - create intermediate insert table*/
 CREATE TABLE dw_prestage.locations_insert 
 AS
 SELECT *
@@ -12,9 +14,10 @@ WHERE EXISTS (SELECT 1
                           SELECT location_id
                           FROM dw_stage.locations)) a
               WHERE dw_prestage.locations.location_id = a.location_id);
-
+/* prestage - drop intermediate update table*/
 DROP TABLE if exists dw_prestage.locations_update;
 
+/* prestage - create intermediate update table*/
 CREATE TABLE dw_prestage.locations_update 
 AS
 SELECT decode(SUM(ch_type),
@@ -25,7 +28,7 @@ SELECT decode(SUM(ch_type),
 FROM (SELECT location_id,
              CH_TYPE
       FROM (
-      --SCD2 columns
+      
       
            SELECT location_id,PARENT_ID,LINE_OF_BUSINESS_ID,'2' CH_TYPE 
            FROM dw_prestage.locations
@@ -39,7 +42,7 @@ FROM (SELECT location_id,
       SELECT location_id,
              CH_TYPE
       FROM (
-      --SCD1 columns
+      
       
            SELECT location_id,ADDRESS,ADDRESS_ONE,ADDRESS_TWO,ADDRESS_THREE,CITY,STATE,COUNTRY,ZIPCODE,ISINACTIVE,ATTENTION,BRANCH_ID,FULL_NAME,INVENTORY_AVAILABLE,INVENTORY_AVAILABLE_WEB_STORE,IS_INCLUDE_IN_SUPPLY_PLANNING,RETURN_ADDRESS_ONE,RETURN_ADDRESS_TWO,RETURN_CITY,RETURN_STATE,RETURN_COUNTRY,RETURN_ZIPCODE,'1' CH_TYPE 
            FROM dw_prestage.locations
@@ -73,8 +76,10 @@ WHERE NOT EXISTS (SELECT 1
                   WHERE dw_prestage.locations_insert.location_id = a.location_id)
 GROUP BY location_id;
 
+/* prestage - drop intermediate delete table*/
 DROP TABLE if exists dw_prestage.locations_delete;
 
+/* prestage - create intermediate delete table*/
 CREATE TABLE dw_prestage.locations_delete 
 AS
 SELECT *
@@ -88,26 +93,30 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.locations)) a
               WHERE dw_stage.locations.location_id = a.location_id);
 
+ /* prestage-> stage*/             
 SELECT 'no of prestage vendor records identified to inserted -->' ||count(1)
 FROM dw_prestage.locations_insert;
 
+/* prestage-> stage*/
 SELECT 'no of prestage vendor records identified to updated -->' ||count(1)
 FROM dw_prestage.locations_update;
 
+/* prestage-> stage*/
 SELECT 'no of prestage vendor records identified to deleted -->' ||count(1)
 FROM dw_prestage.locations_delete;
 
-/* delete from stage records to be updated */ 
+/* stage->delete from stage records to be updated */
+
 DELETE
 FROM dw_stage.locations USING dw_prestage.locations_update
 WHERE dw_stage.locations.location_id = dw_prestage.locations_update.location_id;
 
-/* delete from stage records which have been deleted */ 
+/* stage->delete from stage records which have been deleted */ 
 DELETE
 FROM dw_stage.locations USING dw_prestage.locations_delete
 WHERE dw_stage.locations.location_id = dw_prestage.locations_delete.location_id;
 
-/* insert into stage records which have been created */ 
+/* stage->insert into stage records which have been created */ 
 INSERT INTO dw_stage.locations (ADDRESS,
        ADDRESSEE,
        ADDRESS_ONE,
@@ -172,7 +181,7 @@ SELECT ADDRESS,
        ZIPCODE
 FROM dw_prestage.locations_insert;
 
-/* insert into stage records which have been updated */ 
+/* stage->insert into stage records which have been updated */ 
 INSERT INTO dw_stage.locations (ADDRESS,
        ADDRESSEE,
        ADDRESS_ONE,
@@ -242,7 +251,7 @@ WHERE EXISTS (SELECT 1
 
 COMMIT;
 
-/* insert new records in dim locations */ /*==========================assumed that dimensions will be full extraction and hence dw_prestage.locations will have all the records  =====*/ /*==========================for the first run. =====================================================================================================================================*/ 
+/* dimention->insert new records in dim locations */ /*==========================assumed that dimensions will be full extraction and hence dw_prestage.locations will have all the records  =====*/ /*==========================for the first run. =====================================================================================================================================*/ 
 INSERT INTO dw.locations
 (
   LOCATION_ID,
@@ -390,7 +399,7 @@ AND   EXISTS (SELECT 1
               WHERE dw.locations.location_id = dw_prestage.locations_update.location_id
               AND   dw_prestage.locations_update.ch_type = 2);
 
-/* insert the new records as part of SCD2 maintenance*/ 
+/* dimention->insert the new records as part of SCD2 maintenance*/ 
 INSERT INTO dw.locations
 (
   LOCATION_ID,
@@ -530,7 +539,7 @@ AND   EXISTS (SELECT 1
               WHERE a.location_id = dw_prestage.locations_update.location_id
               AND   dw_prestage.locations_update.ch_type = 2);
 
-/* update SCD1 */ 
+/* dimention->update SCD1 */ 
 UPDATE dw.locations
    SET ADDRESS = DECODE(LENGTH(dw_prestage.locations.ADDRESS),0,'NA_GDW',dw_prestage.locations.ADDRESS),
        ADDRESS_ONE = DECODE(LENGTH(dw_prestage.locations.ADDRESS_ONE),0,'NA_GDW',dw_prestage.locations.ADDRESS_ONE),
@@ -560,7 +569,7 @@ AND   EXISTS (SELECT 1
               WHERE dw_prestage.locations.location_id = dw_prestage.locations_update.location_id
               AND   dw_prestage.locations_update.ch_type = 1);
 
-/* logically delete dw records */ 
+/* dimention->logically delete dw records */ 
 UPDATE dw.locations
    SET DATE_ACTIVE_TO = sysdate -1,
        dw_active = 'I'
