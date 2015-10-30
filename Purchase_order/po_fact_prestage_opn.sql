@@ -304,7 +304,6 @@ FROM dw_prestage.po_fact_insert A
 INSERT INTO dw.po_fact_error
 (
   RUNID,
-PO_ERROR_KEY,
 PO_NUMBER,
 VENDOR_KEY,
 REQUESTER_KEY,
