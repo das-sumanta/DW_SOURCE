@@ -123,10 +123,10 @@ FROM (SELECT TRANSACTION_ID,
             FROM dw_stage.po_fact)) a
 WHERE NOT EXISTS (SELECT 1 FROM dw_prestage.po_fact_insert WHERE dw_prestage.po_fact_insert.TRANSACTION_ID = a.TRANSACTION_ID AND   dw_prestage.po_fact_insert.transaction_line_id = a.transaction_line_id);
 
-/* prestage - drop intermediate delete table*/
+/* prestage - drop intermediate no change track table*/
 DROP TABLE if exists dw_prestage.po_fact_nochange;
 
-/* prestage - create intermediate delete table*/
+/* prestage - create intermediate no change track table*/
 CREATE TABLE dw_prestage.po_fact_nochange 
 AS
 SELECT TRANSACTION_ID,
