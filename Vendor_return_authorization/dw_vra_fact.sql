@@ -10,8 +10,7 @@ CREATE TABLE dw.vra_fact
   TRANSACTION_LINE_ID          INTEGER,
   VENDOR_KEY                   INTEGER,
   REF_TRX_NUMBER                VARCHAR(150),
-/*  REF_PO_KEY                   INTEGER,*/
-/*  REQUESTER_KEY                INTEGER, */
+  REQUESTER_KEY                INTEGER, 
 /*  APPROVER_LEVEL1_KEY          INTEGER, */
   RECEIVE_DATE_KEY             INTEGER,
   CREATE_DATE_KEY              INTEGER,
@@ -29,7 +28,7 @@ CREATE TABLE dw.vra_fact
   VENDOR_STATE                 VARCHAR(50),
   VENDOR_ZIP                   VARCHAR(50),
   QUANTITY                     DECIMAL(18,8),
-  RATE                         VARCHAR(50),
+  RATE                         VARCHAR(50),	
   AMOUNT                       DECIMAL(20,2),
   QUANTITY_BILLED              DECIMAL(18,8),
   QUANTITY_SHIPPED             DECIMAL(18,8),
@@ -38,7 +37,6 @@ CREATE TABLE dw.vra_fact
   NET_AMOUNT                   DECIMAL(22,2),
   NET_AMOUNT_FOREIGN           DECIMAL(22,2),
   GROSS_AMOUNT                 DECIMAL(22,2),
-  MATCH_BILL_TO_RECEIPT        VARCHAR(10),
   TAX_ITEM_KEY                 INTEGER,
   TAX_AMOUNT_FOREIGN           DECIMAL(20,2),
   TAX_AMOUNT                   DECIMAL(20,2),
