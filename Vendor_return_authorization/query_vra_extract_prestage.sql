@@ -6,7 +6,7 @@ SELECT 1 as RUNID,
                ' ') AS VRA_NUMBER,
        TO_CHAR(TRANSACTIONS.ENTITY_ID) AS VENDOR_ID,
        TO_CHAR(TRANSACTIONS.CREATED_FROM_ID) AS CREATED_FROM_ID,
-       E.TRANSACTION_NUMBER AS REF_TRX_NUMBER,
+       F.TRANSACTION_NUMBER AS REF_TRX_NUMBER,
        TO_CHAR(TRANSACTIONS.CREATED_BY_ID) AS CREATED_BY_ID,
        TO_CHAR(TRANSACTION_LINES.SHIPMENT_RECEIVED, 'YYYY-MM-DD HH24:MI:SS') AS SHIPMENT_RECEIVED_DATE,
        TO_CHAR(TRANSACTIONS.CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CREATE_DATE,
@@ -33,9 +33,9 @@ SELECT 1 as RUNID,
        REPLACE(REPLACE(TRANSACTION_ADDRESS.BILL_CITY, CHR(10), ' '),
                CHR(13),
                ' ') AS VENDOR_CITY,
-       REPLACE(REPLACE(TRANSACTION_ADDRESS.BILL_COUNTRY, CHR(10), ' '),
+       REPLACE(REPLACE(NVL(g.name,TRANSACTION_ADDRESS.BILL_COUNTRY), CHR(10), ' '),
                CHR(13),
-               ' ') AS VENDOR_COUNTRY,
+               ' ') AS VENDOR_COUNTRY, 
        REPLACE(REPLACE(TRANSACTION_ADDRESS.BILL_STATE, CHR(10), ' '),
                CHR(13),
                ' ') AS VENDOR_STATE,
@@ -80,13 +80,15 @@ SELECT 1 as RUNID,
   FROM transaction_lines b
  INNER JOIN transactions a
     ON (a.transaction_id = b.transaction_id)
- LEFT OUTER JOIN transactions e 
-   ON (a.created_from_id = e.transaction_id )
+ LEFT OUTER JOIN transactions f 
+   ON (a.created_from_id = f.transaction_id )
   LEFT OUTER JOIN accounts d
     ON (TRANSACTION_LINES.account_id = accounts.account_id)
   LEFT OUTER JOIN transaction_address e
     ON (TRANSACTION_LINES.transaction_id =
        transaction_address.transaction_id)
+  LEFT OUTER JOIN countries g 
+   ON (e.BILL_COUNTRY = g.short_name ) 
   LEFT OUTER JOIN transaction_tax_detail c
     ON (TRANSACTION_LINES.transaction_id =
        transaction_tax_detail.transaction_id AND
