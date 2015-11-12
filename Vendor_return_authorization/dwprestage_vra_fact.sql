@@ -19,12 +19,12 @@ CREATE TABLE dw_prestage.vra_fact
   LOCATION_ID                  INTEGER,
   EXCHANGE_RATE                DECIMAL(30,15),
   VENDOR_ADDRESS_LINE_1        VARCHAR(150),
-  BILL_ADDRESS_LINE_2	         VARCHAR(150),
-  BILL_ADDRESS_LINE_3	         VARCHAR(150),
-  BILL_CITY	                   VARCHAR(50),
-  BILL_COUNTRY	               VARCHAR(50),
-  BILL_STATE	                 VARCHAR(50),
-  BILL_ZIP	                   VARCHAR(50),
+  VENDOR_ADDRESS_LINE_2	         VARCHAR(150),
+  VENDOR_ADDRESS_LINE_3	         VARCHAR(150),
+  VENDOR_CITY	                   VARCHAR(50),
+  VENDOR_COUNTRY	               VARCHAR(50),
+  VENDOR_STATE	                 VARCHAR(50),
+  VENDOR_ZIP	                   VARCHAR(50),
   VRA_STATUS                   VARCHAR(1000),
   APPROVAL_STATUS              VARCHAR(4000),
   ITEM_COUNT                   DECIMAL(18,8),
@@ -49,6 +49,7 @@ CREATE TABLE dw_prestage.vra_fact
   DATE_LAST_MODIFIED           TIMESTAMP,
   EMPLOYEE_CUSTOM_ID           INTEGER,
   CLASS_ID                     INTEGER,
+  LINE_TYPE                    VARCHAR(500),
   PRIMARY KEY (RUNID,TRANSACTION_ID,TRANSACTION_LINE_ID))
 DISTSTYLE ALL INTERLEAVED SORTKEY (RUNID,TRANSACTION_ID,TRANSACTION_LINE_ID);
 
