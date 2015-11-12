@@ -10,6 +10,7 @@ CREATE TABLE dw_prestage.vra_fact
   VRA_NUMBER                   VARCHAR(200),
   VENDOR_ID                    INTEGER,
   CREATED_FROM_ID              INTEGER,
+  REF_TRX_NUMBER                VARCHAR(200),
   CREATED_BY_ID                INTEGER,
   SHIPMENT_RECEIVED_DATE       TIMESTAMP,
   CREATE_DATE                  TIMESTAMP,

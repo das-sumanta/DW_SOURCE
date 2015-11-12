@@ -9,8 +9,8 @@ CREATE TABLE dw.vra_fact
   TRANSACTION_ID               INTEGER,
   TRANSACTION_LINE_ID          INTEGER,
   VENDOR_KEY                   INTEGER,
-  REF_PO_NUMBER                VARCHAR(150),
-  REF_PO_KEY                   INTEGER,
+  REF_TRX_NUMBER                VARCHAR(150),
+/*  REF_PO_KEY                   INTEGER,*/
 /*  REQUESTER_KEY                INTEGER, */
 /*  APPROVER_LEVEL1_KEY          INTEGER, */
   RECEIVE_DATE_KEY             INTEGER,
