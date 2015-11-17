@@ -29,7 +29,6 @@ SELECT decode(SUM(ch_type),
 FROM (SELECT item_id,
              CH_TYPE
       FROM (
-      
           SELECT item_id,
 			       CLASS_ID,
 			       LINE_OF_BUSINESS,
@@ -73,8 +72,6 @@ FROM dw_prestage.items
       SELECT item_id,
              CH_TYPE
       FROM (
-      
-      
            SELECT item_id,
 			       NAME,
 			       ALLOW_DROP_SHIP,
@@ -123,8 +120,8 @@ FROM dw_prestage.items
 			       TYPE_NAME,
 			       VENDOR_ID,
 			       VENDOR_NAME,
-			       VENDRETURN_VARIANCE_ACCOUNT_ID
-       
+			       VENDRETURN_VARIANCE_ACCOUNT_ID,
+             '1' CH_TYPE
 FROM dw_prestage.items
       MINUS
       SELECT item_id,
@@ -176,7 +173,7 @@ FROM dw_prestage.items
              VENDOR_ID,
              VENDOR_NAME,
              VENDRETURN_VARIANCE_ACCOUNT_ID,
-             
+             '1' CH_TYPE
       FROM dw_stage.items)) a
 WHERE NOT EXISTS (SELECT 1
                   FROM dw_prestage.items_insert
