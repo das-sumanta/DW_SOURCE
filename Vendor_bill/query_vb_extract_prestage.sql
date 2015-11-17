@@ -19,6 +19,9 @@ SELECT 1 as RUNID,
        a.sales_effective_date  gl_post_date,  /* gl_post_date */
        a.supplier_create_date  vendor_bill_date,  /* vendor_bill_date */
        TO_CHAR(TRANSACTIONS.CREATED_BY_ID) AS CREATED_BY_ID,
+       TO_CHAR(TRANSACTIONS.APPROVER_LEVEL_ONE_ID) AS APPROVER_LEVEL_ONE_ID,
+       TO_CHAR(TRANSACTIONS.APPROVER_LEVEL_TWO_ID) AS APPROVER_LEVEL_TWO_ID,
+       TO_CHAR(TRANSACTIONS.bill_requestor_ID) AS REQUESTOR_ID,
        TO_CHAR(TRANSACTIONS.CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CREATE_DATE,
        TO_CHAR(TRANSACTION_LINES.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
        TO_CHAR(TRANSACTION_LINES.DEPARTMENT_ID) AS DEPARTMENT_ID,
@@ -52,7 +55,7 @@ SELECT 1 as RUNID,
        REPLACE(REPLACE(TRANSACTION_ADDRESS.BILL_ZIP, CHR(10), ' '),
                CHR(13),
                ' ') AS VENDOR_ZIP,
-       REPLACE(REPLACE(TRANSACTIONS.STATUS, CHR(10), ' '), CHR(13), ' ') AS VRA_STATUS,
+       REPLACE(REPLACE(TRANSACTIONS.STATUS, CHR(10), ' '), CHR(13), ' ') AS VB_STATUS,
        REPLACE(REPLACE(TRANSACTIONS.APPROVAL_STATUS, CHR(10), ' '),
                CHR(13),
                ' ') AS APPROVAL_STATUS,
@@ -64,30 +67,34 @@ SELECT 1 as RUNID,
        TRANSACTION_LINES.NET_AMOUNT_FOREIGN AS NET_AMOUNT_FOREIGN,
        TRANSACTION_LINES.GROSS_AMOUNT AS GROSS_AMOUNT,
        TRANSACTION_LINES.ITEM_UNIT_PRICE AS ITEM_UNIT_PRICE,
-       F.ITEM_COUNT AS PO_QUANTITY,  /* po QUANTITY */
-       F.AMOUNT AS PO_AMOUNT,  /* po AMOUNT */
-       TRANSACTION_LINES.QUANTITY_RECEIVED_IN_SHIPMENT AS QUANTITY_SHIPPED,
+       --F.ITEM_COUNT AS PO_QUANTITY,  /* po QUANTITY */
+       --F.AMOUNT AS PO_AMOUNT,  /* po AMOUNT */
+       --TRANSACTION_LINES.QUANTITY_RECEIVED_IN_SHIPMENT AS QUANTITY_SHIPPED,
        /*TRANSACTION_LINES.account_id,*/
-       TO_CHAR(TRANSACTION_LINES.date_closed, 'YYYY-MM-DD HH24:MI:SS') AS CLOSE_DATE,
+       TO_CHAR(TRANSACTIONS.closed, 'YYYY-MM-DD HH24:MI:SS') AS CLOSE_DATE,
        /*TRANSACTION_LINES.company_id,*/
        TO_CHAR(C.TAX_ITEM_ID) AS TAX_ITEM_ID,
        TRANSACTION_LINES.TRANSACTION_ORDER,
        C.AMOUNT TAX_AMOUNT,
        C.AMOUNT_FOREIGN TAX_AMOUNT_FOREIGN,
        DECODE(CUSTOM_FORM_ID,
-              115,
-              'Scholastic Vendor Return Authorization',
-              198,
-              'INTL Vendor Return Authorization') AS VRA_TYPE,
+              117,'Scholastic Vendor Bill - FA',
+              118,'Scholastic Vendor Bill',
+              188,'INTL Drop Ship Inventory Bill',
+              189,'INTL Non-Inventory Bill',
+              190,'INTL Inventory Bill',
+              192,'INTL Capital Purchase Bill',
+              50,'Standard Vendor Bill',
+              'NA_GDW') AS VB_TYPE,
        A.CURRENCY_ID,
        TO_CHAR(A.CUSTOM_FORM_ID) AS CUSTOM_FORM_ID,
        TO_CHAR(B.DATE_LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') AS DATE_LAST_MODIFIED,
        TO_CHAR(A.EMPLOYEE_CUSTOM_ID) AS EMPLOYEE_CUSTOM_ID,
        B.CLASS_ID,
        Decode(d.name,
-              'Vendor Return Authorizations',
-              'VRA_HDR',
-              DECODE(c.transaction_line_id, NULL, 'VRA_TAX', 'VRA_LINE')) AS line_type
+              'AP-General',
+              'VB_HDR',
+              DECODE(c.transaction_line_id, NULL, 'VB_TAX', 'VB_LINE')) AS line_type
   FROM transaction_lines b
  INNER JOIN transactions a
     ON (a.transaction_id = b.transaction_id)
@@ -112,4 +119,3 @@ SELECT 1 as RUNID,
    AND b.subsidiary_id = 27
  ORDER BY TRANSACTIONS.transaction_id,
           TRANSACTION_LINES.transaction_line_id;
-          
