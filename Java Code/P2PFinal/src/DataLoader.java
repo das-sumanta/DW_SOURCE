@@ -1687,40 +1687,6 @@ public class DataLoader {
 		}
 	}
 
-	public static void main(String[] args) throws ClassNotFoundException,
-			IOException, SQLException {
-
-		String entity = "";
-		if (args.length == 0) {
-			DataLoader dl = new DataLoader();
-			dl.createDbExtract();
-			dl.doAmazonS3FileTransfer();
-
-			final File folder = new File(dl.aSQLScriptFilePath);
-			for (final File fileEntry : folder.listFiles()) {
-				if (fileEntry.isDirectory()) {
-					continue;
-				} else {
-					entity = fileEntry.getName().substring(0,
-							fileEntry.getName().indexOf('_'));
-					ScriptRunner scriptRunner = new ScriptRunner(
-							dl.createRedShiftDbCon(), false, true, dl.RunID,
-							entity);
-					System.out.println("Executing ScriptRunner for entity "
-							+ entity);
-					scriptRunner.runScript(new FileReader(dl.aSQLScriptFilePath
-							+ File.separator + fileEntry.getName()));
-				}
-			}
-
-		} else {
-			System.out.println("DataLoader running in mannual mode");
-			String[] fileList = args[1].split(",");
-			DataLoader dl = new DataLoader();
-			dl.createDbExtract('r', fileList);
-			dl.doAmazonS3FileTransfer('r', fileList);
-		}
-
-	}
+	
 
 }

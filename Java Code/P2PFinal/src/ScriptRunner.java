@@ -36,6 +36,7 @@ public class ScriptRunner {
     private String errorCode;
     private int runID;
     private String entity;
+    private boolean manualMode;
    
     
 	/* To Store any 'SELECT' queries output */
@@ -44,7 +45,7 @@ public class ScriptRunner {
 	/* To Store any SQL Queries output except 'SELECT' SQL */
     private List<String> sqlOutput;
 
-    public ScriptRunner(final Connection connection, final boolean autoCommit, final boolean stopOnError,int runID,String entity) {
+    public ScriptRunner(final Connection connection, final boolean autoCommit, final boolean stopOnError,int runID,String entity, boolean isManualMode) {
         if (connection == null) {
             throw new RuntimeException("ScriptRunner requires an SQL Connection");
         }
@@ -56,6 +57,7 @@ public class ScriptRunner {
         this.err = new PrintWriter(System.err);
         this.runID = runID;
         this.entity = entity;
+        this.manualMode = isManualMode;
         tableList = new ArrayList<Table>();
         sqlOutput = new ArrayList<String>();
         errorCode = "";
@@ -194,6 +196,7 @@ public class ScriptRunner {
                             out.flush();
                             if(!errorCode.equals("")) {
                             	writeDBLog(runID,stmt.getUpdateCount() + " row(s) affected.",entity, this.errorCode,"Info" );
+                            	
                                 errorCode = "";
                             }
                             
@@ -213,6 +216,7 @@ public class ScriptRunner {
                         if (stmt != null) {
                             try {
                                 stmt.close();
+                                
                             } catch (final Exception e) {
                                 err.println("Failed to close statement: " + e.getMessage());
                                 err.flush();
@@ -240,6 +244,7 @@ public class ScriptRunner {
             err.println(e);
             err.flush();
             writeDBLog(runID, e.getMessage(),entity, this.errorCode,"Error" );
+            writeJobLog(runID,entity,(manualMode)?"Rerun Mode":"Normal Mode","Error");
             throw e;
         } catch (final IOException e) {
             e.fillInStackTrace();
@@ -266,6 +271,26 @@ public class ScriptRunner {
 		ps.setString(4, errStg);
 		ps.setString(5, msgTyp);
 		ps.setTimestamp(6, currentTimestamp);
+		ps.executeUpdate();
+		connection.commit();
+		
+    }
+    
+    public void writeJobLog(int runID,String entity,String run_mode,String job_status) throws SQLException {
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
+    	String logSql = "";
+    	
+    	logSql = "INSERT INTO dw_prestage.job_log(runid,entity,run_mode,job_status,job_timestamp) "
+				+ "VALUES(?,?,?,?,?)";
+		
+		ps = connection.prepareStatement(logSql);
+		ps.setInt(1, runID);
+		ps.setString(2,entity);
+		ps.setString(3, run_mode);
+		ps.setString(4, job_status);
+		ps.setTimestamp(5, currentTimestamp);
 		ps.executeUpdate();
 		connection.commit();
 		

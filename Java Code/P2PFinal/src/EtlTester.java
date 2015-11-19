@@ -48,11 +48,12 @@ public class EtlTester {
 									properties.getProperty("RSPWD"));
 
 							ScriptRunner scriptRunner = new ScriptRunner(con,
-									false, true, dl.getRunID(), dbObjects[u]);
+									false, true, dl.getRunID(), dbObjects[u],false);
 
 							scriptRunner.runScript(new FileReader(
 									aSQLScriptFilePath + File.separator
 											+ listOfFiles[i].getName()));
+							scriptRunner.writeJobLog(dl.getRunID(),dbObjects[u],"Normal Mode","Success");
 							break;
 
 						} else {
@@ -112,11 +113,13 @@ public class EtlTester {
 									properties.getProperty("RSPWD"));
 
 							ScriptRunner scriptRunner = new ScriptRunner(con,
-									false, true, dl.getRunID(), fileList[u]);
+									false, true, dl.getRunID(), fileList[u],true);
 
 							scriptRunner.runScript(new FileReader(
 									aSQLScriptFilePath + File.separator
 											+ listOfFiles[i].getName()));
+							
+							scriptRunner.writeJobLog(dl.getRunID(),fileList[u],"Re-run mode","Success");
 							break;
 
 						} else {
