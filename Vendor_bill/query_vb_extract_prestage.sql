@@ -1,4 +1,4 @@
-SELECT 1 as RUNID,
+SELECT 
        TO_CHAR(TRANSACTIONS.transaction_id) AS transaction_id,
        TO_CHAR(TRANSACTION_LINES.transaction_line_id) AS transaction_line_id,
        REPLACE(REPLACE(TRANSACTIONS.transaction_number, CHR(10), ' '),
@@ -94,7 +94,9 @@ SELECT 1 as RUNID,
        Decode(d.name,
               'AP-General',
               'VB_HDR',
-              DECODE(c.transaction_line_id, NULL, 'VB_TAX', 'VB_LINE')) AS line_type
+              DECODE(c.transaction_line_id, NULL, 'VB_TAX', 'VB_LINE')) AS line_type ,
+  DECODE(i.record_id, NULL, 'NO', 'YES') as MATCH_EXCEPTION,
+  i.exceptions_0 as EXCEPTION_MESSAGE 
   FROM transaction_lines b
  INNER JOIN transactions a
     ON (a.transaction_id = b.transaction_id)
@@ -108,7 +110,9 @@ SELECT 1 as RUNID,
   LEFT OUTER JOIN countries g 
    ON (e.BILL_COUNTRY = g.short_name ) 
   LEFT OUTER JOIN payment_terms h 
-   ON (a.payment_terms_id = h.payment_terms_id ) 
+   ON (a.payment_terms_id = h.payment_terms_id )
+  LEFT OUTER JOIN NAW_WORKFLOW_EXCEPTIONS i 
+   ON (a.transaction_id = i.record_id )
   LEFT OUTER JOIN transaction_tax_detail c
     ON (TRANSACTION_LINES.transaction_id =
        transaction_tax_detail.transaction_id AND
