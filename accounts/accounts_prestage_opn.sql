@@ -418,7 +418,7 @@ UPDATE dw.accounts
         DESCRIPTION          = NVL(dw_prestage.accounts.DESCRIPTION         ,'NA_GDW'),
         GENERAL_RATE_TYPE  = NVL(dw_prestage.accounts.GENERAL_RATE_TYPE ,'NA_GDW'),
         HYPERION_CODES     = NVL(dw_prestage.accounts.HYPERION_CODES    ,'NA_GDW'),
-        ISINACTIVE         = NVL(dw_prestage.accounts.ISINACTIVE        ,'NA_GDW'),
+        ISINACTIVE         = NVL(dw_prestage.accounts.ISINACTIVE        ,'NA_GDW')
 FROM dw_prestage.accounts
 WHERE dw.accounts.account_id = dw_prestage.accounts.account_id
 and exists (select 1 from dw_prestage.accounts_update
