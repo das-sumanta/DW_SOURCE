@@ -6,6 +6,10 @@ CREATE TABLE dw.po_fact
 (
   PO_KEY                        BIGINT IDENTITY(0,1),
   PO_NUMBER                    VARCHAR(150),
+  PO_ID                        INTEGER,         /* ADDD */
+  PO_LINE_ID                   INTEGER,         /* ADDD */
+  REF_TRX_NUMBER               VARCHAR(200),    /* ADDD */
+  REF_TRX_TYPE                 VARCHAR(200),    /* ADDD */
   VENDOR_KEY                    INTEGER,
   REQUESTER_KEY                 INTEGER,
   APPROVER_LEVEL1_KEY           INTEGER,
@@ -18,8 +22,20 @@ CREATE TABLE dw.po_fact
   EXCHANGE_RATE                 DECIMAL(30,15),
   ITEM_KEY                      INTEGER,
   VENDOR_ITEM_KEY               INTEGER,
-  BILLADDRESS                   VARCHAR(1000),
-  SHIPADDRESS                   VARCHAR(1000),
+  BILL_ADDRESS_LINE_1          VARCHAR(500),       /* ADDD */
+  BILL_ADDRESS_LINE_2          VARCHAR(500),       /* ADDD */
+  BILL_ADDRESS_LINE_3          VARCHAR(500),       /* ADDD */
+  BILL_CITY                    VARCHAR(200),       /* ADDD */
+  BILL_COUNTRY                 VARCHAR(200),       /* ADDD */
+  BILL_STATE                   VARCHAR(200),       /* ADDD */
+  BILL_ZIP                     VARCHAR(200),       /* ADDD */
+  SHIP_ADDRESS_LINE_1          VARCHAR(500),       /* ADDD */     
+  SHIP_ADDRESS_LINE_2          VARCHAR(500),       /* ADDD */     
+  SHIP_ADDRESS_LINE_3          VARCHAR(500),       /* ADDD */    
+  SHIP_CITY                    VARCHAR(200),       /* ADDD */     
+  SHIP_COUNTRY                 VARCHAR(200),       /* ADDD */     
+  SHIP_STATE                   VARCHAR(200),       /* ADDD */    
+  SHIP_ZIP                     VARCHAR(200),       /* ADDD */    
   QUANTITY                      DECIMAL(18,8),
   BIH_QUANTITY                  DECIMAL(22),
   BC_QUANTITY                   DECIMAL(22),
@@ -28,6 +44,9 @@ CREATE TABLE dw.po_fact
   EDUCATION_QUANTITY            DECIMAL(22),
   SCHOOL_ESSENTIALS_QUANTITY    DECIMAL(22),
   BOOK_FAIR_QUANTITY            DECIMAL(22),
+  NUMBER_BILLED                DECIMAL(18,8),           /* ADDD */
+  QUANTITY_RECEIVED_IN_SHIPMENT DECIMAL(18,8),          /* ADDD */
+  QUANTITY_RETURNED            DECIMAL(22,8),           /* ADDD */
   RATE                          VARCHAR(50),
   AMOUNT                        DECIMAL(20,2),
   ITEM_GROSS_AMOUNT             DECIMAL(20,2),
