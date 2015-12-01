@@ -4,10 +4,11 @@ DROP TABLE if exists dw.carrier;
 
 CREATE TABLE dw.carrier 
 (
-  CARRIER_KEY        INTEGER,
+  CARRIER_KEY        BIGINT IDENTITY(0,1),
   CARRIER_ID         INTEGER,
   CARRIER_NAME       VARCHAR(200),
   CARRIER_ADDRESS    VARCHAR(4000),
+  IS_INACTIVE        VARCHAR(10),
   DATE_ACTIVE_FROM   TIMESTAMP,
   DATE_ACTIVE_TO     TIMESTAMP,
   DW_ACTIVE          VARCHAR(1),
@@ -15,3 +16,38 @@ CREATE TABLE dw.carrier
 )
 DISTSTYLE ALL COMPOUND SORTKEY (CARRIER_KEY,CARRIER_ID,DW_ACTIVE);
 
+insert into dw.carrier
+( CARRIER_ID       
+ ,CARRIER_NAME     
+ ,CARRIER_ADDRESS  
+ ,IS_INACTIVE      
+ ,DATE_ACTIVE_FROM 
+ ,DATE_ACTIVE_TO   
+ ,DW_ACTIVE 
+ )
+select
+      -99      AS  CARRIER_ID      
+     ,'NA_GDW' AS  CARRIER_NAME    
+     ,'NA_GDW' AS  CARRIER_ADDRESS 
+     ,'NA_GDW' AS  IS_INACTIVE     
+     ,sysdate AS DATE_ACTIVE_FROM
+     ,'9999-12-31 23:59:59' AS DATE_ACTIVE_TO
+     ,'A' AS DW_ACTIVE ;      
+
+insert into dw.carrier
+( CARRIER_ID       
+ ,CARRIER_NAME     
+ ,CARRIER_ADDRESS  
+ ,IS_INACTIVE      
+ ,DATE_ACTIVE_FROM 
+ ,DATE_ACTIVE_TO   
+ ,DW_ACTIVE 
+ )
+select
+      0      AS  CARRIER_ID      
+     ,'NA_ERR' AS  CARRIER_NAME    
+     ,'NA_ERR' AS  CARRIER_ADDRESS 
+     ,'NA_ERR' AS  IS_INACTIVE     
+     ,sysdate AS DATE_ACTIVE_FROM
+     ,'9999-12-31 23:59:59' AS DATE_ACTIVE_TO
+     ,'A' AS DW_ACTIVE ;

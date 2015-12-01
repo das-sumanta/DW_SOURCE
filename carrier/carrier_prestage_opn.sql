@@ -23,9 +23,9 @@ from
 (
 SELECT carrier_record_id , CH_TYPE FROM 
 (  
-select carrier_record_id , CARRIER_RECORD_NAME , CARRIER_ADDRESS, '2' CH_TYPE from dw_prestage.carrier
+select carrier_record_id , CARRIER_RECORD_NAME , CARRIER_ADDRESS, IS_INACTIVE, '1' CH_TYPE from dw_prestage.carrier
 MINUS
-select carrier_record_id , CARRIER_RECORD_NAME , CARRIER_ADDRESS, '2' CH_TYPE from dw_stage.carrier
+select carrier_record_id , CARRIER_RECORD_NAME , CARRIER_ADDRESS, IS_INACTIVE,'1' CH_TYPE from dw_stage.carrier
 )
 ) a where not exists ( select 1 from dw_prestage.carrier_insert
 where dw_prestage.carrier_insert.carrier_record_id = a.carrier_record_id) group by carrier_record_id;
@@ -67,32 +67,32 @@ where dw_stage.carrier.carrier_record_id = dw_prestage.carrier_delete.carrier_re
 insert into dw_stage.carrier (CARRIER_ADDRESS    
 ,CARRIER_RECORD_ID  
 ,CARRIER_RECORD_NAME
-,DATE_CREATED       
-,IS_INACTIVE        
-,LAST_MODIFIED_DATE 
+,IS_INACTIVE
+,DATE_CREATED              
+,DATE_LAST_MODIFIED 
 )
 select CARRIER_ADDRESS    
 ,CARRIER_RECORD_ID  
 ,CARRIER_RECORD_NAME
-,DATE_CREATED       
-,IS_INACTIVE        
-,LAST_MODIFIED_DATE 
+,IS_INACTIVE
+,DATE_CREATED               
+,DATE_LAST_MODIFIED 
  from dw_prestage.carrier_insert;
 
 /* stage ->insert into stage records which have been updated */
 insert into dw_stage.carrier (CARRIER_ADDRESS    
 ,CARRIER_RECORD_ID  
 ,CARRIER_RECORD_NAME
-,DATE_CREATED       
-,IS_INACTIVE        
-,LAST_MODIFIED_DATE 
+,IS_INACTIVE
+,DATE_CREATED               
+,DATE_LAST_MODIFIED 
 )
 select CARRIER_ADDRESS    
 ,CARRIER_RECORD_ID  
 ,CARRIER_RECORD_NAME
-,DATE_CREATED       
-,IS_INACTIVE        
-,LAST_MODIFIED_DATE 
+,IS_INACTIVE
+,DATE_CREATED              
+,DATE_LAST_MODIFIED 
  from dw_prestage.carrier
 where exists ( select 1 from 
 dw_prestage.carrier_update
@@ -105,7 +105,7 @@ commit;
 
 insert into dw.carrier ( 
  carrier_id   
-,ISINACTIVE             
+,IS_INACTIVE             
 ,CARRIER_NAME 
 ,CARRIER_ADDRESS
 ,date_active_from       
@@ -113,7 +113,7 @@ insert into dw.carrier (
 ,dw_active    )
 select 
 A.carrier_record_id,
-A.ISINACTIVE,
+NVL(A.IS_INACTIVE,'NA_GDW'),
 DECODE(LENGTH(A.CARRIER_RECORD_NAME),0,'NA_GDW',A.CARRIER_RECORD_NAME),
 DECODE(LENGTH(A.CARRIER_ADDRESS),0,'NA_GDW',A.CARRIER_ADDRESS),
 sysdate,
@@ -137,7 +137,7 @@ WHERE dw_active = 'A'
 
 insert into dw.carrier ( 
  carrier_id   
-,ISINACTIVE             
+,IS_INACTIVE             
 ,CARRIER_NAME 
 ,CARRIER_ADDRESS
 ,date_active_from       
@@ -145,10 +145,9 @@ insert into dw.carrier (
 ,dw_active      )
 select 
 A.carrier_record_id,
-A.ISINACTIVE,
+NVL(A.IS_INACTIVE,'NA_GDW'),
 DECODE(LENGTH(A.CARRIER_RECORD_NAME),0,'NA_GDW',A.CARRIER_RECORD_NAME),
 DECODE(LENGTH(A.CARRIER_ADDRESS),0,'NA_GDW',A.CARRIER_ADDRESS),   
-DECODE(LENGTH(A.HYPERION_LOB_CODES),0,'NA_GDW',A.HYPERION_LOB_CODES),  
 sysdate,
 '9999-12-31 23:59:59',
 'A'
@@ -161,9 +160,9 @@ WHERE exists (select 1 from dw_prestage.carrier_update
 /* dimension -> update records as part of SCD1 maintenance */
 
 UPDATE dw.carrier
-   SET CARRIER_name = dw_prestage.carrier.CARRIER_RECORD_name,
-       isinactive = dw_prestage.carrier.isinactive,
-       CARRIER_ADDRESS = dw_prestage.carrier.CARRIER_ADDRESS,
+   SET CARRIER_name = NVL(dw_prestage.carrier.CARRIER_RECORD_name,'NA_GDW'),
+       is_inactive = NVL(dw_prestage.carrier.is_inactive,'NA_GDW'),
+       CARRIER_ADDRESS = NVL(dw_prestage.carrier.CARRIER_ADDRESS,'NA_GDW')
 FROM dw_prestage.carrier
 WHERE dw.carrier.carrier_id = dw_prestage.carrier.carrier_record_id
 and exists (select 1 from dw_prestage.carrier_update
