@@ -5,7 +5,7 @@ DROP TABLE if exists dw.vb_fact_error;
 CREATE TABLE dw.vb_fact_error 
 (
   RUNID                       BIGINT,
-  VB_ERROR_KEY                INTEGER,
+  VB_ERROR_KEY                BIGINT IDENTITY(0,1),
   VB_NUMBER                   VARCHAR(150),
   VB_ID                       INTEGER,
   VB_LINE_ID                  INTEGER,
