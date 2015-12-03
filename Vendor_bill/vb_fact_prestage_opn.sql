@@ -490,7 +490,7 @@ FROM dw_prestage.vb_fact_insert A
 UPDATE dw.vb_fact SET dw_current = 0,DATE_ACTIVE_TO = (sysdate -1) WHERE dw_current = 1
 AND   sysdate>= date_active_from
 AND   sysdate< date_active_to
-AND   EXISTS (SELECT 1 FROM dw_prestage.vb_fact_update WHERE dw.vb_fact.transaction_id = dw_prestage.vb_fact_update.transaction_id AND   dw.vb_fact.transaction_line_id = dw_prestage.vb_fact_update.transaction_line_id);
+AND   EXISTS (SELECT 1 FROM dw_prestage.vb_fact_update WHERE dw.vb_fact.VB_ID = dw_prestage.vb_fact_update.transaction_id AND   dw.vb_fact.VB_LINE_ID = dw_prestage.vb_fact_update.transaction_line_id);
 
 /* fact -> NOW INSERT THE FACT RECORDS WHICH HAVE BEEN UPDATED AT THE SOURCE */ 
 INSERT INTO dw.vb_fact
