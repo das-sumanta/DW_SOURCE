@@ -1,0 +1,58 @@
+CREATE SCHEMA if not exists dw;
+
+DROP TABLE if exists dw.revenue_fact;
+
+CREATE TABLE dw.revenue_fact 
+(
+  REVENUE_KEY                 BIGINT IDENTITY(0,1),
+  DOCUMENT_NUMBER             VARCHAR(150),
+  TRANSACTION_ID              INTEGER,
+  TRANSACTION_LINE_ID         INTEGER,
+  REF_DOC_NUMBER              VARCHAR(200),
+  REF_DOC_TYPE                VARCHAR(200),
+  TERMS_KEY                   INTEGER,
+  REVENUE_COMMITMENT_STATUS   VARCHAR(500),
+  REVENUE_STATUS              VARCHAR(500),
+  TERRITORY_KEY               INTEGER,
+  BILL_ADDRESS_LINE_1         VARCHAR(500),
+  BILL_ADDRESS_LINE_2         VARCHAR(500),
+  BILL_ADDRESS_LINE_3         VARCHAR(500),
+  BILL_CITY                   VARCHAR(200),
+  BILL_COUNTRY                VARCHAR(200),
+  BILL_STATE                  VARCHAR(200),
+  BILL_ZIP                    VARCHAR(200),
+  SHIP_ADDRESS_LINE_1         VARCHAR(500),
+  SHIP_ADDRESS_LINE_2         VARCHAR(500),
+  SHIP_ADDRESS_LINE_3         VARCHAR(500),
+  SHIP_CITY                   VARCHAR(200),
+  SHIP_COUNTRY                VARCHAR(200),
+  SHIP_STATE                  VARCHAR(200),
+  SHIP_ZIP                    VARCHAR(200),
+  DOCUMENT_STATUS             VARCHAR(500),
+  DOCUMENT_TYPE               VARCHAR(50),
+  CURRENCY_KEY                INTEGER,
+  TRANSACTION_DATE_KEY        INTEGER,
+  EXCHANGE_RATE               DECIMAL(30,15),
+  ACCOUNT_KEY                 INTEGER,
+  AMOUNT                      DECIMAL(20,2),
+  AMOUNT_FOREIGN              DECIMAL(22,2),
+  GROSS_AMOUNT                DECIMAL(22,2),
+  NET_AMOUNT                  DECIMAL(22,2),
+  NET_AMOUNT_FOREIGN          DECIMAL(22,2),
+  QUANTITY                    DECIMAL(18,8),
+  ITEM_KEY                    INTEGER,
+  RATE                        VARCHAR(50),
+  TAX_ITEM_KEY                INTEGER,
+  TAX_AMOUNT                  DECIMAL(20,2),
+  LOCATION_KEY                INTEGER,
+  CLASS_KEY                   INTEGER,
+  SUBSIDIARY_KEY              INTEGER,
+  CUSTOMER_KEY                INTEGER,
+  LAST_MODIFIED_DATE          TIMESTAMP,
+  DATE_ACTIVE_FROM            TIMESTAMP,
+  DATE_ACTIVE_TO              TIMESTAMP,
+  DW_CURRENT                  INTEGER,
+  PRIMARY KEY (REVENUE_KEY,DOCUMENT_TYPE,DOCUMENT_NUMBER)
+)
+DISTSTYLE ALL INTERLEAVED SORTKEY (REVENUE_KEY,DOCUMENT_TYPE,DOCUMENT_NUMBER);
+
