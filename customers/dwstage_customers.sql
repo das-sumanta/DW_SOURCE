@@ -1,8 +1,8 @@
-CREATE SCHEMA if not exists dw_prestage;
+CREATE SCHEMA if not exists dw_stage;
 
-DROP TABLE if exists dw_prestage.customers;
+DROP TABLE if exists dw_stage.customers;
 
-CREATE TABLE dw_prestage.customers 
+CREATE TABLE dw_stage.customers 
 (
   CUSTOMER_ID                INTEGER,
   CUSTOMER_EXTID             VARCHAR(500),
