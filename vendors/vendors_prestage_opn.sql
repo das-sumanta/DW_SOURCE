@@ -443,7 +443,7 @@ SELECT ABCD_MARKER_ID,
        ZONE_NUMBER_ID
 FROM dw_prestage.vendors_insert;
 
-/* stage -> insert into stage records which have been created */ 
+/* stage -> insert into stage records which have been updated */ 
 INSERT INTO dw_stage.vendors
 (
   ABCD_MARKER_ID,
