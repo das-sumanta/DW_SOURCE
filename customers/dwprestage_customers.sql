@@ -22,7 +22,7 @@ CREATE TABLE dw_prestage.customers
   CURRENCY                   VARCHAR(150),
   CURRENCY_ID                INTEGER,
   ISINACTIVE                 VARCHAR(10),
-  TYPE                       VARCHAR(50),
+  CUSTOMER_TYPE              VARCHAR(50),
   LINE_OF_BUSINESS           VARCHAR(50),
   LINE_OF_BUSINESS_ID        INTEGER,
   SUBSIDIARY                 VARCHAR(83),

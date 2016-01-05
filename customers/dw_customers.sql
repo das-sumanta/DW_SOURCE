@@ -22,7 +22,7 @@ CREATE TABLE dw.customers
   CURRENCY                   VARCHAR(150),
   CURRENCY_ID                INTEGER,
   ISINACTIVE                 VARCHAR(10),
-  TYPE                       VARCHAR(50),
+  CUSTOMER_TYPE              VARCHAR(50),
   LINE_OF_BUSINESS           VARCHAR(50),
   LINE_OF_BUSINESS_ID        INTEGER,
   SUBSIDIARY                 VARCHAR(83),
@@ -59,7 +59,7 @@ insert into dw.customers
   ,CURRENCY                
   ,CURRENCY_ID             
   ,ISINACTIVE              
-  ,TYPE                    
+  ,CUSTOMER_TYPE                    
   ,LINE_OF_BUSINESS        
   ,LINE_OF_BUSINESS_ID     
   ,SUBSIDIARY              
@@ -92,7 +92,7 @@ insert into dw.customers
   ,'NA_GDW' AS CURRENCY
   ,-99 AS CURRENCY_ID
   ,'NA_GDW' AS ISINACTIVE
-  ,'NA_GDW' AS TYPE
+  ,'NA_GDW' AS CUSTOMER_TYPE
   ,'NA_GDW' AS LINE_OF_BUSINESS
   ,-99 AS LINE_OF_BUSINESS_ID
   ,'NA_GDW' AS SUBSIDIARY
@@ -127,7 +127,7 @@ insert into dw.customers
   ,CURRENCY                
   ,CURRENCY_ID             
   ,ISINACTIVE              
-  ,TYPE                    
+  ,CUSTOMER_TYPE                    
   ,LINE_OF_BUSINESS        
   ,LINE_OF_BUSINESS_ID     
   ,SUBSIDIARY              
@@ -160,7 +160,7 @@ insert into dw.customers
   ,'NA_ERR' AS CURRENCY
   ,0 AS CURRENCY_ID
   ,'NA_ERR' AS ISINACTIVE
-  ,'NA_ERR' AS TYPE
+  ,'NA_ERR' AS CUSTOMER_TYPE
   ,'NA_ERR' AS LINE_OF_BUSINESS
   ,0 AS LINE_OF_BUSINESS_ID
   ,'NA_ERR' AS SUBSIDIARY
