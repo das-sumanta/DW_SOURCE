@@ -1,10 +1,11 @@
 CREATE SCHEMA if not exists dw;
 
-DROP TABLE if exists dw.revenue_fact;
+DROP TABLE if exists dw.revenue_fact_error;
 
-CREATE TABLE dw.revenue_fact 
+CREATE TABLE dw.revenue_fact_error 
 (
-  REVENUE_KEY                 BIGINT IDENTITY(0,1),
+  RUNID                       BIGINT,
+  REVENUE_ERROR_KEY           BIGINT IDENTITY(0,1),
   DOCUMENT_NUMBER             VARCHAR(150),
   TRANSACTION_ID              INTEGER,
   TRANSACTION_LINE_ID         INTEGER,
@@ -47,15 +48,28 @@ CREATE TABLE dw.revenue_fact
   LOCATION_KEY                INTEGER,
   CLASS_KEY                   INTEGER,
   SUBSIDIARY_KEY              INTEGER,
-  CUSTOMER_KEY                INTEGER, 
+  CUSTOMER_KEY                INTEGER,
   ACCOUNTING_PERIOD_KEY       INTEGER,
-/*  LAST_MODIFIED_DATE          TIMESTAMP, */
-  DATE_ACTIVE_FROM            TIMESTAMP,
-  DATE_ACTIVE_TO              TIMESTAMP,
-  DW_CURRENT                  INTEGER,
-  PRIMARY KEY (REVENUE_KEY,DOCUMENT_TYPE_KEY,DOCUMENT_NUMBER)
+  REF_CUSTOM_FORM_ID          INTEGER,
+  CUSTOM_FORM_ID              INTEGER,
+  PAYMENT_TERMS_ID            INTEGER,
+  SALES_REP_ID                INTEGER,
+  STATUS                      VARCHAR(500),
+  CURRENCY_ID                 INTEGER,
+  TRANDATE                    TIMESTAMP,
+  ACCOUNT_ID                  INTEGER,
+  ITEM_ID                     INTEGER,
+  TAX_ITEM_ID                 INTEGER,
+  LOCATION_ID                 INTEGER,
+  CLASS_ID                    INTEGER,
+  SUBSIDIARY_ID               INTEGER,
+  CUSTOMER_ID                 INTEGER,
+  ACCOUNTING_PERIOD_ID        INTEGER,
+  RECORD_STATUS               VARCHAR(50),
+  DW_CREATION_DATE            TIMESTAMP,
+  PRIMARY KEY (REVENUE_ERROR_KEY,DOCUMENT_TYPE_KEY,DOCUMENT_NUMBER)
 )
-DISTSTYLE ALL INTERLEAVED SORTKEY (REVENUE_KEY,DOCUMENT_TYPE_KEY,DOCUMENT_NUMBER);  
+DISTSTYLE ALL INTERLEAVED SORTKEY (REVENUE_ERROR_KEY,DOCUMENT_TYPE_KEY,DOCUMENT_NUMBER);
 
-commit;
+COMMIT;
 

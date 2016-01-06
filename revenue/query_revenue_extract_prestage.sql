@@ -3,7 +3,8 @@ SELECT b.transaction_number AS document_number,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       f.transaction_type AS REF_DOC_TYPE,
+       /*f.transaction_type AS REF_DOC_TYPE,*/
+       f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
@@ -69,13 +70,15 @@ AND   EXISTS (SELECT 1
               FROM transactions g
               WHERE g.transaction_id = b.created_from_id
               AND   g.transaction_type = 'Sales Order')
+AND a.date_last_modified >= '1900-01-01 00:00:00'
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       f.transaction_type AS REF_DOC_TYPE,
+       /*f.transaction_type AS REF_DOC_TYPE,*/
+       f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
@@ -139,13 +142,15 @@ AND   b.transaction_type = 'Return Authorization'
 AND EXISTS ( select 1 from transactions g
 						 WHERE g.transaction_id = b.created_from_id
 						 AND g.transaction_type IN ('Sales Order','Invoice') )
+AND a.date_last_modified >= '1900-01-01 00:00:00'
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       f.transaction_type AS REF_DOC_TYPE,
+       /*f.transaction_type AS REF_DOC_TYPE,*/
+       f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
@@ -209,13 +214,15 @@ AND   b.transaction_type = 'Credit Memo'
 AND EXISTS ( select 1 from transactions g
 						 WHERE g.transaction_id = b.created_from_id
 						 AND g.transaction_type IN ('Sales Order','Invoice') )
+AND a.date_last_modified >= '1900-01-01 00:00:00'
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       f.transaction_type AS REF_DOC_TYPE,
+       /* f.transaction_type AS REF_DOC_TYPE, */
+       f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
@@ -278,3 +285,4 @@ WHERE a.subsidiary_id = 27
 AND   b.transaction_type = 'Journal'
 AND   c.accountnumber = '4000001'
 AND c.full_name = 'Product Revenue : Revenue-Product'
+AND a.date_last_modified >= '1900-01-01 00:00:00'
