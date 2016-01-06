@@ -7,8 +7,9 @@ CREATE TABLE dw_prestage.territories
   RUNID                      INTEGER,
   TERRITORY_ID               INTEGER,
   TERRITORY                  VARCHAR(100),
+  SUBSIDIARY                 VARCHAR(100),
   SUBSIDIARY_ID              INTEGER,
-  SUBSIDIARY                 VARCHAR(100)
-);
+  IS_INACTIVE                 VARCHAR(10)
+  );
 
 
