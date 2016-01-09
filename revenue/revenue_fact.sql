@@ -2,8 +2,7 @@ SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
-       /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       /*f.transaction_type AS REF_DOC_TYPE,*/
+       f.transaction_number AS REF_DOC_NUMBER,
        f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
@@ -22,7 +21,7 @@ SELECT b.transaction_number AS document_number,
        e.SHIP_CITY,
        e.SHIP_COUNTRY,
        e.SHIP_STATE,
-       e.SHIP_ZIP, /* a.*/ /* 24159 */ /*24106*/ 
+       e.SHIP_ZIP,
        status AS document_status,
        b.transaction_type AS transaction_type,
        TO_CHAR(b.currency_id) as currency_id,
@@ -53,7 +52,6 @@ SELECT b.transaction_number AS document_number,
              'AR-General','INV_HDR',
              decode(d.transaction_line_id,NULL,'INV_TAX',DECODE(c.name,'Revenue-Product','INV_LINE','INV_FRT'))
        )  AS line_type 
- /* a.*/ /* 24159 */ /*24106*/ 
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -63,21 +61,19 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-/*  LEFT OUTER JOIN crmgroup g ON (h.sales_rep_id = g.group_id)  */
 WHERE a.subsidiary_id = 27
 AND   b.transaction_type = 'Invoice'
 AND   EXISTS (SELECT 1
               FROM transactions g
               WHERE g.transaction_id = b.created_from_id
               AND   g.transaction_type = 'Sales Order')
-AND a.date_last_modified >= '1900-01-01 00:00:00'
+AND a.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS')
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
-       /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       /*f.transaction_type AS REF_DOC_TYPE,*/
+       f.transaction_number AS REF_DOC_NUMBER,
        f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
@@ -96,7 +92,7 @@ SELECT b.transaction_number AS document_number,
        e.SHIP_CITY,
        e.SHIP_COUNTRY,
        e.SHIP_STATE,
-       e.SHIP_ZIP, /* a.*/ /* 24159 */ /*24106*/ 
+       e.SHIP_ZIP,
        status AS document_status,
        b.transaction_type AS transaction_type,
        TO_CHAR(b.currency_id) as currency_id,
@@ -142,14 +138,13 @@ AND   b.transaction_type = 'Return Authorization'
 AND EXISTS ( select 1 from transactions g
 						 WHERE g.transaction_id = b.created_from_id
 						 AND g.transaction_type IN ('Sales Order','Invoice') )
-AND a.date_last_modified >= '1900-01-01 00:00:00'
+AND a.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS')
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
-       /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       /*f.transaction_type AS REF_DOC_TYPE,*/
+       f.transaction_number AS REF_DOC_NUMBER,
        f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
@@ -168,7 +163,7 @@ SELECT b.transaction_number AS document_number,
        e.SHIP_CITY,
        e.SHIP_COUNTRY,
        e.SHIP_STATE,
-       e.SHIP_ZIP, /* a.*/ /* 24159 */ /*24106*/ 
+       e.SHIP_ZIP,
        status AS document_status,
        b.transaction_type AS transaction_type,
        TO_CHAR(b.currency_id) as currency_id,
@@ -214,14 +209,13 @@ AND   b.transaction_type = 'Credit Memo'
 AND EXISTS ( select 1 from transactions g
 						 WHERE g.transaction_id = b.created_from_id
 						 AND g.transaction_type IN ('Sales Order','Invoice') )
-AND a.date_last_modified >= '1900-01-01 00:00:00'
+AND a.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS')
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
-       /*count(1) */  f.transaction_number AS REF_DOC_NUMBER,
-       /* f.transaction_type AS REF_DOC_TYPE, */
+       f.transaction_number AS REF_DOC_NUMBER,
        f.custom_form_id as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
@@ -240,7 +234,7 @@ SELECT b.transaction_number AS document_number,
        e.SHIP_CITY,
        e.SHIP_COUNTRY,
        e.SHIP_STATE,
-       e.SHIP_ZIP, /* a.*/ /* 24159 */ /*24106*/ 
+       e.SHIP_ZIP,
        status AS document_status,
        b.transaction_type AS transaction_type,
        TO_CHAR(b.currency_id) as currency_id,
@@ -285,4 +279,4 @@ WHERE a.subsidiary_id = 27
 AND   b.transaction_type = 'Journal'
 AND   c.accountnumber = '4000001'
 AND c.full_name = 'Product Revenue : Revenue-Product'
-AND a.date_last_modified >= '1900-01-01 00:00:00'
+AND a.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS')
