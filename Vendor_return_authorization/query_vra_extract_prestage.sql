@@ -1,5 +1,4 @@
-SELECT 1 as RUNID,
-       TO_CHAR(TRANSACTIONS.transaction_id) AS transaction_id,
+SELECT TO_CHAR(TRANSACTIONS.transaction_id) AS transaction_id,
        TO_CHAR(TRANSACTION_LINES.transaction_line_id) AS transaction_line_id,
        REPLACE(REPLACE(TRANSACTIONS.transaction_number, CHR(10), ' '),
                CHR(13),
