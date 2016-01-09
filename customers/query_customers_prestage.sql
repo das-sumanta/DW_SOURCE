@@ -37,6 +37,5 @@ LEFT OUTER JOIN customer_types f ON (CUSTOMERS.customer_type_id = customer_types
 LEFT OUTER JOIN payment_terms g ON (CUSTOMERS.payment_terms_id = payment_terms.payment_terms_id)
 LEFT OUTER JOIN crmgroup h ON (CUSTOMERS.sales_rep_id = crmgroup.group_id)
 LEFT OUTER JOIN customers j ON (CUSTOMERS.parent_id = j.customer_id)
-WHERE a.CATEGORY_0 = 'CUSTOMER' and a.subsidiary_id = 27
-AND a.DATE_LAST_MODIFIED >= '1900-01-01 00:00:00';
+WHERE a.CATEGORY_0 = 'CUSTOMER' and a.subsidiary_id = 27;
 
