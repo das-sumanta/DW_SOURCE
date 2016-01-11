@@ -450,4 +450,3 @@ FROM dw_prestage.customers_delete
 WHERE dw.customers.customer_id = dw_prestage.customers_delete.customer_id;
 
 COMMIT;
-

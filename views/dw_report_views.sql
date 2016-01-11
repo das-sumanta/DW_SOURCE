@@ -114,5 +114,9 @@ create view dw_report.territories
 AS select * from dw.territories
 where dw_active = 'A';
 
+create view dw_report.book_fairs
+AS select * from dw.book_fairs
+where dw_active = 'A';
+
 commit;
 

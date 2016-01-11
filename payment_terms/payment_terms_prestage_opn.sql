@@ -108,54 +108,8 @@ select
  ,'A'
   from 
 dw_prestage.payment_terms_insert A;
-
-
-/* dimension ->update old record as part of SCD2 maintenance*/
-
--- UPDATE dw.payment_terms
---   SET dw_active = 'I' ,
---	   DATE_ACTIVE_TO = (sysdate -1)
--- WHERE dw_active = 'A'
---      and sysdate >= date_active_from and sysdate < date_active_to
---	  and exists ( select 1 from dw_prestage.payment_terms_update
---	  WHERE dw.payment_terms.payment_terms_id = dw_prestage.payment_terms_update.payment_terms_id
---	  and dw_prestage.payment_terms_update.ch_type = 2);  
-
-/* dimension -> Insert the new records as part of SCD2 maintenance*/
-
---insert into dw.payment_terms ( 
---   payment_terms_id        
---  ,NAME
---  ,FULL_NAME
---  ,DESCRIPTION
---  ,INCOME_ACCOUNT_ID
---  ,INCOME_ACCOUNT_NUMBER
---  ,INCOME_ACCOUNT_NAME
---  ,ISINACTIVE
---  ,RATE
---  ,DATE_ACTIVE_FROM
---  ,DATE_ACTIVE_TO
---  ,DW_ACTIVE )
--- select 
---  payment_terms_id
--- ,DECODE(LENGTH(NAME),0,'NA_GDW',NAME)
--- ,DECODE(LENGTH(FULL_NAME),0,'NA_GDW',FULL_NAME )         
---,DECODE(LENGTH(DESCRIPTION),0,'NA_GDW',DESCRIPTION   )      
---,NVL(INCOME_ACCOUNT_ID,-99)    
---,DECODE(LENGTH(INCOME_ACCOUNT_NUMBER),0,'NA_GDW', INCOME_ACCOUNT_NUMBER )    
---,DECODE(LENGTH(INCOME_ACCOUNT_NAME),0,'NA_GDW', INCOME_ACCOUNT_NAME )    
---,NVL(ISINACTIVE,'NA_GDW')       
---,DECODE(LENGTH(RATE),0,'NA_GDW', RATE) 
---,sysdate
---,'9999-12-31 23:59:59'
---,'A'
--- from 
--- dw_prestage.payment_terms A
--- WHERE exists (select 1 from dw_prestage.payment_terms_update
---	  WHERE a.payment_terms_id = dw_prestage.payment_terms_update.payment_terms_id
---	  and dw_prestage.payment_terms_update.ch_type = 2) ;  
 	  
-/* dimension ->update SCD1 */
+/* dimension -> update records as part of SCD1 maintenance */
 
 UPDATE dw.payment_terms 
    SET  NAME                  =  DECODE(LENGTH(dw_prestage.payment_terms.NAME),0,'NA_GDW',dw_prestage.payment_terms.NAME)

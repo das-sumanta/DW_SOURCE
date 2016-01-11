@@ -853,7 +853,7 @@ UPDATE dw.items
        TYPE_NAME = NVL(dw_prestage.items.TYPE_NAME,'NA_GDW'),
        VENDOR_ID = NVL(dw_prestage.items.VENDOR_ID,-99),
        VENDOR_NAME = NVL(dw_prestage.items.VENDOR_NAME,'NA_GDW'),
-       VENDRETURN_VARIANCE_ACCOUNT_ID = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_ID,-99), /*   VENDRETURN_VARIANCE_ACCOUNT_NUMBER = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_NUMBER,'NA_GDW'), */ /*   WANG_ITEM_CODE = NVL(dw_prestage.items.WANG_ITEM_CODE,'NA_GDW') */ 
+       VENDRETURN_VARIANCE_ACCOUNT_ID = NVL(dw_prestage.items.VENDRETURN_VARIANCE_ACCOUNT_ID,-99), 
 			 PRODUCT_CATEGORY	=  NVL(dw_prestage.items.PRODUCT_CATEGORY,'NA_GDW'),
 			 ITEM_TYPE =	NVL(dw_prestage.items.ITEM_TYPE,'NA_GDW'),
 			 PRODUCT_CLASSIFICATION = NVL(dw_prestage.items.PRODUCT_CLASSIFICATION,'NA_GDW'),
@@ -874,6 +874,3 @@ FROM dw_prestage.items_delete
 WHERE dw.items.item_id = dw_prestage.items_delete.item_id;
 
 COMMIT;
-
-
-

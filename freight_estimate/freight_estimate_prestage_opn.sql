@@ -253,4 +253,3 @@ FROM dw_prestage.freight_estimate_delete
 WHERE dw.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_delete.LANDED_COST_RULE_MATRIX_NZ_ID;
 
 COMMIT;
-

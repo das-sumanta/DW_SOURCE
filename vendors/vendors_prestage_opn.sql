@@ -928,4 +928,3 @@ FROM dw_prestage.vendors_delete
 WHERE dw.vendors.vendor_id = dw_prestage.vendors_delete.vendor_id;
 
 COMMIT;
-

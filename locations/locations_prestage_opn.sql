@@ -251,7 +251,8 @@ WHERE EXISTS (SELECT 1
 
 COMMIT;
 
-/* dimention->insert new records in dim locations */ /*==========================assumed that dimensions will be full extraction and hence dw_prestage.locations will have all the records  =====*/ /*==========================for the first run. =====================================================================================================================================*/ 
+/* dimension ->insert new records in dim locations */
+
 INSERT INTO dw.locations
 (
   LOCATION_ID,
@@ -387,7 +388,7 @@ FROM dw_prestage.locations_insert A,
 WHERE A.PARENT_ID = B.location_id (+)
 AND   A.line_of_business_id = C.class_id (+);
 
-/*==============================================assumed since this is an update the record/s already exists in dim table===========================================================*/ /*===============================================only one record will be there with dw_active column as 'A'========================================================================*/ /* update old record as part of SCD2 maintenance*/ 
+/* dimension ->update old record as part of SCD2 maintenance*/
 UPDATE dw.locations
    SET dw_active = 'I',
        DATE_ACTIVE_TO = (sysdate -1)
@@ -539,7 +540,7 @@ AND   EXISTS (SELECT 1
               WHERE a.location_id = dw_prestage.locations_update.location_id
               AND   dw_prestage.locations_update.ch_type = 2);
 
-/* dimention->update SCD1 */ 
+/* dimension -> update records as part of SCD1 maintenance */ 
 UPDATE dw.locations
    SET ADDRESS = DECODE(LENGTH(dw_prestage.locations.ADDRESS),0,'NA_GDW',dw_prestage.locations.ADDRESS),
        ADDRESS_ONE = DECODE(LENGTH(dw_prestage.locations.ADDRESS_ONE),0,'NA_GDW',dw_prestage.locations.ADDRESS_ONE),
@@ -577,5 +578,3 @@ FROM dw_prestage.locations_delete
 WHERE dw.locations.location_id = dw_prestage.locations_delete.location_id;
 
 COMMIT;
-
-

@@ -215,4 +215,3 @@ FROM dw_prestage.territories_delete
 WHERE dw.territories.territory_id = dw_prestage.territories_delete.territory_id;
 
 COMMIT;
-

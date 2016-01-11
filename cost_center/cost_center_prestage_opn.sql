@@ -270,4 +270,3 @@ FROM dw_prestage.cost_center_delete
 WHERE dw.cost_center.department_id = dw_prestage.cost_center_delete.department_id;
 
 COMMIT;
-
