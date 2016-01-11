@@ -1,4 +1,4 @@
-CREATE TABLE DW.DWDATE_NEW 
+CREATE TABLE DW.DWDATE 
 (
   DATE_KEY                  BIGINT IDENTITY(0,1),
   DATE_ID                   INTEGER,
