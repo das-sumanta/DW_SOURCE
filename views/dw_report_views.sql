@@ -48,11 +48,6 @@ create view dw_report.vendors
 AS select * from dw.vendors
 where dw_active = 'A';
 
-DROP VIEW if exists dw_report.freight_estimate;
-
-create view dw_report.freight_estimate
-AS select * from dw.freight_estimate
-where dw_active = 'A';
 
 DROP VIEW if exists dw_report.items;
 
@@ -114,9 +109,23 @@ create view dw_report.territories
 AS select * from dw.territories
 where dw_active = 'A';
 
+DROP VIEW if exists dw_report.book_fairs;
+
 create view dw_report.book_fairs
 AS select * from dw.book_fairs
 where dw_active = 'A';
+
+DROP VIEW if exists dw_report.revenue_fact;
+
+create view dw_report.revenue_fact
+AS select * from dw.revenue_fact;
+where dw_current = 1;
+
+DROP VIEW if exists dw_report.opportunity_fact;
+
+create view dw_report.opportunity_fact
+AS select * from dw.opportunity_fact;
+where dw_current = 1;
 
 commit;
 
