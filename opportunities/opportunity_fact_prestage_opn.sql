@@ -5,11 +5,9 @@ DROP TABLE if exists dw_prestage.opportunity_fact_insert;
 CREATE TABLE dw_prestage.opportunity_fact_insert 
 AS
 SELECT *
-FROM dw_prestage.opportunity_fact
-WHERE EXISTS (SELECT 1
-FROM (SELECT TRANSACTION_ID FROM (SELECT TRANSACTION_ID FROM dw_prestage.opportunity_fact MINUS SELECT TRANSACTION_ID  FROM dw_stage.opportunity_fact)) a
-WHERE dw_prestage.opportunity_fact.TRANSACTION_ID = a.TRANSACTION_ID
-);
+FROM dw_prestage.opportunity_fact a
+WHERE not exists ( select 1 from dw_stage.opportunity_fact b
+where b.transaction_id = a.transaction_id);
 
 /* prestage - drop intermediate update table*/
 DROP TABLE if exists dw_prestage.opportunity_fact_update;
@@ -17,94 +15,10 @@ DROP TABLE if exists dw_prestage.opportunity_fact_update;
 /* prestage - create intermediate update table*/
 CREATE TABLE dw_prestage.opportunity_fact_update 
 AS
-SELECT TRANSACTION_ID , DOCUMENT_NUMBER   
-FROM (SELECT TRANSACTION_ID , DOCUMENT_NUMBER   
-      FROM (SELECT TRANSACTION_NUMBER         
-	              ,DOCUMENT_NUMBER     
-	              ,TRANSACTION_ID         
-	              ,SALES_REP_ID           
-	              ,TERRITORY_ID           
-	              ,OPEN_DATE              
-	              ,SHIP_DATE              
-	              ,CLOSE_DATE             
-	              ,RETURN_DATE            
-	              ,FORECAST_TYPE          
-	              ,ABCDO_MARKER_ID        
-	              ,BOOK_FAIRS_STATUS_ID   
-	              ,BOOK_FAIR_TYPE_ID      
-	              ,TRUCK_ROUTE_ID         
-	              ,INVOICE_OPTION_ID      
-	              ,BILL_ADDRESS_LINE_1    
-	              ,BILL_ADDRESS_LINE_2    
-	              ,BILL_ADDRESS_LINE_3    
-	              ,BILL_CITY              
-	              ,BILL_COUNTRY           
-	              ,BILL_STATE             
-	              ,BILL_ZIP               
-	              ,SHIP_ADDRESS_LINE_1    
-	              ,SHIP_ADDRESS_LINE_2    
-	              ,SHIP_ADDRESS_LINE_3    
-	              ,SHIP_CITY              
-	              ,SHIP_COUNTRY           
-	              ,SHIP_STATE             
-	              ,SHIP_ZIP               
-	              ,STATUS                 
-	              ,CURRENCY_ID            
-	              ,TRANDATE               
-	              ,EXCHANGE_RATE          
-	              ,ROLL_SIZE              
-	              ,PROJECTED_TOTAL        
-	              ,WEIGHTED_TOTAL         
-	              ,LOCATION_ID            
-	              ,SUBSIDIARY_ID          
-	              ,ACCOUNTING_PERIOD_ID   
-	              ,CUSTOMER_ID            
-	              ,CUSTOM_FORM_ID         
-            FROM dw_prestage.opportunity_fact
-            MINUS
-            SELECT  TRANSACTION_NUMBER         
-	              ,DOCUMENT_NUMBER     
-	              ,TRANSACTION_ID         
-	              ,SALES_REP_ID           
-	              ,TERRITORY_ID           
-	              ,OPEN_DATE              
-	              ,SHIP_DATE              
-	              ,CLOSE_DATE             
-	              ,RETURN_DATE            
-	              ,FORECAST_TYPE          
-	              ,ABCDO_MARKER_ID        
-	              ,BOOK_FAIRS_STATUS_ID   
-	              ,BOOK_FAIR_TYPE_ID      
-	              ,TRUCK_ROUTE_ID         
-	              ,INVOICE_OPTION_ID      
-	              ,BILL_ADDRESS_LINE_1    
-	              ,BILL_ADDRESS_LINE_2    
-	              ,BILL_ADDRESS_LINE_3    
-	              ,BILL_CITY              
-	              ,BILL_COUNTRY           
-	              ,BILL_STATE             
-	              ,BILL_ZIP               
-	              ,SHIP_ADDRESS_LINE_1    
-	              ,SHIP_ADDRESS_LINE_2    
-	              ,SHIP_ADDRESS_LINE_3    
-	              ,SHIP_CITY              
-	              ,SHIP_COUNTRY           
-	              ,SHIP_STATE             
-	              ,SHIP_ZIP               
-	              ,STATUS                 
-	              ,CURRENCY_ID            
-	              ,TRANDATE               
-	              ,EXCHANGE_RATE          
-	              ,ROLL_SIZE              
-	              ,PROJECTED_TOTAL        
-	              ,WEIGHTED_TOTAL         
-	              ,LOCATION_ID            
-	              ,SUBSIDIARY_ID          
-	              ,ACCOUNTING_PERIOD_ID   
-	              ,CUSTOMER_ID            
-	              ,CUSTOM_FORM_ID 
-            FROM dw_stage.opportunity_fact)) a
-WHERE NOT EXISTS (SELECT 1 FROM dw_prestage.opportunity_fact_insert WHERE dw_prestage.opportunity_fact_insert.TRANSACTION_ID = a.TRANSACTION_ID);
+SELECT *
+FROM dw_prestage.opportunity_fact a
+WHERE not exists ( select 1 from dw_prestage.opportunity_fact_insert b
+where b.transaction_id = a.transaction_id);
 
 /* prestage - drop intermediate no change track table*/
 DROP TABLE if exists dw_prestage.opportunity_fact_nochange;
@@ -536,7 +450,7 @@ SELECT A.DOCUMENT_NUMBER,
        SYSDATE AS DATE_ACTIVE_FROM,
        '9999-12-31 11:59:59' AS DATE_ACTIVE_TO,
        1 AS DW_CURRENT
-FROM dw_prestage.opportunity_fact A
+FROM dw_prestage.opportunity_fact_update A
   INNER JOIN DW_REPORT.ACCOUNTING_PERIOD B ON (NVL (A.ACCOUNTING_PERIOD_ID,-99) = B.ACCOUNTING_PERIOD_ID)
   INNER JOIN DW_REPORT.TERRITORIES C ON (NVL (A.TERRITORY_ID,-99) = C.TERRITORY_ID)
   INNER JOIN DW_REPORT.EMPLOYEES D ON (NVL (A.SALES_REP_ID,-99) = D.EMPLOYEE_ID)
@@ -559,8 +473,7 @@ FROM dw_prestage.opportunity_fact A
   INNER JOIN DW_REPORT.LOCATIONS N ON (NVL (A.LOCATION_ID,-99) = N.LOCATION_ID)
   INNER JOIN DW_REPORT.CLASSES O ON ('Book Fairs' = O.NAME)
   INNER JOIN DW_REPORT.SUBSIDIARIES P ON (27 = P.SUBSIDIARY_ID)
-  INNER JOIN DW_REPORT.CUSTOMERS Q ON (A.CUSTOMER_ID = Q.CUSTOMER_ID)
-WHERE   EXISTS (SELECT 1 FROM dw_prestage.opportunity_fact_update WHERE a.transaction_id = dw_prestage.opportunity_fact_update.transaction_id );
+  INNER JOIN DW_REPORT.CUSTOMERS Q ON (A.CUSTOMER_ID = Q.CUSTOMER_ID);
 
 /* fact -> INSERT UPDATED RECORDS IN ERROR TABLE WHICH DOES NOT HAVE VALID DIMENSIONS */ 
 INSERT INTO dw.opportunity_fact_error
@@ -686,7 +599,7 @@ SELECT A.RUNID,
        A.CUSTOMER_ID,
        'ERROR' AS RECORD_STATUS,
        SYSDATE AS DW_CREATION_DATE	   
-FROM dw_prestage.opportunity_fact A
+FROM dw_prestage.opportunity_fact_update A
   LEFT OUTER JOIN DW_REPORT.ACCOUNTING_PERIOD B ON (A.ACCOUNTING_PERIOD_ID = B.ACCOUNTING_PERIOD_ID)
   LEFT OUTER JOIN DW_REPORT.TERRITORIES C ON (A.TERRITORY_ID = C.TERRITORY_ID)
   LEFT OUTER JOIN DW_REPORT.EMPLOYEES D ON (A.SALES_REP_ID = D.EMPLOYEE_ID)
@@ -726,6 +639,4 @@ FROM dw_prestage.opportunity_fact A
   N.LOCATION_KEY IS NULL OR
   O.CLASS_KEY IS NULL OR
   P.SUBSIDIARY_KEY IS NULL OR
-  Q.CUSTOMER_KEY IS NULL )
-AND   EXISTS (SELECT 1 FROM dw_prestage.opportunity_fact_update WHERE a.transaction_id = dw_prestage.opportunity_fact_update.transaction_id
-                                                                      AND a.document_number = dw_prestage.opportunity_fact_update.document_number );
+  Q.CUSTOMER_KEY IS NULL );
