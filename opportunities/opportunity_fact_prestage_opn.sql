@@ -640,3 +640,5 @@ FROM dw_prestage.opportunity_fact_update A
   O.CLASS_KEY IS NULL OR
   P.SUBSIDIARY_KEY IS NULL OR
   Q.CUSTOMER_KEY IS NULL );
+
+commit;
