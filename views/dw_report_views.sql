@@ -118,14 +118,19 @@ where dw_active = 'A';
 DROP VIEW if exists dw_report.revenue_fact;
 
 create view dw_report.revenue_fact
-AS select * from dw.revenue_fact;
+AS select * from dw.revenue_fact
 where dw_current = 1;
 
 DROP VIEW if exists dw_report.opportunity_fact;
 
 create view dw_report.opportunity_fact
-AS select * from dw.opportunity_fact;
+AS select * from dw.opportunity_fact
 where dw_current = 1;
+
+DROP VIEW if exists dw_report.dwdate;
+
+create view dw_report.dwdate
+AS select * from dw.dwdate;
 
 commit;
 
