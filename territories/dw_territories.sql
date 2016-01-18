@@ -61,4 +61,4 @@ insert into dw.territories
     ,'9999-12-31 23:59:59'   as DATE_ACTIVE_TO            
     ,'A'  as DW_ACTIVE ; 
     
-                                                                 
+commit; 
