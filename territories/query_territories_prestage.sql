@@ -3,8 +3,9 @@ SELECT TO_CHAR(a.SALES_TERRITORY_CUSTOM_ID) AS TERRITORY_ID,
        a.subsidiary_id AS subsidiary_id,
        b.name AS subsidiary,
        a.is_inactive
-FROM sales_territory_custom a,
+     FROM sales_territory_custom a,
      subsidiaries b
-WHERE a.subsidiary_id = 27
-AND   a.subsidiary_id = b.subsidiary_id;
+WHERE a.subsidiary_id = b.subsidiary_id
+AND IS_INACTIVE = 'F'
+ORDER BY a.SALES_TERRITORY_CUSTOM_ID,a.SALES_TERRITORY_CUSTOM_NAME;
 
