@@ -14,18 +14,18 @@ REPLACE(REPLACE(a.STATE,CHR (10),' '),CHR (13),' ') AS STATE,
 b.name as COUNTRY,
 a.companyname ,
 c.name as CURRENCY,
-c.currency_id as currency_id,
+to_char(c.currency_id) as currency_id,
 a.ISINACTIVE ,
 DECODE(a.IS_PERSON,'No','Company','Individual') AS CUSTOMER_TYPE,
 d.name as LINE_OF_BUSINESS,
-d.class_id as class_id, 
+to_char(d.class_id) as class_id, 
 e.name as SUBSIDIARY,
-e.subsidiary_id as SUBSIDIARY_ID,
+to_char(e.subsidiary_id) as SUBSIDIARY_ID,
 f.name as CUSTOMER_CATEGORY,
 g.name as PAYMENT_TERMS,
-g.payment_terms_id,
+to_char(g.payment_terms_id) as payment_terms_id,
 j.name as PARENT,
-j.customer_id as parent_id,
+to_char(j.customer_id) as parent_id,
 h.title as TERRITORY
 FROM 
 CUSTOMERS	a
@@ -37,5 +37,6 @@ LEFT OUTER JOIN customer_types f ON (CUSTOMERS.customer_type_id = customer_types
 LEFT OUTER JOIN payment_terms g ON (CUSTOMERS.payment_terms_id = payment_terms.payment_terms_id)
 LEFT OUTER JOIN crmgroup h ON (CUSTOMERS.sales_rep_id = crmgroup.group_id)
 LEFT OUTER JOIN customers j ON (CUSTOMERS.parent_id = j.customer_id)
-WHERE a.CATEGORY_0 = 'CUSTOMER' and a.subsidiary_id = 27;
-
+WHERE a.CATEGORY_0 = 'CUSTOMER' 
+and a.ISINACTIVE = 'No' 
+ORDER BY a.CUSTOMER_ID , a.NAME 

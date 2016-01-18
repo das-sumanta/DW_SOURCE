@@ -144,7 +144,8 @@ WHERE dw_stage.customers.customer_id = dw_prestage.customers_delete.customer_id;
 /* stage -> insert into stage records which have been created */ 
 INSERT INTO dw_stage.customers
 (
-   CUSTOMER_EXTID            
+   CUSTOMER_ID
+  ,CUSTOMER_EXTID            
   ,LEGACY_CUSTOMER_IDCUSTOM  
   ,NAME                      
   ,EMAIL                     
@@ -172,7 +173,9 @@ INSERT INTO dw_stage.customers
   ,PARENT_ID                 
   ,TERRITORY 
 )
-SELECT  CUSTOMER_EXTID            
+SELECT  
+   CUSTOMER_ID
+  ,CUSTOMER_EXTID            
   ,LEGACY_CUSTOMER_IDCUSTOM  
   ,NAME                      
   ,EMAIL                     
@@ -204,7 +207,8 @@ FROM dw_prestage.customers_insert;
 /* stage -> insert into stage records which have been updated */ 
 INSERT INTO dw_stage.customers
 (
-  CUSTOMER_EXTID            
+  CUSTOMER_ID
+  ,CUSTOMER_EXTID            
   ,LEGACY_CUSTOMER_IDCUSTOM  
   ,NAME                      
   ,EMAIL                     
@@ -232,7 +236,9 @@ INSERT INTO dw_stage.customers
   ,PARENT_ID                 
   ,TERRITORY 
 )
-SELECT CUSTOMER_EXTID            
+SELECT 
+   CUSTOMER_ID
+  ,CUSTOMER_EXTID            
   ,LEGACY_CUSTOMER_IDCUSTOM  
   ,NAME                      
   ,EMAIL                     

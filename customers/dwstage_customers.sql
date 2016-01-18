@@ -31,5 +31,7 @@ CREATE TABLE dw_stage.customers
   PAYMENT_TERM_ID            INTEGER,
   PARENT                     VARCHAR(100),
   PARENT_ID                  INTEGER,
-  TERRITORY                  VARCHAR(500)
-);
+  TERRITORY                  VARCHAR(500),
+  PRIMARY KEY (CUSTOMER_ID,NAME)
+)
+DISTSTYLE ALL INTERLEAVED SORTKEY (CUSTOMER_ID,NAME);
