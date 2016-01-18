@@ -11,7 +11,6 @@ CREATE TABLE dw_prestage.accounting_period
   END_DATE               TIMESTAMP,
   FISCAL_CALENDAR        VARCHAR(100),
   FISCAL_CALENDAR_ID     INTEGER,
-  SUBSIDIARY             VARCHAR(100),
   QUARTER_NAME           VARCHAR(300),
   YEAR_NAME              VARCHAR(300),
   CLOSED                 VARCHAR(10),

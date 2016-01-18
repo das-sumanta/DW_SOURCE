@@ -4,7 +4,6 @@ select A.ACCOUNTING_PERIOD_ID,
        A.ENDING AS END_DATE,
        'Scholastic NZ Fiscal Calendar' AS FISCAL_CALENDAR,
        A.fiscal_calendar_id,
-       c.name as subsidiary,
        d.name as quarter_name,
        e.name as year_name,
        a.closed,
@@ -20,16 +19,15 @@ select A.ACCOUNTING_PERIOD_ID,
        a.isinactive,
        a.year_id
  from accounting_periods A
-INNER JOIN SUBSIDIARIES C ON (C.fiscal_calendar_id = A.fiscal_calendar_id)
 LEFT OUTER JOIN accounting_periods D ON ( A.PARENT_ID= D.ACCOUNTING_PERIOD_ID  )
 LEFT OUTER JOIN accounting_periods E ON ( D.PARENT_ID = E.ACCOUNTING_PERIOD_ID )
 WHERE NOT EXISTS ( SELECT 1 FROM accounting_periods B
 WHERE A.ACCOUNTING_PERIOD_ID = B.PARENT_ID )
-AND C.SUBSIDIARY_ID = 27
-AND C.FISCAL_CALENDAR_ID = A.FISCAL_CALENDAR_ID
 AND D.Quarter = 'Yes'
 AND D.YEAR_0 = 'No'
 AND A.Quarter = 'No'
 AND A.year_0 = 'No'
 AND E.Quarter = 'No'
 AND E.YEAR_0 = 'Yes'
+AND A.ISINACTIVE = 'No'
+ORDER BY A.ACCOUNTING_PERIOD_ID,A.NAME
