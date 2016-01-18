@@ -8,7 +8,9 @@ CREATE TABLE dw_stage.territories
   TERRITORY                  VARCHAR(100), 
   SUBSIDIARY                 VARCHAR(100), 
   SUBSIDIARY_ID              INTEGER,      
-  IS_INACTIVE                 VARCHAR(10)  
-);
+  IS_INACTIVE                 VARCHAR(10),
+  PRIMARY KEY (TERRITORY_ID,TERRITORY)
+)
+DISTSTYLE ALL INTERLEAVED SORTKEY (TERRITORY_ID,TERRITORY);  
 
 
