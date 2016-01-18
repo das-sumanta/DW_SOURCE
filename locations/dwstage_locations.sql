@@ -34,7 +34,9 @@ CREATE TABLE dw_stage.locations
   RETURN_ZIPCODE                  VARCHAR(36),
   STATE                           VARCHAR(50),
   TRAN_NUM_PREFIX                 VARCHAR(8),
-  ZIPCODE                         VARCHAR(36)
-);
+  ZIPCODE                         VARCHAR(36),
+  PRIMARY KEY (LOCATION_ID,NAME)
+)
+DISTSTYLE ALL INTERLEAVED SORTKEY (LOCATION_ID,NAME);
 
 
