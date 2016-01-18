@@ -4,7 +4,7 @@ DROP TABLE if exists dw_prestage.cost_center;
 
 CREATE TABLE dw_prestage.cost_center 
 (
-  RUNID                        BIGINT
+  RUNID                        BIGINT,
   ACCPAC_COST_CENTER_CODES     VARCHAR(4000),
   COST_CENTER_CODE             VARCHAR(4000),
   DATE_LAST_MODIFIED           TIMESTAMP,

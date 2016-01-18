@@ -20,7 +20,7 @@ CREATE TABLE dw.cost_center
   DW_ACTIVE                    VARCHAR(1),
   PRIMARY KEY (department_key,department_ID)
 )
-DISTSTYLE ALL INTERLEAVED SORTKEY (department_key,department_ID,DW_ACTIVE);
+DISTSTYLE ALL INTERLEAVED SORTKEY (department_key,department_ID,COST_CENTER_CODE,NAME,DW_ACTIVE);
 
 
 INSERT INTO dw.cost_center

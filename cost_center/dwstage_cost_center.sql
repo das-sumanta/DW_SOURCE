@@ -13,7 +13,9 @@ CREATE TABLE dw_stage.cost_center
   HYPERION_COST_CENTER_CODES   VARCHAR(4000),
   ISINACTIVE                   VARCHAR(3),
   NAME                         VARCHAR(31),
-  PARENT_ID                    INTEGER
-);
+  PARENT_ID                    INTEGER,
+  PRIMARY KEY (department_ID)
+)
+DISTSTYLE ALL INTERLEAVED SORTKEY (department_ID,COST_CENTER_CODE,NAME,DW_ACTIVE);
 
 
