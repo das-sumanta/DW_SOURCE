@@ -4,20 +4,11 @@ DROP TABLE if exists dw_prestage.revenue_fact_insert;
 /* prestage - create intermediate insert table*/ 
 CREATE TABLE dw_prestage.revenue_fact_insert 
 AS
-SELECT *
-FROM dw_prestage.revenue_fact
-WHERE EXISTS (SELECT 1
-              FROM (SELECT TRANSACTION_ID,
-                           transaction_line_id
-                    FROM (SELECT TRANSACTION_ID,
-                                 transaction_line_id
-                          FROM dw_prestage.revenue_fact
-                          MINUS
-                          SELECT TRANSACTION_ID,
-                                 transaction_line_id
-                          FROM dw_stage.revenue_fact)) a
-              WHERE dw_prestage.revenue_fact.TRANSACTION_ID = a.TRANSACTION_ID
-              AND   dw_prestage.revenue_fact.transaction_line_id = a.transaction_line_id);
+SELECT a.*
+FROM dw_prestage.revenue_fact a
+WHERE not exists ( select 1 FROM dw_stage.revenue_fact b
+where a.TRANSACTION_ID = b.TRANSACTION_ID
+AND   a.transaction_line_id = b.transaction_line_id);
 
 /* prestage - drop intermediate update table*/ 
 DROP TABLE if exists dw_prestage.revenue_fact_update;
@@ -131,7 +122,10 @@ FROM (SELECT TRANSACTION_ID,
                    CREATED_BY_ID,
                    CREATE_DATE,
                    DATE_LAST_MODIFIED
-            FROM dw_stage.revenue_fact)) a
+            FROM dw_stage.revenue_fact a1
+			WHERE EXISTS ( select 1 from dw_prestage.revenue_fact b1
+where b1.TRANSACTION_ID = a1.TRANSACTION_ID
+     and b1.transaction_line_id = a1.transaction_line_id ))) a
 WHERE NOT EXISTS (SELECT 1
                   FROM dw_prestage.revenue_fact_insert
                   WHERE dw_prestage.revenue_fact_insert.TRANSACTION_ID = a.TRANSACTION_ID
@@ -143,35 +137,31 @@ DROP TABLE if exists dw_prestage.revenue_fact_nochange;
 /* prestage - create intermediate no change track table*/ 
 CREATE TABLE dw_prestage.revenue_fact_nochange 
 AS
-SELECT TRANSACTION_ID,
+EXPLAIN SELECT TRANSACTION_ID,
        transaction_line_id
 FROM (SELECT TRANSACTION_ID,
              transaction_line_id
-      FROM dw_prestage.revenue_fact
-      MINUS
-      (SELECT TRANSACTION_ID,
-             transaction_line_id
-      FROM dw_prestage.revenue_fact_insert
-      UNION ALL
-      SELECT TRANSACTION_ID,
-             transaction_line_id
-      FROM dw_prestage.revenue_fact_update));
+      FROM dw_prestage.revenue_fact A
+      WHERE NOT EXISTS ( SELECT 1
+      FROM dw_prestage.revenue_fact_insert B
+      WHERE A.TRANSACTION_ID = B.TRANSACTION_ID
+      AND A.TRANSACTION_LINE_ID = B.TRANSACTION_LINE_ID)
+      AND NOT EXISTS ( SELECT 1
+      FROM dw_prestage.revenue_fact_update C
+      WHERE A.TRANSACTION_ID = C.TRANSACTION_ID
+      AND A.TRANSACTION_LINE_ID = C.TRANSACTION_LINE_ID));
 
-/* prestage-> stage*/ 
-SELECT 'no of revenue fact records ingested in staging -->' ||count(1)
-FROM dw_prestage.revenue_fact;
+/* prestage-> no of revenue fact records ingested in staging*/ 
+SELECT count(1) FROM dw_prestage.revenue_fact;
 
-/* prestage-> stage*/ 
-SELECT 'no of revenue fact records identified to inserted -->' ||count(1)
-FROM dw_prestage.revenue_fact_insert;
+/* prestage-> no of revenue fact records identified to inserted*/ 
+SELECT  count(1) FROM dw_prestage.revenue_fact_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of revenue fact records identified to updated -->' ||count(1)
-FROM dw_prestage.revenue_fact_update;
+/* prestage-> no of revenue fact records identified to updated -->*/ 
+SELECT  count(1) FROM dw_prestage.revenue_fact_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of revenue fact records identified as no change -->' ||count(1)
-FROM dw_prestage.revenue_fact_nochange;
+/* prestage-> no of revenue fact records identified as no change*/ 
+SELECT count(1) FROM dw_prestage.revenue_fact_nochange;
 
 --D --A = B + C + D
 /* stage -> delete from stage records to be updated */ 
@@ -402,7 +392,7 @@ WHERE EXISTS (SELECT 1
 COMMIT;
 
 /* fact -> INSERT NEW RECORDS WHICH HAS ALL VALID DIMENSIONS */ 
-insert into dw.revenue_fact
+INSERT INTO dw.revenue_fact
 (
 DOCUMENT_NUMBER            
 ,TRANSACTION_ID             
@@ -503,19 +493,19 @@ TRANSACTION_NUMBER
  from dw_prestage.revenue_fact a 
  INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
  INNER JOIN DW_REPORT.territories c ON (NVL (A.sales_rep_ID,-99) = c.territory_ID)
- INNER JOIN DW_REPORT.CURRENCIES d ON (NVL (A.CURRENCY_ID,-99) = d.CURRENCY_ID)
- INNER JOIN DW_REPORT.DWDATE e ON (NVL (TO_CHAR (A.tranDATE,'YYYYMMDD'),'0') = e.DATE_ID)
+ INNER JOIN DW_REPORT.CURRENCIES d ON (A.CURRENCY_ID = d.CURRENCY_ID)
+ INNER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
  INNER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
- INNER JOIN DW_REPORT.ITEMS g ON (NVL (A.ITEM_ID,-99) = g.ITEM_ID)
- INNER JOIN DW_REPORT.TAX_ITEMS h ON (NVL (A.TAX_ITEM_ID,-99) = h.ITEM_ID)
- INNER JOIN DW_REPORT.SUBSIDIARIES j ON (NVL (A.SUBSIDIARY_ID,-99) = j.SUBSIDIARY_ID)  
- INNER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
+ INNER JOIN DW_REPORT.ITEMS g ON (A.ITEM_ID = g.ITEM_ID)
+ INNER JOIN DW_REPORT.TAX_ITEMS h ON (A.TAX_ITEM_ID = h.ITEM_ID)
+ INNER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)  
+ INNER JOIN DW_REPORT.LOCATIONS k ON (A.LOCATION_ID = k.LOCATION_ID)
  INNER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID) 
- INNER JOIN DW_REPORT.customers m ON (NVL(A.customer_ID,-99) = m.customer_ID) 
+ INNER JOIN DW_REPORT.customers m ON (A.customer_ID = m.customer_ID) 
  INNER JOIN DW_REPORT.transaction_type n ON (NVL(A.ref_custom_form_id,-99) = n.transaction_type_id) 
  INNER JOIN DW_REPORT.transaction_status o ON (NVL(A.STATUS,'NA_GDW') = o.status AND NVL(A.TRANSACTION_TYPE,'NA_GDW') = o.DOCUMENT_TYPE)
- INNER JOIN DW_REPORT.transaction_type p ON (NVL(A.custom_form_id,-99) = p.transaction_type_id) 
- INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)   
+ INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id) 
+ INNER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)   
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' );
   
 /* fact -> INSERT NEW RECORDS IN ERROR TABLE WHICH DOES NOT HAVE VALID DIMENSIONS */ 
@@ -567,22 +557,37 @@ INSERT INTO dw.revenue_fact_error
   ,CUSTOMER_KEY                
   ,ACCOUNTING_PERIOD_KEY       
   ,REF_CUSTOM_FORM_ID          
+  ,REF_TRANSACTION_TYPE_ERROR  
   ,CUSTOM_FORM_ID              
+  ,TRANSACTION_TYPE_ERROR      
   ,PAYMENT_TERMS_ID            
+  ,PAYMENT_TERMS_ID_ERROR      
   ,SALES_REP_ID                
+  ,TERRITORY_ID_ERROR          
   ,STATUS                      
+  ,STATUS_ERROR                
   ,CURRENCY_ID                 
+  ,CURRENCY_ID_ERROR           
   ,TRANDATE                    
+  ,TRANDATE_ERROR              
   ,ACCOUNT_ID                  
+  ,ACCOUNT_ID_ERROR            
   ,ITEM_ID                     
+  ,ITEM_ID_ERROR               
   ,TAX_ITEM_ID                 
+  ,TAX_ITEM_ID_ERROR           
   ,LOCATION_ID                 
+  ,LOCATION_ID_ERROR           
   ,CLASS_ID                    
+  ,CLASS_ID_ERROR              
   ,SUBSIDIARY_ID               
+  ,SUBSIDIARY_ID_ERROR         
   ,CUSTOMER_ID                 
+  ,CUSTOMER_ID_ERROR           
   ,ACCOUNTING_PERIOD_ID        
+  ,ACCOUNTING_PERIOD_ID_ERROR  
   ,RECORD_STATUS               
-  ,DW_CREATION_DATE            
+  ,DW_CREATION_DATE                   
 )
 SELECT 
   A.RUNID 
@@ -631,56 +636,130 @@ SELECT
  ,m.customer_key
  ,q.accounting_period_key
  ,A.ref_custom_form_id
+  ,CASE
+         WHEN (n.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (n.transaction_type_key IS NULL AND A.ref_custom_form_id IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.custom_form_id
+   ,CASE
+         WHEN (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (P.transaction_type_key IS NULL AND A.custom_form_id IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.PAYMENT_TERMS_ID
+ ,CASE
+         WHEN (b.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (b.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.sales_rep_ID
+  ,CASE
+         WHEN (c.territory_key IS NULL AND A.sales_rep_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (c.territory_key IS NULL AND A.sales_rep_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.STATUS
+   ,CASE
+         WHEN (d.currency_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL ) THEN ' DIM LOOKUP FAILED '
+         WHEN (d.currency_key IS NULL AND A.STATUS IS NULL AND A.TRANSACTION_TYPE IS  NULL ) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.CURRENCY_ID
+  ,CASE
+         WHEN (d.currency_key IS NULL AND A.CURRENCY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (d.currency_key IS NULL AND A.CURRENCY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.TRANDATE
+  ,CASE
+         WHEN (e.date_key IS NULL AND A.TRANDATE IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (e.date_key IS NULL AND A.TRANDATE IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  , A.ACCOUNT_ID
+   ,CASE
+         WHEN (f.account_key IS NULL AND A.ACCOUNT_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (f.account_key IS NULL AND A.ACCOUNT_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 , A.ITEM_ID
+   ,CASE
+         WHEN (g.item_key IS NULL AND A.ITEM_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (g.item_key IS NULL AND A.ITEM_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 , A.TAX_ITEM_ID
+   ,CASE
+         WHEN (h.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (h.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.LOCATION_ID
+   ,CASE
+         WHEN (k.location_key IS NULL AND A.LOCATION_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (k.location_key IS NULL AND A.LOCATION_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.CLASS_ID
+   ,CASE
+         WHEN (l.class_key  IS NULL AND A.CLASS_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (l.class_key  IS NULL AND A.CLASS_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.SUBSIDIARY_ID
+   ,CASE
+         WHEN (j.subsidiary_key IS NULL AND A.SUBSIDIARY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (j.subsidiary_key IS NULL AND A.SUBSIDIARY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.CUSTOMER_ID
+   ,CASE
+         WHEN (m.customer_key IS NULL AND A.CUSTOMER_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (m.customer_key IS NULL AND A.CUSTOMER_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.ACCOUNTING_PERIOD_ID
+   ,CASE
+         WHEN (q.accounting_period_key IS NULL AND A.ACCOUNTING_PERIOD_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (q.accounting_period_key IS NULL AND A.ACCOUNTING_PERIOD_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact a 
- LEFT OUTER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
- LEFT OUTER JOIN DW_REPORT.territories c ON (NVL (A.sales_rep_ID,-99) = c.territory_ID)
- LEFT OUTER JOIN DW_REPORT.CURRENCIES d ON (NVL (A.CURRENCY_ID,-99) = d.CURRENCY_ID)
- LEFT OUTER JOIN DW_REPORT.DWDATE e ON (NVL (TO_CHAR (A.tranDATE,'YYYYMMDD'),'0') = e.DATE_ID)
- LEFT OUTER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
- LEFT OUTER JOIN DW_REPORT.ITEMS g ON (NVL (A.ITEM_ID,-99) = g.ITEM_ID)
- LEFT OUTER JOIN DW_REPORT.TAX_ITEMS h ON (NVL (A.TAX_ITEM_ID,-99) = h.ITEM_ID)
- LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES j ON (NVL (A.SUBSIDIARY_ID,-99) = j.SUBSIDIARY_ID)  
- LEFT OUTER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
- LEFT OUTER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID) 
- LEFT OUTER JOIN DW_REPORT.customers m ON (NVL(A.customer_ID,-99) = m.customer_ID) 
- LEFT OUTER JOIN DW_REPORT.transaction_type n ON (NVL(A.ref_custom_form_id,-99) = n.transaction_type_id) 
- LEFT OUTER JOIN DW_REPORT.transaction_status o ON (NVL(A.STATUS,'NA_GDW') = o.status AND NVL(A.TRANSACTION_TYPE,'NA_GDW') = o.DOCUMENT_TYPE)
- LEFT OUTER JOIN DW_REPORT.transaction_type p ON (NVL(A.custom_form_id,-99) = p.transaction_type_id) 
- LEFT OUTER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)   
+ LEFT OUTER JOIN DW_REPORT.PAYMENT_TERMS b ON (A.PAYMENT_TERMS_ID = b.PAYMENT_TERMS_ID)
+ LEFT OUTER JOIN DW_REPORT.territories c ON (A.sales_rep_ID = c.territory_ID)
+ LEFT OUTER JOIN DW_REPORT.CURRENCIES d ON (A.CURRENCY_ID = d.CURRENCY_ID)
+ LEFT OUTER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
+ LEFT OUTER JOIN DW_REPORT.ACCOUNTS F ON (A.account_ID = f.account_ID)
+ LEFT OUTER JOIN DW_REPORT.ITEMS g ON (A.ITEM_ID = g.ITEM_ID)
+ LEFT OUTER JOIN DW_REPORT.TAX_ITEMS h ON (A.TAX_ITEM_ID = h.ITEM_ID)
+ LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)  
+ LEFT OUTER JOIN DW_REPORT.LOCATIONS k ON (A.LOCATION_ID = k.LOCATION_ID)
+ LEFT OUTER JOIN DW_REPORT.CLASSES l ON (A.CLASS_ID = l.CLASS_ID) 
+ LEFT OUTER JOIN DW_REPORT.customers m ON (A.customer_ID = m.customer_ID) 
+ LEFT OUTER JOIN DW_REPORT.transaction_type n ON (A.ref_custom_form_id = n.transaction_type_id) 
+ LEFT OUTER JOIN DW_REPORT.transaction_status o ON (A.STATUS = o.status AND A.TRANSACTION_TYPE = o.DOCUMENT_TYPE)
+ LEFT OUTER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id) 
+ LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)   
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' ) AND
-(B.PAYMENT_TERM_KEY IS NULL OR
- C.TERRITORY_KEY IS NULL OR
+((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
+ (C.TERRITORY_KEY IS NULL AND A.sales_rep_ID IS NOT NULL ) OR
  D.CURRENCY_KEY IS NULL OR
  E.DATE_KEY IS NULL OR
- F.ACCOUNT_KEY IS NULL OR
+ (F.ACCOUNT_KEY IS NULL AND A.account_ID IS NOT NULL ) OR
  G.ITEM_KEY IS NULL OR
  H.TAX_ITEM_KEY IS NULL OR
  J.SUBSIDIARY_KEY IS NULL OR
  K.LOCATION_KEY IS NULL OR
- L.CLASS_KEY IS NULL OR
+ ( L.CLASS_KEY IS NULL AND A.CLASS_ID IS NOT NULL ) OR
  M.CUSTOMER_KEY IS NULL OR
- N.transaction_type_key IS NULL OR
- O.transaction_status_key IS NULL OR
- P.transaction_type_key IS NULL OR
+ ( N.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL ) OR
+ ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
+ ( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL ) OR
  Q.ACCOUNTING_PERIOD_KEY IS NULL);
  
-
 /* fact -> UPDATE THE OLD RECORDS SETTING THE CURRENT FLAG VALUE TO 0 */  
 UPDATE dw.revenue_fact SET dw_current = 0,DATE_ACTIVE_TO = (sysdate -1) WHERE dw_current = 1
 AND   sysdate>= date_active_from
@@ -690,7 +769,7 @@ AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
   AND   dw.revenue_fact.transaction_LINE_ID = dw_prestage.revenue_fact_update.transaction_line_id);
 
 /* fact -> NOW INSERT THE FACT RECORDS WHICH HAVE BEEN UPDATED AT THE SOURCE */ 
-insert into dw.revenue_fact
+INSERT INTO dw.revenue_fact
 (
 DOCUMENT_NUMBER            
 ,TRANSACTION_ID             
@@ -791,19 +870,19 @@ TRANSACTION_NUMBER
  from dw_prestage.revenue_fact a 
  INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
  INNER JOIN DW_REPORT.territories c ON (NVL (A.sales_rep_ID,-99) = c.territory_ID)
- INNER JOIN DW_REPORT.CURRENCIES d ON (NVL (A.CURRENCY_ID,-99) = d.CURRENCY_ID)
- INNER JOIN DW_REPORT.DWDATE e ON (NVL (TO_CHAR (A.tranDATE,'YYYYMMDD'),'0') = e.DATE_ID)
+ INNER JOIN DW_REPORT.CURRENCIES d ON (A.CURRENCY_ID = d.CURRENCY_ID)
+ INNER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
  INNER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
- INNER JOIN DW_REPORT.ITEMS g ON (NVL (A.ITEM_ID,-99) = g.ITEM_ID)
- INNER JOIN DW_REPORT.TAX_ITEMS h ON (NVL (A.TAX_ITEM_ID,-99) = h.ITEM_ID)
- INNER JOIN DW_REPORT.SUBSIDIARIES j ON (NVL (A.SUBSIDIARY_ID,-99) = j.SUBSIDIARY_ID)  
- INNER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
+ INNER JOIN DW_REPORT.ITEMS g ON (A.ITEM_ID = g.ITEM_ID)
+ INNER JOIN DW_REPORT.TAX_ITEMS h ON (A.TAX_ITEM_ID = h.ITEM_ID)
+ INNER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)  
+ INNER JOIN DW_REPORT.LOCATIONS k ON (A.LOCATION_ID = k.LOCATION_ID)
  INNER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID) 
- INNER JOIN DW_REPORT.customers m ON (NVL(A.customer_ID,-99) = m.customer_ID) 
+ INNER JOIN DW_REPORT.customers m ON (A.customer_ID = m.customer_ID) 
  INNER JOIN DW_REPORT.transaction_type n ON (NVL(A.ref_custom_form_id,-99) = n.transaction_type_id) 
  INNER JOIN DW_REPORT.transaction_status o ON (NVL(A.STATUS,'NA_GDW') = o.status AND NVL(A.TRANSACTION_TYPE,'NA_GDW') = o.DOCUMENT_TYPE)
- INNER JOIN DW_REPORT.transaction_type p ON (NVL(A.custom_form_id,-99) = p.transaction_type_id) 
- INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)   
+ INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id) 
+ INNER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)   
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' )
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update 
  WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id 
@@ -858,22 +937,37 @@ INSERT INTO dw.revenue_fact_error
   ,CUSTOMER_KEY                
   ,ACCOUNTING_PERIOD_KEY       
   ,REF_CUSTOM_FORM_ID          
+  ,REF_TRANSACTION_TYPE_ERROR  
   ,CUSTOM_FORM_ID              
+  ,TRANSACTION_TYPE_ERROR      
   ,PAYMENT_TERMS_ID            
+  ,PAYMENT_TERMS_ID_ERROR      
   ,SALES_REP_ID                
+  ,TERRITORY_ID_ERROR          
   ,STATUS                      
+  ,STATUS_ERROR                
   ,CURRENCY_ID                 
+  ,CURRENCY_ID_ERROR           
   ,TRANDATE                    
+  ,TRANDATE_ERROR              
   ,ACCOUNT_ID                  
+  ,ACCOUNT_ID_ERROR            
   ,ITEM_ID                     
+  ,ITEM_ID_ERROR               
   ,TAX_ITEM_ID                 
+  ,TAX_ITEM_ID_ERROR           
   ,LOCATION_ID                 
+  ,LOCATION_ID_ERROR           
   ,CLASS_ID                    
+  ,CLASS_ID_ERROR              
   ,SUBSIDIARY_ID               
+  ,SUBSIDIARY_ID_ERROR         
   ,CUSTOMER_ID                 
+  ,CUSTOMER_ID_ERROR           
   ,ACCOUNTING_PERIOD_ID        
+  ,ACCOUNTING_PERIOD_ID_ERROR  
   ,RECORD_STATUS               
-  ,DW_CREATION_DATE            
+  ,DW_CREATION_DATE                   
 )
 SELECT 
   A.RUNID 
@@ -922,53 +1016,128 @@ SELECT
  ,m.customer_key
  ,q.accounting_period_key
  ,A.ref_custom_form_id
+  ,CASE
+         WHEN (n.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (n.transaction_type_key IS NULL AND A.ref_custom_form_id IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.custom_form_id
+   ,CASE
+         WHEN (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (P.transaction_type_key IS NULL AND A.custom_form_id IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.PAYMENT_TERMS_ID
+ ,CASE
+         WHEN (b.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (b.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.sales_rep_ID
+  ,CASE
+         WHEN (c.territory_key IS NULL AND A.sales_rep_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (c.territory_key IS NULL AND A.sales_rep_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  ,A.STATUS
+   ,CASE
+         WHEN (d.currency_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL ) THEN ' DIM LOOKUP FAILED '
+         WHEN (d.currency_key IS NULL AND A.STATUS IS NULL AND A.TRANSACTION_TYPE IS  NULL ) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.CURRENCY_ID
+  ,CASE
+         WHEN (d.currency_key IS NULL AND A.CURRENCY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (d.currency_key IS NULL AND A.CURRENCY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.TRANDATE
+  ,CASE
+         WHEN (e.date_key IS NULL AND A.TRANDATE IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (e.date_key IS NULL AND A.TRANDATE IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
  , A.ACCOUNT_ID
+   ,CASE
+         WHEN (f.account_key IS NULL AND A.ACCOUNT_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (f.account_key IS NULL AND A.ACCOUNT_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 , A.ITEM_ID
+   ,CASE
+         WHEN (g.item_key IS NULL AND A.ITEM_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (g.item_key IS NULL AND A.ITEM_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 , A.TAX_ITEM_ID
+   ,CASE
+         WHEN (h.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (h.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.LOCATION_ID
+   ,CASE
+         WHEN (k.location_key IS NULL AND A.LOCATION_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (k.location_key IS NULL AND A.LOCATION_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.CLASS_ID
+   ,CASE
+         WHEN (l.class_key  IS NULL AND A.CLASS_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (l.class_key  IS NULL AND A.CLASS_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.SUBSIDIARY_ID
+   ,CASE
+         WHEN (j.subsidiary_key IS NULL AND A.SUBSIDIARY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (j.subsidiary_key IS NULL AND A.SUBSIDIARY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.CUSTOMER_ID
+   ,CASE
+         WHEN (m.customer_key IS NULL AND A.CUSTOMER_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (m.customer_key IS NULL AND A.CUSTOMER_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,A.ACCOUNTING_PERIOD_ID
+   ,CASE
+         WHEN (q.accounting_period_key IS NULL AND A.ACCOUNTING_PERIOD_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (q.accounting_period_key IS NULL AND A.ACCOUNTING_PERIOD_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+       END 
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact a 
- LEFT OUTER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
- LEFT OUTER JOIN DW_REPORT.territories c ON (NVL (A.sales_rep_ID,-99) = c.territory_ID)
- LEFT OUTER JOIN DW_REPORT.CURRENCIES d ON (NVL (A.CURRENCY_ID,-99) = d.CURRENCY_ID)
- LEFT OUTER JOIN DW_REPORT.DWDATE e ON (NVL (TO_CHAR (A.tranDATE,'YYYYMMDD'),'0') = e.DATE_ID)
- LEFT OUTER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
- LEFT OUTER JOIN DW_REPORT.ITEMS g ON (NVL (A.ITEM_ID,-99) = g.ITEM_ID)
- LEFT OUTER JOIN DW_REPORT.TAX_ITEMS h ON (NVL (A.TAX_ITEM_ID,-99) = h.ITEM_ID)
- LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES j ON (NVL (A.SUBSIDIARY_ID,-99) = j.SUBSIDIARY_ID)  
- LEFT OUTER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
- LEFT OUTER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID) 
- LEFT OUTER JOIN DW_REPORT.customers m ON (NVL(A.customer_ID,-99) = m.customer_ID) 
- LEFT OUTER JOIN DW_REPORT.transaction_type n ON (NVL(A.ref_custom_form_id,-99) = n.transaction_type_id) 
- LEFT OUTER JOIN DW_REPORT.transaction_status o ON (NVL(A.STATUS,'NA_GDW') = o.status AND NVL(A.TRANSACTION_TYPE,'NA_GDW') = o.DOCUMENT_TYPE)
- LEFT OUTER JOIN DW_REPORT.transaction_type p ON (NVL(A.custom_form_id,-99) = p.transaction_type_id) 
- LEFT OUTER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)   
+ LEFT OUTER JOIN DW_REPORT.PAYMENT_TERMS b ON (A.PAYMENT_TERMS_ID = b.PAYMENT_TERMS_ID)
+ LEFT OUTER JOIN DW_REPORT.territories c ON (A.sales_rep_ID = c.territory_ID)
+ LEFT OUTER JOIN DW_REPORT.CURRENCIES d ON (A.CURRENCY_ID = d.CURRENCY_ID)
+ LEFT OUTER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
+ LEFT OUTER JOIN DW_REPORT.ACCOUNTS F ON (A.account_ID = f.account_ID)
+ LEFT OUTER JOIN DW_REPORT.ITEMS g ON (A.ITEM_ID = g.ITEM_ID)
+ LEFT OUTER JOIN DW_REPORT.TAX_ITEMS h ON (A.TAX_ITEM_ID = h.ITEM_ID)
+ LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)  
+ LEFT OUTER JOIN DW_REPORT.LOCATIONS k ON (A.LOCATION_ID = k.LOCATION_ID)
+ LEFT OUTER JOIN DW_REPORT.CLASSES l ON (A.CLASS_ID = l.CLASS_ID) 
+ LEFT OUTER JOIN DW_REPORT.customers m ON (A.customer_ID = m.customer_ID) 
+ LEFT OUTER JOIN DW_REPORT.transaction_type n ON (A.ref_custom_form_id = n.transaction_type_id) 
+ LEFT OUTER JOIN DW_REPORT.transaction_status o ON (A.STATUS = o.status AND A.TRANSACTION_TYPE = o.DOCUMENT_TYPE)
+ LEFT OUTER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id) 
+ LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)   
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' ) AND
-(B.PAYMENT_TERM_KEY IS NULL OR
- C.TERRITORY_KEY IS NULL OR
+((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
+ (C.TERRITORY_KEY IS NULL AND A.sales_rep_ID IS NOT NULL ) OR
  D.CURRENCY_KEY IS NULL OR
  E.DATE_KEY IS NULL OR
- F.ACCOUNT_KEY IS NULL OR
+ (F.ACCOUNT_KEY IS NULL AND A.account_ID IS NOT NULL ) OR
  G.ITEM_KEY IS NULL OR
  H.TAX_ITEM_KEY IS NULL OR
  J.SUBSIDIARY_KEY IS NULL OR
  K.LOCATION_KEY IS NULL OR
- L.CLASS_KEY IS NULL OR
+ ( L.CLASS_KEY IS NULL AND A.CLASS_ID IS NOT NULL ) OR
  M.CUSTOMER_KEY IS NULL OR
- N.transaction_type_key IS NULL OR
- O.transaction_status_key IS NULL OR
- P.transaction_type_key IS NULL OR
+ ( N.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL ) OR
+ ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
+ ( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL ) OR
  Q.ACCOUNTING_PERIOD_KEY IS NULL)
 AND   EXISTS (SELECT 1 
              FROM dw_prestage.revenue_fact_update 
