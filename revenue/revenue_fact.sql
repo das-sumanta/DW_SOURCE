@@ -3,11 +3,12 @@ SELECT b.transaction_number AS document_number,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        f.transaction_number AS REF_DOC_NUMBER,
-       f.custom_form_id as ref_custom_form_id,
+       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
-       TO_CHAR(h.sales_rep_id) as sales_rep_id,
+       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
+       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
        e.BILL_ADDRESS_LINE_1,
        e.BILL_ADDRESS_LINE_2,
        e.BILL_ADDRESS_LINE_3,
@@ -61,7 +62,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-WHERE a.subsidiary_id = 27
+WHERE a.subsidiary_id = 6
 AND   b.transaction_type = 'Invoice'
 AND   EXISTS (SELECT 1
               FROM transactions g
@@ -74,11 +75,12 @@ SELECT b.transaction_number AS document_number,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        f.transaction_number AS REF_DOC_NUMBER,
-       f.custom_form_id as ref_custom_form_id,
+       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
-       TO_CHAR(h.sales_rep_id) as sales_rep_id,
+       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
+       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
        e.BILL_ADDRESS_LINE_1,
        e.BILL_ADDRESS_LINE_2,
        e.BILL_ADDRESS_LINE_3,
@@ -133,7 +135,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-WHERE a.subsidiary_id = 27
+WHERE a.subsidiary_id = 6
 AND   b.transaction_type = 'Return Authorization' 
 AND EXISTS ( select 1 from transactions g
 						 WHERE g.transaction_id = b.created_from_id
@@ -145,11 +147,12 @@ SELECT b.transaction_number AS document_number,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        f.transaction_number AS REF_DOC_NUMBER,
-       f.custom_form_id as ref_custom_form_id,
+       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
-       TO_CHAR(h.sales_rep_id) as sales_rep_id,
+       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
+       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
        e.BILL_ADDRESS_LINE_1,
        e.BILL_ADDRESS_LINE_2,
        e.BILL_ADDRESS_LINE_3,
@@ -204,7 +207,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-WHERE a.subsidiary_id = 27
+WHERE a.subsidiary_id = 6
 AND   b.transaction_type = 'Credit Memo'
 AND EXISTS ( select 1 from transactions g
 						 WHERE g.transaction_id = b.created_from_id
@@ -216,11 +219,12 @@ SELECT b.transaction_number AS document_number,
        to_char(a.transaction_line_id) as transaction_line_id,
        to_char(a.transaction_order) as transaction_order,
        f.transaction_number AS REF_DOC_NUMBER,
-       f.custom_form_id as ref_custom_form_id,
+       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
        TO_CHAR(b.payment_terms_id) AS payment_terms_id,
        b.revenue_commitment_status,
        b.revenue_status,
-       TO_CHAR(h.sales_rep_id) as sales_rep_id,
+       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
+       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
        e.BILL_ADDRESS_LINE_1,
        e.BILL_ADDRESS_LINE_2,
        e.BILL_ADDRESS_LINE_3,
@@ -275,8 +279,8 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-WHERE a.subsidiary_id = 27
+WHERE a.subsidiary_id = 6
 AND   b.transaction_type = 'Journal'
 AND   c.accountnumber = '4000001'
 AND c.full_name = 'Product Revenue : Revenue-Product'
-AND a.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS')
+AND a.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS');
