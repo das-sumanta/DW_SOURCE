@@ -51,14 +51,14 @@ minus
 select employee_id from dw_prestage.employees )) a
 where dw_stage.employees.employee_id = a.employee_id );
 
-/* prestage-> stage*/
-select 'no of prestage vendor records identified to inserted -->'||count(1) from  dw_prestage.employees_insert;
+/* prestage-> no of prestage employee records identified to inserted*/
+select count(1) from  dw_prestage.employees_insert;
 
-/* prestage-> stage*/
-select 'no of prestage vendor records identified to updated -->'||count(1) from  dw_prestage.employees_update;
+/* prestage-> no of prestage employee records identified to updated*/
+select count(1) from  dw_prestage.employees_update;
 
-/* prestage-> stage*/
-select 'no of prestage vendor records identified to deleted -->'||count(1) from  dw_prestage.employees_delete;
+/* prestage-> no of prestage employee records identified to deleted*/
+select count(1) from  dw_prestage.employees_delete;
 
 /* stage -> delete from stage records to be updated */
 delete from dw_stage.employees 
