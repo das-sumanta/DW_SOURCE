@@ -7,7 +7,8 @@ AS
 SELECT *
 FROM dw_prestage.budgetforecast_fact a
 WHERE not exists ( select 1 from dw_stage.budgetforecast_fact b
-where b.budgetforecast_id = a.budgetforecast_id);
+where b.budgetforecast_id = a.budgetforecast_id
+AND b.subsidiary_id = a.subsidiary_id);
 
 /* prestage - drop intermediate update table*/
 DROP TABLE if exists dw_prestage.budgetforecast_fact_update;
