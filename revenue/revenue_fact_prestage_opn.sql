@@ -8,7 +8,8 @@ SELECT a.*
 FROM dw_prestage.revenue_fact a
 WHERE not exists ( select 1 FROM dw_stage.revenue_fact b
 where a.TRANSACTION_ID = b.TRANSACTION_ID
-AND   a.transaction_line_id = b.transaction_line_id);
+AND   a.transaction_line_id = b.transaction_line_id
+AND   a.subsidiary_id = b.subsidiary_id);
 
 /* prestage - drop intermediate update table*/
 DROP TABLE if exists dw_prestage.revenue_fact_update;
@@ -17,9 +18,11 @@ DROP TABLE if exists dw_prestage.revenue_fact_update;
 CREATE TABLE dw_prestage.revenue_fact_update
 AS
 SELECT TRANSACTION_ID,
-       transaction_line_id
+       transaction_line_id,
+       subsidiary_id
 FROM (SELECT TRANSACTION_ID,
-             transaction_line_id
+             transaction_line_id,
+             subsidiary_id
       FROM (SELECT TRANSACTION_NUMBER,
                    TRANSACTION_ID,
                    TRANSACTION_LINE_ID,
@@ -127,7 +130,8 @@ FROM (SELECT TRANSACTION_ID,
             FROM dw_stage.revenue_fact a1
 			WHERE EXISTS ( select 1 from dw_prestage.revenue_fact b1
 where b1.TRANSACTION_ID = a1.TRANSACTION_ID
-     and b1.transaction_line_id = a1.transaction_line_id ))) a
+     and b1.transaction_line_id = a1.transaction_line_id 
+     AND   a1.subsidiary_id = b1.subsidiary_id))) a
 WHERE NOT EXISTS (SELECT 1
                   FROM dw_prestage.revenue_fact_insert
                   WHERE dw_prestage.revenue_fact_insert.TRANSACTION_ID = a.TRANSACTION_ID
@@ -170,7 +174,8 @@ SELECT count(1) FROM dw_prestage.revenue_fact_nochange;
 DELETE
 FROM dw_stage.revenue_fact USING dw_prestage.revenue_fact_update
 WHERE dw_stage.revenue_fact.transaction_id = dw_prestage.revenue_fact_update.transaction_id
-AND   dw_stage.revenue_fact.transaction_line_id = dw_prestage.revenue_fact_update.transaction_line_id;
+AND   dw_stage.revenue_fact.transaction_line_id = dw_prestage.revenue_fact_update.transaction_line_id
+AND   dw_stage.revenue_fact.subsidiary_id = dw_prestage.revenue_fact_update.subsidiary_id;
 
 /* stage -> insert into stage records which have been created */
 INSERT INTO dw_stage.revenue_fact(runid
