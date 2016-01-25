@@ -1,78 +1,109 @@
 /* prestage - drop intermediate insert table */
-DROP TABLE if exists dw_prestage.budgetforecast_fact_insert;
+DROP TABLE IF EXISTS DW_PRESTAGE.BUDGETFORECAST_FACT_INSERT;
 
 /* prestage - create intermediate insert table*/
-CREATE TABLE dw_prestage.budgetforecast_fact_insert 
+CREATE TABLE DW_PRESTAGE.BUDGETFORECAST_FACT_INSERT 
 AS
 SELECT *
-FROM dw_prestage.budgetforecast_fact a
-WHERE not exists ( select 1 from dw_stage.budgetforecast_fact b
-where b.budgetforecast_id = a.budgetforecast_id
-AND b.subsidiary_id = a.subsidiary_id);
+FROM DW_PRESTAGE.BUDGETFORECAST_FACT A
+WHERE NOT EXISTS ( SELECT 1 
+   FROM DW_STAGE.BUDGETFORECAST_FACT B
+WHERE B.BUDGETFORECAST_ID = A.BUDGETFORECAST_ID
+     AND B.SUBSIDIARY_ID = A.SUBSIDIARY_ID);
 
 /* prestage - drop intermediate update table*/
-DROP TABLE if exists dw_prestage.budgetforecast_fact_update;
+DROP TABLE IF EXISTS DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE;
 
 /* prestage - create intermediate update table*/
-CREATE TABLE dw_prestage.budgetforecast_fact_update 
+CREATE TABLE DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE 
 AS
 SELECT *
-FROM dw_prestage.budgetforecast_fact a
-WHERE not exists ( select 1 from dw_prestage.budgetforecast_fact_insert b
-where b.budgetforecast_id = a.budgetforecast_id);
+FROM DW_PRESTAGE.BUDGETFORECAST_FACT A
+WHERE EXISTS ( SELECT 1 FROM
+                     ( SELECT  
+                       BUDGETFORECAST_ID
+                      ,BUDGETFORECAST_NAME
+                      ,FISCAL_MONTH_ID
+                      ,FISCAL_WEEK_ID
+                      ,LINE_OF_BUSINESS_ID
+                      ,REGIONSALES_TERRITORY_ID
+                      ,SUBSIDIARY_ID
+                      ,MONTH_END_DATE
+                      ,MONTH_START_DATE
+                      ,WEEK_START_DATE
+                      ,WEEK_END_DATE
+                      ,AMOUNT
+                      ,IS_INACTIVE
+                      ,BUDGETFORECAST_TYPE 
+                  FROM DW_PRESTAGE.BUDGETFORECAST_FACT A
+                  MINUS
+                  SELECT  
+                       BUDGETFORECAST_ID
+                      ,BUDGETFORECAST_NAME
+                      ,FISCAL_MONTH_ID
+                      ,FISCAL_WEEK_ID
+                      ,LINE_OF_BUSINESS_ID
+                      ,REGIONSALES_TERRITORY_ID
+                      ,SUBSIDIARY_ID
+                      ,MONTH_END_DATE
+                      ,MONTH_START_DATE
+                      ,WEEK_START_DATE
+                      ,WEEK_END_DATE
+                      ,AMOUNT
+                      ,IS_INACTIVE
+                      ,BUDGETFORECAST_TYPE 
+   FROM DW_STAGE.BUDGETFORECAST_FACT B
+WHERE EXISTS ( SELECT 1 FROM DW_PRESTAGE.BUDGETFORECAST_FACT B1
+WHERE B1.BUDGETFORECAST_ID = B.BUDGETFORECAST_ID
+     AND B1.SUBSIDIARY_ID = B.SUBSIDIARY_ID)) A1
+     WHERE A1.BUDGETFORECAST_ID = A.BUDGETFORECAST_ID) 
+AND NOT EXISTS ( SELECT 1 FROM DW_PRESTAGE.BUDGETFORECAST_FACT_INSERT C
+WHERE A.BUDGETFORECAST_ID = C.BUDGETFORECAST_ID);
 
 /* prestage - drop intermediate no change track table*/
-DROP TABLE if exists dw_prestage.budgetforecast_fact_nochange;
+DROP TABLE IF EXISTS DW_PRESTAGE.BUDGETFORECAST_FACT_NOCHANGE;
 
 /* prestage - create intermediate no change track table*/
-CREATE TABLE dw_prestage.budgetforecast_fact_nochange 
+CREATE TABLE DW_PRESTAGE.BUDGETFORECAST_FACT_NOCHANGE 
 AS
-SELECT budgetforecast_ID
-FROM (SELECT budgetforecast_ID
-      FROM dw_prestage.budgetforecast_fact
+SELECT BUDGETFORECAST_ID
+FROM (SELECT BUDGETFORECAST_ID
+      FROM DW_PRESTAGE.BUDGETFORECAST_FACT
       MINUS
-      (SELECT budgetforecast_ID
-      FROM dw_prestage.budgetforecast_fact_insert
+      (SELECT BUDGETFORECAST_ID
+      FROM DW_PRESTAGE.BUDGETFORECAST_FACT_INSERT
       UNION ALL
-      SELECT budgetforecast_ID
-      FROM dw_prestage.budgetforecast_fact_update));
+      SELECT BUDGETFORECAST_ID
+      FROM DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE));
 
-/* prestage-> stage*/
-SELECT 'no of budgetforecast fact records ingested in staging -->' ||count(1)
-FROM dw_prestage.budgetforecast_fact;
+/* prestage-> no of budgetforecast fact records ingested in staging*/
+SELECT count(1) FROM dw_prestage.budgetforecast_fact;
 
-/* prestage-> stage*/
-SELECT 'no of budgetforecast fact records identified to inserted -->' ||count(1)
-FROM dw_prestage.budgetforecast_fact_insert;
+/* prestage-> no of budgetforecast fact records identified to inserted*/
+SELECT count(1) FROM dw_prestage.budgetforecast_fact_insert;
 
-/* prestage-> stage*/
-SELECT 'no of budgetforecast fact records identified to updated -->' ||count(1)
-FROM dw_prestage.budgetforecast_fact_update;
+/* prestage-> no of budgetforecast fact records identified to updated*/
+SELECT count(1) FROM dw_prestage.budgetforecast_fact_update;
 
-/* prestage-> stage*/
-SELECT 'no of budgetforecast fact records identified as no change -->' ||count(1)
-FROM dw_prestage.budgetforecast_fact_nochange;
+/* prestage-> no of budgetforecast fact records identified as no change*/
+SELECT count(1) FROM dw_prestage.budgetforecast_fact_nochange;
 
---D --A = B + C + D
 /* stage -> delete from stage records to be updated */ 
 DELETE
-FROM dw_stage.budgetforecast_fact USING dw_prestage.budgetforecast_fact_update
-WHERE dw_stage.budgetforecast_fact.budgetforecast_id = dw_prestage.budgetforecast_fact_update.budgetforecast_id;
+FROM DW_STAGE.BUDGETFORECAST_FACT USING DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE
+WHERE DW_STAGE.BUDGETFORECAST_FACT.BUDGETFORECAST_ID = DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE.BUDGETFORECAST_ID
+AND DW_STAGE.BUDGETFORECAST_FACT.SUBSIDIARY_ID = DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE.SUBSIDIARY_ID;
 
 /* stage -> insert into stage records which have been created */ 
-INSERT INTO dw_stage.budgetforecast_fact
+INSERT INTO DW_STAGE.BUDGETFORECAST_FACT
 SELECT *
-FROM dw_prestage.budgetforecast_fact_insert;
+FROM DW_PRESTAGE.BUDGETFORECAST_FACT_INSERT;
 
 /* stage -> insert into stage records which have been updated */ 
-INSERT INTO dw_stage.budgetforecast_fact
+INSERT INTO DW_STAGE.BUDGETFORECAST_FACT
 SELECT *
-FROM dw_prestage.budgetforecast_fact
-WHERE EXISTS (SELECT 1
-              FROM dw_prestage.budgetforecast_fact_update
-              WHERE dw_prestage.budgetforecast_fact_update.budgetforecast_id = dw_prestage.budgetforecast_fact.budgetforecast_id);
+FROM DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE;
 
-COMMIT;
 
 /* fact -> INSERT NEW RECORDS WHICH HAS ALL VALID DIMENSIONS */ 
 INSERT INTO dw.budgetforecast_fact
@@ -118,7 +149,7 @@ SELECT
  ,'9999-12-31 11:59:59' AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
  FROM
-  dw_prestage.budgetforecast_fact_insert A
+  DW_PRESTAGE.BUDGETFORECAST_FACT_INSERT A
   INNER JOIN DW_REPORT.CLASSES B ON (A.LINE_OF_BUSINESS_ID = B.CLASS_ID) 
   INNER JOIN DW_REPORT.territories C ON (A.REGIONSALES_TERRITORY_ID = C.TERRITORY_ID)
   INNER JOIN DW_REPORT.SUBSIDIARIES D ON (A.SUBSIDIARY_ID = D.SUBSIDIARY_ID);
@@ -163,24 +194,21 @@ SELECT A.RUNID,
          WHEN (B.CLASS_KEY IS NULL AND A.LINE_OF_BUSINESS_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (B.CLASS_KEY IS NULL AND A.LINE_OF_BUSINESS_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
-       END 
-,
+       END,
        C.TERRITORY_KEY,
        A.REGIONSALES_TERRITORY_ID,
        CASE
          WHEN (C.TERRITORY_KEY IS NULL AND A.REGIONSALES_TERRITORY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (C.TERRITORY_KEY IS NULL AND A.REGIONSALES_TERRITORY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
-       END 
-,
+       END,
        D.SUBSIDIARY_KEY,
        A.SUBSIDIARY_ID,
        CASE
          WHEN (D.SUBSIDIARY_KEY IS NULL AND A.SUBSIDIARY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (D.SUBSIDIARY_KEY IS NULL AND A.SUBSIDIARY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
-       END 
-,
+       END,
        BUDGETFORECAST_TYPE,
        MONTH_END_DATE,
        MONTH_START_DATE,
@@ -195,17 +223,24 @@ SELECT A.RUNID,
 FROM dw_prestage.budgetforecast_fact_insert A
   LEFT OUTER JOIN DW_REPORT.CLASSES B ON (A.LINE_OF_BUSINESS_ID = B.CLASS_ID)
   LEFT OUTER JOIN DW_REPORT.territories C ON (A.REGIONSALES_TERRITORY_ID = C.TERRITORY_ID)
-  LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES D
-               ON (A.SUBSIDIARY_ID = D.SUBSIDIARY_ID)
-              AND (B.CLASS_KEY IS NULL
+  LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES D ON (A.SUBSIDIARY_ID = D.SUBSIDIARY_ID)
+              WHERE (B.CLASS_KEY IS NULL
                OR C.TERRITORY_KEY IS NULL
                OR D.SUBSIDIARY_KEY IS NULL);
 
 /* fact -> UPDATE THE OLD RECORDS SETTING THE CURRENT FLAG VALUE TO 0 */  
-UPDATE dw.budgetforecast_fact SET dw_current = 0,DATE_ACTIVE_TO = (sysdate -1) WHERE dw_current = 1
-AND   sysdate>= date_active_from
-AND   sysdate< date_active_to
-AND   EXISTS (SELECT 1 FROM dw_prestage.budgetforecast_fact_update WHERE dw.budgetforecast_fact.budgetforecast_id = dw_prestage.budgetforecast_fact_update.budgetforecast_id);
+UPDATE DW.BUDGETFORECAST_FACT 
+SET DW_CURRENT = 0,
+DATE_ACTIVE_TO = (SYSDATE -1) 
+WHERE DW_CURRENT = 1
+AND   SYSDATE >= DATE_ACTIVE_FROM
+AND   SYSDATE < DATE_ACTIVE_TO
+AND   EXISTS 
+	(SELECT 1 FROM DW_PRESTAGE.BUDGETFORECAST_FACT_UPDATE B,
+	               DW_REPORT.SUBSIDIARIES C
+	 WHERE DW.BUDGETFORECAST_FACT.BUDGETFORECAST_ID = B.BUDGETFORECAST_ID
+	 AND DW.BUDGETFORECAST_FACT.SUBSIDIARY_KEY = C.SUBSIDIARY_KEY
+	 AND B.SUBSIDIARY_ID = C.SUBSIDIARY_ID );
 
 /* fact -> NOW INSERT THE FACT RECORDS WHICH HAVE BEEN UPDATED AT THE SOURCE */ 
 INSERT INTO dw.budgetforecast_fact
@@ -297,24 +332,21 @@ SELECT A.RUNID,
          WHEN (B.CLASS_KEY IS NULL AND A.LINE_OF_BUSINESS_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (B.CLASS_KEY IS NULL AND A.LINE_OF_BUSINESS_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
-       END 
-,
+       END,
        C.TERRITORY_KEY,
        A.REGIONSALES_TERRITORY_ID,
        CASE
          WHEN (C.TERRITORY_KEY IS NULL AND A.REGIONSALES_TERRITORY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (C.TERRITORY_KEY IS NULL AND A.REGIONSALES_TERRITORY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
-       END 
-,
+       END,
        D.SUBSIDIARY_KEY,
        A.SUBSIDIARY_ID,
        CASE
          WHEN (D.SUBSIDIARY_KEY IS NULL AND A.SUBSIDIARY_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (D.SUBSIDIARY_KEY IS NULL AND A.SUBSIDIARY_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
-       END 
-,
+       END,
        BUDGETFORECAST_TYPE,
        MONTH_END_DATE,
        MONTH_START_DATE,
@@ -329,10 +361,9 @@ SELECT A.RUNID,
 FROM dw_prestage.budgetforecast_fact_update A
   LEFT OUTER JOIN DW_REPORT.CLASSES B ON (A.LINE_OF_BUSINESS_ID = B.CLASS_ID)
   LEFT OUTER JOIN DW_REPORT.territories C ON (A.REGIONSALES_TERRITORY_ID = C.TERRITORY_ID)
-  LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES D
-               ON (A.SUBSIDIARY_ID = D.SUBSIDIARY_ID)
-              AND (B.CLASS_KEY IS NULL
+  LEFT OUTER JOIN DW_REPORT.SUBSIDIARIES D ON (A.SUBSIDIARY_ID = D.SUBSIDIARY_ID)
+              WHERE (B.CLASS_KEY IS NULL
                OR C.TERRITORY_KEY IS NULL
                OR D.SUBSIDIARY_KEY IS NULL);
 
-commit;
+COMMIT;
