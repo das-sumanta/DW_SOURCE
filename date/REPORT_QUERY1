@@ -1,0 +1,91 @@
+drop view dw_report.timeline
+
+create view dw_report.timeline as
+select c.subsidiary_key , c.subsidiary , a.class_key , a.line_of_business , b.FISCAL_WEEK_NUMBER, b.FISCAL_MONTH_NUMBER, b.FISCAL_YEAR from
+(select class_key , name line_of_business from dw_report.classes
+where class_id <> 0) a,
+(SELECT DISTINCT FISCAL_WEEK_NUMBER , FISCAL_MONTH_NUMBER, FISCAL_YEAR FROM DW_report.DWDATE 
+/*WHERE FISCAL_YEAR = 2016*/ ) b,
+(select subsidiary_key , name subsidiary from dw_report.subsidiaries
+where subsidiary_id <> 0) c
+
+drop view dw_report.budget
+
+SELECT B.fiscal_week_ID fiscal_week_number, B.fiscal_month_ID fiscal_month_number, B.BUDGETFORECAST_NAME fiscal_year,b.class_key,B.SUBSIDIARY_KEY,SUM(NVL(B.AMOUNT,0)) as budget
+                  FROM DW.BUDGETFORECAST_FACT b WHERE BUDGETFORECAST_TYPE = 'BUDGET'
+group by B.fiscal_week_ID , B.fiscal_month_ID , B.BUDGETFORECAST_NAME ,b.class_key,B.SUBSIDIARY_KEY
+
+drop view dw_report.forecast
+
+SELECT D.fiscal_week_ID fiscal_week_number, D.fiscal_month_ID fiscal_month_number, D.BUDGETFORECAST_NAME fiscal_year,D.class_key,D.SUBSIDIARY_KEY,SUM(NVL(D.AMOUNT,0)) as FORECAST
+                  FROM DW.BUDGETFORECAST_FACT D WHERE BUDGETFORECAST_TYPE = 'FORECAST3'
+group by d.fiscal_week_ID , d.fiscal_month_ID , d.BUDGETFORECAST_NAME ,d.class_key,d.SUBSIDIARY_KEY
+
+DROP VIEW DW_REPORT.ACTUAL4
+
+CREATE VIEW DW_REPORT.ACTUAL4 AS
+SELECT F.CLASS_KEY,F.SUBSIDIARY_KEY,G.fiscal_week_number, G.fiscal_month_number , G.fiscal_year ,SUM(NVL(F.NET_AMOUNT,0)) as ACTUAL 
+FROM dw.revenue_fact F 
+INNER JOIN dw_REPORT.dwdate G ON (F.transaction_date_key = G.date_key)
+GROUP BY F.CLASS_KEY,F.SUBSIDIARY_KEY,G.fiscal_week_number, G.fiscal_month_number , G.fiscal_year 
+
+
+
+
+select NVL(F.ACTUAL,0) ACTUAL,NVL(c.budget,0) BUDGET,NVL(e.FORECAST,0) FORECAST,NVL(G.ACTUAL,0) LAST_YEAR,A.LINE_OF_BUSINESS,A.class_key,A.SUBSIDIARY,A.SUBSIDIARY_KEY,a.FISCAL_WEEK_NUMBER, a.FISCAL_MONTH_NUMBER, a.FISCAL_YEAR 
+from dw_report.timeline a
+LEFT OUTER JOIN (SELECT B.fiscal_week_ID fiscal_week_number, B.fiscal_month_ID fiscal_month_number, B.BUDGETFORECAST_NAME fiscal_year,b.class_key,B.SUBSIDIARY_KEY,SUM(NVL(B.AMOUNT,0)) as budget
+                  FROM DW.BUDGETFORECAST_FACT b WHERE BUDGETFORECAST_TYPE = 'BUDGET'
+group by B.fiscal_week_ID , B.fiscal_month_ID , B.BUDGETFORECAST_NAME ,b.class_key,B.SUBSIDIARY_KEY) c on (a.FISCAL_WEEK_NUMBER = c.FISCAL_WEEK_NUMBER AND 
+a.fiscal_month_number = c.fiscal_month_number AND a.fiscal_year = c.fiscal_year AND c.class_key = a.class_key and c.subsidiary_key = a.subsidiary_key)
+LEFT OUTER JOIN (SELECT D.fiscal_week_ID fiscal_week_number, D.fiscal_month_ID fiscal_month_number, D.BUDGETFORECAST_NAME fiscal_year,D.class_key,D.SUBSIDIARY_KEY,SUM(NVL(D.AMOUNT,0)) as FORECAST
+                  FROM DW.BUDGETFORECAST_FACT D WHERE BUDGETFORECAST_TYPE = 'FORECAST3'
+group by d.fiscal_week_ID , d.fiscal_month_ID , d.BUDGETFORECAST_NAME ,d.class_key,d.SUBSIDIARY_KEY) e on (a.FISCAL_WEEK_NUMBER = e.FISCAL_WEEK_NUMBER AND 
+a.fiscal_month_number = e.fiscal_month_number AND a.fiscal_year = e.fiscal_year AND e.class_key = a.class_key and e.subsidiary_key = a.subsidiary_key)
+LEFT OUTER JOIN DW_REPORT.ACTUAL4 F ON (a.FISCAL_WEEK_NUMBER = F.FISCAL_WEEK_NUMBER AND 
+a.fiscal_month_number = F.fiscal_month_number AND a.fiscal_year = F.fiscal_year AND F.class_key = a.class_key and F.subsidiary_key = a.subsidiary_key)
+LEFT OUTER JOIN DW_REPORT.ACTUAL4 G ON (a.FISCAL_WEEK_NUMBER = G.FISCAL_WEEK_NUMBER AND 
+a.fiscal_month_number = G.fiscal_month_number AND a.fiscal_year-1 = G.fiscal_year AND A.class_key = G.class_key and A.subsidiary_key = G.subsidiary_key)
+where a.subsidiary_key = 255
+/*AND A.FISCAL_WEEK_NUMBER = 34*/
+/*AND A.FISCAL_MONTH_NUMBER IN (8,9)*/
+AND A.FISCAL_YEAR = 2016
+
+
+==========================================================================================================================================================
+
+
+drop view if exists dw_report.timeline cascade;
+
+create view dw_report.timeline as
+select c.subsidiary_key , c.subsidiary , a.class_key , a.line_of_business , b.FISCAL_WEEK_NUMBER, b.FISCAL_MONTH_NUMBER, b.FISCAL_YEAR from
+(select class_key , name line_of_business from dw_report.classes
+where class_id <> 0) a,
+(SELECT DISTINCT FISCAL_WEEK_NUMBER , FISCAL_MONTH_NUMBER, FISCAL_YEAR FROM DW_report.DWDATE 
+/*WHERE FISCAL_YEAR = 2016*/ ) b,
+(select subsidiary_key , name subsidiary from dw_report.subsidiaries
+where subsidiary_id <> 0) c;
+
+drop view if exists dw_report.budget cascade;
+
+create view  dw_report.budget as 
+SELECT B.fiscal_week_ID fiscal_week_number, B.fiscal_month_ID fiscal_month_number, B.BUDGETFORECAST_NAME fiscal_year,b.class_key,B.SUBSIDIARY_KEY,SUM(NVL(B.AMOUNT,0)) as budget
+                  FROM DW.BUDGETFORECAST_FACT b WHERE BUDGETFORECAST_TYPE = 'BUDGET'
+group by B.fiscal_week_ID , B.fiscal_month_ID , B.BUDGETFORECAST_NAME ,b.class_key,B.SUBSIDIARY_KEY;
+
+drop view if exists dw_report.forecast cascade;
+
+create view dw_report.forecast as 
+SELECT D.fiscal_week_ID fiscal_week_number, D.fiscal_month_ID fiscal_month_number, D.BUDGETFORECAST_NAME fiscal_year,D.class_key,D.SUBSIDIARY_KEY,SUM(NVL(D.AMOUNT,0)) as FORECAST
+                  FROM DW.BUDGETFORECAST_FACT D WHERE BUDGETFORECAST_TYPE = 'FORECAST3'
+group by d.fiscal_week_ID , d.fiscal_month_ID , d.BUDGETFORECAST_NAME ,d.class_key,d.SUBSIDIARY_KEY;
+
+DROP VIEW if exists DW_REPORT.ACTUAL4 cascade;
+
+DROP VIEW if exists DW_REPORT.ACTUAL cascade;
+
+CREATE VIEW DW_REPORT.ACTUAL AS
+SELECT F.CLASS_KEY,F.SUBSIDIARY_KEY,G.fiscal_week_number, G.fiscal_month_number , G.fiscal_year ,SUM(NVL(F.NET_AMOUNT,0)) as ACTUAL 
+FROM dw.revenue_fact F 
+INNER JOIN dw_REPORT.dwdate G ON (F.transaction_date_key = G.date_key)
+GROUP BY F.CLASS_KEY,F.SUBSIDIARY_KEY,G.fiscal_week_number, G.fiscal_month_number , G.fiscal_year ;
