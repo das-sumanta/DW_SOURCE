@@ -101,17 +101,14 @@ WHERE EXISTS (SELECT 1
               AND dw_stage.book_fairs.fair_type_id = a.fair_type_id
               AND dw_stage.book_fairs.invoice_option_id = a.invoice_option_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage book fair records identified to inserted -->' ||count(1)
-FROM dw_prestage.book_fair_insert;
+/* prestage-> no of prestage book fair records identified to inserted*/ 
+SELECT count(1) FROM dw_prestage.book_fair_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage book fair  records identified to updated -->' ||count(1)
-FROM dw_prestage.book_fair_update;
+/* prestage-> no of prestage book fair  records identified to updated*/ 
+SELECT count(1) FROM dw_prestage.book_fair_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage book fair records identified to deleted -->' ||count(1)
-FROM dw_prestage.book_fair_delete;
+/* prestage-> no of prestage book fair records identified to deleted*/ 
+SELECT count(1) FROM dw_prestage.book_fair_delete;
 
 /* stage -> delete from stage records to be updated */ 
 DELETE
