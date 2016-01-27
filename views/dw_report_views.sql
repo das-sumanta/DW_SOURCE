@@ -1,3 +1,5 @@
+/****************DIMENSION VIEWS ********************/
+
 CREATE SCHEMA if not exists dw_report;
 
 DROP VIEW if exists dw_report.PAYMENT_TERMS;
@@ -131,6 +133,41 @@ DROP VIEW if exists dw_report.dwdate;
 
 create view dw_report.dwdate
 AS select * from dw.dwdate;
+
+/****************FACT VIEWS *************************/
+
+
+
+
+
+/****************REPORT VIEWS ********************/
+
+DROP VIEW IF EXISTS dw_report.actual CASCADE;
+
+CREATE VIEW dw_report.actual
+AS 
+ SELECT f.class_key, f.subsidiary_key, g.fiscal_week_number, g.fiscal_month_number, g.fiscal_year, g.fiscal_year + 1 AS previous_year, sum(COALESCE(f.net_amount, 0::numeric::numeric(18,0))) AS actual
+   FROM dw.revenue_fact f
+   JOIN dw_report.dwdate g ON f.transaction_date_key = g.date_key
+  GROUP BY f.class_key, f.subsidiary_key, g.fiscal_week_number, g.fiscal_month_number, g.fiscal_year;
+
+DROP VIEW IF EXISTS dw_report.budget CASCADE;
+
+CREATE VIEW dw_report.budget
+AS 
+ SELECT b.fiscal_week_id AS fiscal_week_number, b.fiscal_month_id AS fiscal_month_number, b.budgetforecast_name AS fiscal_year, b.class_key, b.subsidiary_key, sum(COALESCE(b.amount, 0::numeric)) AS budget
+   FROM dw.budgetforecast_fact b
+  WHERE b.budgetforecast_type::text = 'BUDGET'::text
+  GROUP BY b.fiscal_week_id, b.fiscal_month_id, b.budgetforecast_name, b.class_key, b.subsidiary_key;
+
+DROP VIEW IF EXISTS dw_report.forecast CASCADE;
+
+CREATE VIEW dw_report.forecast
+AS 
+ SELECT d.fiscal_week_id AS fiscal_week_number, d.fiscal_month_id AS fiscal_month_number, d.budgetforecast_name AS fiscal_year, d.class_key, d.subsidiary_key, sum(COALESCE(d.amount, 0::numeric)) AS forecast
+   FROM dw.budgetforecast_fact d
+  WHERE d.budgetforecast_type::text = 'FORECAST3'::text
+  GROUP BY d.fiscal_week_id, d.fiscal_month_id, d.budgetforecast_name, d.class_key, d.subsidiary_key;
 
 commit;
 
