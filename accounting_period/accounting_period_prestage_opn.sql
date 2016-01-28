@@ -89,17 +89,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.accounting_period)) a
               WHERE dw_stage.accounting_period.accounting_period_id = a.accounting_period_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage accounting_period records identified to inserted -->' ||count(1)
-FROM dw_prestage.accounting_period_insert;
+/* prestage-> no of prestage accounting_period records identified to inserted */ 
+SELECT count(1) FROM dw_prestage.accounting_period_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage accounting_period records identified to updated -->' ||count(1)
-FROM dw_prestage.accounting_period_update;
+/* prestage-> no of prestage accounting_period records identified to updated */ 
+SELECT count(1) FROM dw_prestage.accounting_period_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage accounting_period records identified to deleted -->' ||count(1)
-FROM dw_prestage.accounting_period_delete;
+/* prestage-> no of prestage accounting_period records identified to deleted */ 
+SELECT count(1) FROM dw_prestage.accounting_period_delete;
 
 /* stage ->delete from stage records to be updated */ 
 DELETE
