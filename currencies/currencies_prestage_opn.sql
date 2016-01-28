@@ -74,7 +74,7 @@ where exists ( select 1 from
 dw_prestage.currencies_update
 where dw_prestage.currencies_update.currency_id = dw_prestage.currencies.currency_id);
 
-commit;
+
 
 /* dimension ->insert new records in dim currencies */
 
@@ -119,5 +119,3 @@ set DATE_ACTIVE_TO = sysdate-1,
 dw_active = 'I'
 FROM dw_prestage.currencies_delete
 WHERE dw.currencies.currency_id = dw_prestage.currencies_delete.currency_id;
-
-commit;
