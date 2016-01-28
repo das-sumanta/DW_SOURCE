@@ -89,17 +89,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.subsidiaries)) a
               WHERE dw_stage.subsidiaries.subsidiary_id = a.subsidiary_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage subsidiaries records identified to inserted -->' ||count(1)
-FROM dw_prestage.subsidiaries_insert;
+/* prestage-> no of prestage subsidiaries records identified to inserted*/ 
+SELECT count(1) FROM dw_prestage.subsidiaries_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage subsidiaries records identified to updated -->' ||count(1)
-FROM dw_prestage.subsidiaries_update;
+/* prestage-> no of prestage subsidiaries records identified to updated*/ 
+SELECT count(1) FROM dw_prestage.subsidiaries_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage subsidiaries records identified to deleted -->' ||count(1)
-FROM dw_prestage.subsidiaries_delete;
+/* prestage-> no of prestage subsidiaries records identified to deleted*/ 
+SELECT count(1) FROM dw_prestage.subsidiaries_delete;
 
 /* stage -> delete from stage records to be updated */ 
 DELETE
@@ -242,7 +239,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.subsidiaries_update
               WHERE dw_prestage.subsidiaries_update.subsidiary_id = dw_prestage.subsidiaries.subsidiary_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim subsidiaries */ 
 INSERT INTO dw.subsidiaries
@@ -416,6 +413,3 @@ UPDATE dw.subsidiaries
        dw_active = 'I'
 FROM dw_prestage.subsidiaries_delete
 WHERE dw.subsidiaries.subsidiary_id = dw_prestage.subsidiaries_delete.subsidiary_id;
-
-COMMIT;
-
