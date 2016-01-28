@@ -119,17 +119,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.customers)) a
               WHERE dw_stage.customers.customer_id = a.customer_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage customer records identified to inserted -->' ||count(1)
-FROM dw_prestage.customers_insert;
+/* prestage-> no of prestage customer records identified to inserted*/ 
+SELECT count(1) FROM dw_prestage.customers_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage customer records identified to updated -->' ||count(1)
-FROM dw_prestage.customers_update;
+/* prestage-> no of prestage customer records identified to updated*/ 
+SELECT count(1) FROM dw_prestage.customers_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage customer records identified to deleted -->' ||count(1)
-FROM dw_prestage.customers_delete;
+/* prestage-> no of prestage customer records identified to deleted*/ 
+SELECT count(1) FROM dw_prestage.customers_delete;
 
 /* stage -> delete from stage records to be updated */ 
 DELETE
@@ -270,7 +267,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.customers_update
               WHERE dw_prestage.customers_update.customer_id = dw_prestage.customers.customer_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim customers */ 
 
@@ -455,4 +452,3 @@ UPDATE dw.customers
 FROM dw_prestage.customers_delete
 WHERE dw.customers.customer_id = dw_prestage.customers_delete.customer_id;
 
-COMMIT;
