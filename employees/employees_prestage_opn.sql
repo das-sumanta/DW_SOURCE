@@ -81,7 +81,7 @@ where exists ( select 1 from
 dw_prestage.employees_update
 where dw_prestage.employees_update.employee_id = dw_prestage.employees.employee_id);
 
-commit;
+
 
 
 /* dimension ->insert new records in dim employees */
@@ -275,5 +275,3 @@ set DATE_ACTIVE_TO = sysdate-1,
 dw_active = 'I'
 FROM dw_prestage.employees_delete
 WHERE dw.employees.employee_id = dw_prestage.employees_delete.employee_id;
-
-commit;
