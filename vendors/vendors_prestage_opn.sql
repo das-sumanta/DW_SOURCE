@@ -119,17 +119,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.vendors)) a
               WHERE dw_stage.vendors.vendor_id = a.vendor_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage vendor records identified to inserted -->' ||count(1)
-FROM dw_prestage.vendors_insert;
+/* prestage-> no of prestage vendor records identified to inserted*/ 
+SELECT count(1) FROM dw_prestage.vendors_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage vendor records identified to updated -->' ||count(1)
-FROM dw_prestage.vendors_update;
+/* prestage-> no of prestage vendor records identified to updated*/ 
+SELECT count(1) FROM dw_prestage.vendors_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage vendor records identified to deleted -->' ||count(1)
-FROM dw_prestage.vendors_delete;
+/* prestage-> no of prestage vendor records identified to deleted*/ 
+SELECT count(1) FROM dw_prestage.vendors_delete;
 
 /* stage -> delete from stage records to be updated */ 
 DELETE
@@ -748,7 +745,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.vendors_update
               WHERE dw_prestage.vendors_update.vendor_id = dw_prestage.vendors.vendor_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim vendors */ 
 INSERT INTO dw.vendors
@@ -926,5 +923,3 @@ UPDATE dw.vendors
        dw_active = 'I'
 FROM dw_prestage.vendors_delete
 WHERE dw.vendors.vendor_id = dw_prestage.vendors_delete.vendor_id;
-
-COMMIT;
