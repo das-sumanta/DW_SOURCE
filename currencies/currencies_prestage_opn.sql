@@ -44,14 +44,14 @@ minus
 select currency_id from dw_prestage.currencies )) a
 where dw_stage.currencies.currency_id = a.currency_id );
 
-/* prestage-> stage*/
-select 'no of prestage currency records identified to inserted -->'||count(1) from  dw_prestage.currencies_insert;
+/* prestage-> no of prestage currency records identified to inserted */
+select count(1) from  dw_prestage.currencies_insert;
 
-/* prestage-> stage*/
-select 'no of prestage currency records identified to updated -->'||count(1) from  dw_prestage.currencies_update;
+/* prestage-> no of prestage currency records identified to updated */
+select count(1) from  dw_prestage.currencies_update;
 
-/* prestage-> stage*/
-select 'no of prestage currency records identified to deleted -->'||count(1) from  dw_prestage.currencies_delete;
+/* prestage-> no of prestage currency records identified to deleted */
+select count(1) from  dw_prestage.currencies_delete;
 
 /*  stage ->delete from stage records to be updated */
 delete from dw_stage.currencies 
