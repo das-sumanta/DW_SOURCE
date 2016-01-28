@@ -44,14 +44,14 @@ minus
 select carrier_record_id from dw_prestage.carrier )) a
 where dw_stage.carrier.carrier_record_id = a.carrier_record_id );
 
-/* prestage-> stage*/
-select 'no of prestage carrier records identified to inserted -->'||count(1) from  dw_prestage.carrier_insert;
+/* prestage-> no of prestage carrier records identified to inserted */
+select count(1) from  dw_prestage.carrier_insert;
 
-/* prestage-> stage*/
-select 'no of prestage carrier records identified to updated -->'||count(1) from  dw_prestage.carrier_update;
+/* prestage-> no of prestage carrier records identified to updated */
+select count(1) from  dw_prestage.carrier_update;
 
-/* prestage-> stage*/
-select 'no of prestage carrier records identified to deleted -->'||count(1) from  dw_prestage.carrier_delete;
+/* prestage-> no of prestage carrier records identified to deleted */
+select count(1) from  dw_prestage.carrier_delete;
 
 /* stage ->delete from stage records to be updated */
 delete from dw_stage.carrier 
@@ -98,7 +98,7 @@ where exists ( select 1 from
 dw_prestage.carrier_update
 where dw_prestage.carrier_update.carrier_record_id = dw_prestage.carrier.carrier_record_id);
 
-commit;
+
 
 
 /* dimension ->insert new records in dim carrier */
@@ -176,4 +176,3 @@ dw_active = 'I'
 FROM dw_prestage.carrier_delete
 WHERE dw.carrier.carrier_id = dw_prestage.carrier_delete.carrier_record_id;
 
-commit;
