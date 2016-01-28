@@ -78,17 +78,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.freight_estimate)) a
               WHERE dw_stage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = a.LANDED_COST_RULE_MATRIX_NZ_ID);
 
-/* prestage-> stage*/
-SELECT 'no of prestage freight estimate records identified to inserted -->' ||count(1)
-FROM dw_prestage.freight_estimate_insert;
+/* prestage-> no of prestage freight estimate records identified to inserted */
+SELECT count(1) FROM dw_prestage.freight_estimate_insert;
 
-/* prestage-> stage*/
-SELECT 'no of prestage freight estimate records identified to updated -->' ||count(1)
-FROM dw_prestage.freight_estimate_update;
+/* prestage-> no of prestage freight estimate records identified to updated */
+SELECT count(1) FROM dw_prestage.freight_estimate_update;
 
-/* prestage-> stage*/
-SELECT 'no of prestage freight estimate records identified to deleted -->' ||count(1)
-FROM dw_prestage.freight_estimate_delete;
+/* prestage-> no of prestage freight estimate records identified to deleted */
+SELECT count(1) FROM dw_prestage.freight_estimate_delete;
 
 /* stage->delete from stage records to be updated */ 
 DELETE
@@ -155,7 +152,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.freight_estimate_update
               WHERE dw_prestage.freight_estimate_update.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID);
 
-COMMIT;
+
 
 /* dimention->insert new records in dim freight_estimate */  
 INSERT INTO dw.freight_estimate
@@ -251,5 +248,3 @@ UPDATE dw.freight_estimate
        dw_active = 'I'
 FROM dw_prestage.freight_estimate_delete
 WHERE dw.freight_estimate.LANDED_COST_RULE_MATRIX_NZ_ID = dw_prestage.freight_estimate_delete.LANDED_COST_RULE_MATRIX_NZ_ID;
-
-COMMIT;
