@@ -95,14 +95,14 @@ minus
 select account_id from dw_prestage.accounts )) a
 where dw_stage.accounts.account_id = a.account_id );
 
-/* prestage-> stage*/
-select 'no of prestage account records identified to inserted -->'||count(1) from  dw_prestage.accounts_insert;
+/* prestage-> no of prestage account records identified to inserted */
+select count(1) from  dw_prestage.accounts_insert;
 
-/* prestage-> stage*/
-select 'no of prestage account records identified to updated -->'||count(1) from  dw_prestage.accounts_update;
+/* prestage-> no of prestage account records identified to updated */
+select count(1) from  dw_prestage.accounts_update;
 
-/* prestage-> stage*/
-select 'no of prestage account records identified to deleted -->'||count(1) from  dw_prestage.accounts_delete;
+/* prestage-> no of prestage account records identified to deleted*/
+select count(1) from  dw_prestage.accounts_delete;
 
 /* stage ->delete from stage records to be updated */
 delete from dw_stage.accounts 
@@ -431,5 +431,3 @@ set DATE_ACTIVE_TO = sysdate-1,
 dw_active = 'I'
 FROM dw_prestage.accounts_delete
 WHERE dw.accounts.account_id = dw_prestage.accounts_delete.account_id;
-
-commit;
