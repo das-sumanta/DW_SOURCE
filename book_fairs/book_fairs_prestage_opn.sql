@@ -187,7 +187,7 @@ WHERE EXISTS (SELECT 1
               AND dw_prestage.book_fair_update.fair_type_id = dw_prestage.book_fairs.fair_type_id
               AND dw_prestage.book_fair_update.invoice_option_id = dw_prestage.book_fairs.invoice_option_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim book_fair */ 
 INSERT INTO dw.book_fairs
@@ -287,6 +287,3 @@ WHERE dw.book_fairs.fair_status_id = dw_prestage.book_fair_delete.fair_status_id
   AND dw.book_fairs.marker_id = dw_prestage.book_fair_delete.marker_id
   AND dw.book_fairs.fair_type_id = dw_prestage.book_fair_delete.fair_type_id
   AND dw.book_fairs.invoice_option_id = dw_prestage.book_fair_delete.invoice_option_id;
-
-COMMIT;
-
