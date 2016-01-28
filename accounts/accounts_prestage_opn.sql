@@ -269,8 +269,6 @@ where exists ( select 1 from
 dw_prestage.accounts_update
 where dw_prestage.accounts_update.account_id = dw_prestage.accounts.account_id);
 
-commit;
-
 
 /* dimension ->insert new records in dim accounts */
 
