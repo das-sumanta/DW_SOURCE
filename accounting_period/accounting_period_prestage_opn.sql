@@ -203,7 +203,6 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.accounting_period_update
               WHERE dw_prestage.accounting_period_update.accounting_period_id = dw_prestage.accounting_period.accounting_period_id);
 
-commit;
 
 
 /* dimension ->insert new records in dim accounting_period */
@@ -376,4 +375,4 @@ UPDATE dw.accounting_period
 FROM dw_prestage.accounting_period_delete
 WHERE dw.accounting_period.accounting_period_id = dw_prestage.accounting_period_delete.accounting_period_id;
 
-COMMIT;
+
