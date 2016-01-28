@@ -18,7 +18,7 @@ CREATE TABLE dw.cost_center
   DATE_ACTIVE_FROM             TIMESTAMP,
   DATE_ACTIVE_TO               TIMESTAMP,
   DW_ACTIVE                    VARCHAR(1),
-  PRIMARY KEY (department_key,department_ID)
+  PRIMARY KEY (department_key)
 )
 DISTSTYLE ALL INTERLEAVED SORTKEY (department_key,department_ID,COST_CENTER_CODE,NAME,DW_ACTIVE);
 
