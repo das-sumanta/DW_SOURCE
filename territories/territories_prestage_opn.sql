@@ -75,17 +75,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.territories)) a
               WHERE dw_stage.territories.territory_id = a.territory_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage territory records identified to inserted -->' ||count(1)
-FROM dw_prestage.territories_insert;
+/* prestage-> no of prestage territory records identified to inserted */ 
+SELECT count(1) FROM dw_prestage.territories_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage territory records identified to updated -->' ||count(1)
-FROM dw_prestage.territories_update;
+/* prestage-> no of prestage territory records identified to updated */ 
+SELECT count(1) FROM dw_prestage.territories_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage territory records identified to deleted -->' ||count(1)
-FROM dw_prestage.territories_delete;
+/* prestage-> no of prestage territory records identified to deleted */ 
+SELECT count(1) FROM dw_prestage.territories_delete;
 
 /* stage -> delete from stage records to be updated */ 
 DELETE
@@ -132,7 +129,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.territories_update
               WHERE dw_prestage.territories_update.territory_id = dw_prestage.territories.territory_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim territories */ 
 INSERT INTO dw.territories
@@ -213,5 +210,3 @@ UPDATE dw.territories
        dw_active = 'I'
 FROM dw_prestage.territories_delete
 WHERE dw.territories.territory_id = dw_prestage.territories_delete.territory_id;
-
-COMMIT;
