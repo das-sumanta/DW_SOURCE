@@ -44,14 +44,14 @@ minus
 select payment_terms_id from dw_prestage.payment_terms )) a
 where dw_stage.payment_terms.payment_terms_id = a.payment_terms_id );
 
-/* prestage-> stage*/
-select 'no of prestage vendor records identified to inserted -->'||count(1) from  dw_prestage.payment_terms_insert;
+/* prestage-> no of prestage vendor records identified to inserted */
+select count(1) from  dw_prestage.payment_terms_insert;
 
-/* prestage-> stage*/
-select 'no of prestage vendor records identified to updated -->'||count(1) from  dw_prestage.payment_terms_update;
+/* prestage-> no of prestage vendor records identified to updated */
+select count(1) from  dw_prestage.payment_terms_update;
 
-/* prestage-> stage*/
-select 'no of prestage vendor records identified to deleted -->'||count(1) from  dw_prestage.payment_terms_delete;
+/* prestage-> no of prestage vendor records identified to deleted */
+select count(1) from  dw_prestage.payment_terms_delete;
 
 /* stage ->delete from stage records to be updated */
 delete from dw_stage.payment_terms 
@@ -73,7 +73,7 @@ where exists ( select 1 from
 dw_prestage.payment_terms_update
 where dw_prestage.payment_terms_update.payment_terms_id = dw_prestage.payment_terms.payment_terms_id);
 
-commit;
+
 
 /* dimension ->insert new records in dim payment_terms */
 
@@ -133,5 +133,3 @@ set DATE_ACTIVE_TO = sysdate-1,
 dw_active = 'I'
 FROM dw_prestage.payment_terms_delete
 WHERE dw.payment_terms.payment_terms_id = dw_prestage.payment_terms_delete.payment_terms_id;
-
-commit;
