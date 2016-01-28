@@ -1,58 +1,3 @@
-SELECT
-document_number, 
-transaction_id,
-transaction_line_id,
-transaction_order,
-REF_DOC_NUMBER,
-ref_custom_form_id,
-payment_terms_id,
-revenue_commitment_status,
-revenue_status,
-sales_rep_id,
-SALES_TERRITORY_ID,
-BILL_ADDRESS_LINE_1,
-BILL_ADDRESS_LINE_2,
-BILL_ADDRESS_LINE_3,
-BILL_CITY,
-BILL_COUNTRY,
-BILL_STATE,
-BILL_ZIP,
-SHIP_ADDRESS_LINE_1,
-SHIP_ADDRESS_LINE_2,
-SHIP_ADDRESS_LINE_3,
-SHIP_CITY,
-SHIP_COUNTRY,
-SHIP_STATE,
-SHIP_ZIP,
-document_status,
-transaction_type,
-currency_id,
-trandate,
-EXCHANGE_RATE,
-account_id,
-AMOUNT,
-AMOUNT_FOREIGN,
-GROSS_AMOUNT,
-NET_AMOUNT,
-NET_AMOUNT_FOREIGN,
-quantity,
-item_id,
-ITEM_UNIT_PRICE,
-TAX_ITEM_ID,
-TAX_AMOUNT,
-LOCATION_ID,
-CLASS_ID,
-SUBSIDIARY_ID,
-accounting_period_ID,
-customer_ID,
-price_type_ID,
-custom_form_ID,
-created_by_ID,
-create_date,
-date_last_modified,
-line_type
-FROM
-(
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
        to_char(a.transaction_line_id) as transaction_line_id,
@@ -354,6 +299,4 @@ AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
               AND   i.transaction_type = 'Journal'
-	      AND  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
-)
-ORDER BY trandate,SUBSIDIARY_ID,transaction_type,document_number,transaction_id,transaction_line_id;
+	      AND  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'));
