@@ -51,14 +51,14 @@ minus
 select class_id from dw_prestage.classes )) a
 where dw_stage.classes.class_id = a.class_id );
 
-/* prestage-> stage*/
-select 'no of prestage class records identified to inserted -->'||count(1) from  dw_prestage.classes_insert;
+/* prestage-> no of prestage class records identified to inserted */
+select count(1) from  dw_prestage.classes_insert;
 
-/* prestage-> stage*/
-select 'no of prestage class records identified to updated -->'||count(1) from  dw_prestage.classes_update;
+/* prestage-> no of prestage class records identified to updated */
+select count(1) from  dw_prestage.classes_update;
 
-/* prestage-> stage*/
-select 'no of prestage class records identified to deleted -->'||count(1) from  dw_prestage.classes_delete;
+/* prestage-> 'no of prestage class records identified to deleted */
+select count(1) from  dw_prestage.classes_delete;
 
 /* stage ->delete from stage records to be updated */
 delete from dw_stage.classes 
@@ -81,7 +81,7 @@ where exists ( select 1 from
 dw_prestage.classes_update
 where dw_prestage.classes_update.class_id = dw_prestage.classes.class_id);
 
-commit;
+
 
 
 /* dimension ->insert new records in dim classes */
@@ -177,5 +177,3 @@ set DATE_ACTIVE_TO = sysdate-1,
 dw_active = 'I'
 FROM dw_prestage.classes_delete
 WHERE dw.classes.class_id = dw_prestage.classes_delete.class_id;
-
-commit;
