@@ -127,7 +127,7 @@ AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
               AND   i.transaction_type = 'Invoice'
-			  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
+	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
@@ -203,7 +203,7 @@ AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
               AND   i.transaction_type = 'Return Authorization' 
-			  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
+	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
@@ -279,7 +279,7 @@ AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
               AND   i.transaction_type = 'Credit Memo'
-			  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
+	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
 UNION ALL
 SELECT b.transaction_number AS document_number,
        to_char(a.transaction_id) as transaction_id,
@@ -354,6 +354,6 @@ AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
               AND   i.transaction_type = 'Journal'
-			  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
+	      AND  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
 )
 ORDER BY trandate,SUBSIDIARY_ID,transaction_type,document_number,transaction_id,transaction_line_id;
