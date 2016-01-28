@@ -93,17 +93,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.locations)) a
               WHERE dw_stage.locations.location_id = a.location_id);
 
- /* prestage-> stage*/             
-SELECT 'no of prestage vendor records identified to inserted -->' ||count(1)
-FROM dw_prestage.locations_insert;
+ /* prestage-> no of prestage vendor records identified to inserted */             
+SELECT count(1) FROM dw_prestage.locations_insert;
 
-/* prestage-> stage*/
-SELECT 'no of prestage vendor records identified to updated -->' ||count(1)
-FROM dw_prestage.locations_update;
+/* prestage-> no of prestage vendor records identified to updated */
+SELECT count(1) FROM dw_prestage.locations_update;
 
-/* prestage-> stage*/
-SELECT 'no of prestage vendor records identified to deleted -->' ||count(1)
-FROM dw_prestage.locations_delete;
+/* prestage-> no of prestage vendor records identified to deleted */
+SELECT count(1) FROM dw_prestage.locations_delete;
 
 /* stage->delete from stage records to be updated */
 
@@ -249,7 +246,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.locations_update
               WHERE dw_prestage.locations_update.location_id = dw_prestage.locations.location_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim locations */
 
@@ -576,5 +573,3 @@ UPDATE dw.locations
        dw_active = 'I'
 FROM dw_prestage.locations_delete
 WHERE dw.locations.location_id = dw_prestage.locations_delete.location_id;
-
-COMMIT;
