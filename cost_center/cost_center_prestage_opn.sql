@@ -83,17 +83,14 @@ WHERE EXISTS (SELECT 1
                           FROM dw_prestage.cost_center)) a
               WHERE dw_stage.cost_center.department_id = a.department_id);
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage cost center records identified to inserted -->' ||count(1)
-FROM dw_prestage.cost_center_insert;
+/* prestage-> no of prestage cost center records identified to inserted */ 
+SELECT count(1) FROM dw_prestage.cost_center_insert;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage cost center records identified to updated -->' ||count(1)
-FROM dw_prestage.cost_center_update;
+/* prestage-> no of prestage cost center records identified to updated */ 
+SELECT count(1) FROM dw_prestage.cost_center_update;
 
-/* prestage-> stage*/ 
-SELECT 'no of prestage cost center records identified to deleted -->' ||count(1)
-FROM dw_prestage.cost_center_delete;
+/* prestage-> no of prestage cost center records identified to deleted */ 
+SELECT count(1) FROM dw_prestage.cost_center_delete;
 
 /* stage -> delete from stage records to be updated */ 
 DELETE
@@ -160,7 +157,7 @@ WHERE EXISTS (SELECT 1
               FROM dw_prestage.cost_center_update
               WHERE dw_prestage.cost_center_update.department_id = dw_prestage.cost_center.department_id);
 
-COMMIT;
+
 
 /* dimension ->insert new records in dim cost_center */ 
 INSERT INTO dw.cost_center
@@ -268,5 +265,3 @@ UPDATE dw.cost_center
        dw_active = 'I'
 FROM dw_prestage.cost_center_delete
 WHERE dw.cost_center.department_id = dw_prestage.cost_center_delete.department_id;
-
-COMMIT;
