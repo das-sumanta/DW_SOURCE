@@ -169,5 +169,17 @@ AS
   WHERE d.budgetforecast_type::text = 'FORECAST3'::text
   GROUP BY d.fiscal_week_id, d.fiscal_month_id, d.budgetforecast_name, d.class_key, d.subsidiary_key;
 
+drop view if exists dw_report.timeline cascade;
+
+create view dw_report.timeline as
+select c.subsidiary_key , c.subsidiary , a.class_key , a.line_of_business , b.FISCAL_WEEK_NUMBER, b.FISCAL_MONTH_NUMBER, b.FISCAL_YEAR from
+(select class_key , name line_of_business from dw_report.classes
+where class_id <> 0) a,
+(SELECT DISTINCT FISCAL_WEEK_NUMBER , FISCAL_MONTH_NUMBER, FISCAL_YEAR FROM DW_report.DWDATE 
+/*WHERE FISCAL_YEAR = 2016*/ ) b,
+(select subsidiary_key , name subsidiary from dw_report.subsidiaries
+where subsidiary_id <> 0) c;
+
+
 commit;
 
