@@ -90,8 +90,7 @@ SELECT count(1) FROM dw_prestage.tax_items_insert;
 SELECT count(1) FROM dw_prestage.tax_items_update;
 
 /* prestage-> no of prestage tax item records identified to deleted*/ 
-SELECT 'no of prestage tax item records identified to deleted -->' ||count(1)
-FROM dw_prestage.tax_items_delete;
+SELECT count(1) FROM dw_prestage.tax_items_delete;
 
 /* stage ->delete from stage records to be updated */ 
 DELETE
