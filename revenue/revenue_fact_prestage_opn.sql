@@ -400,7 +400,7 @@ WHERE EXISTS (SELECT 1
               WHERE dw_prestage.revenue_fact_update.transaction_id = dw_prestage.revenue_fact.transaction_id
               AND   dw_prestage.revenue_fact_update.transaction_line_id = dw_prestage.revenue_fact.transaction_line_id);
 
-COMMIT;
+
 
 /* fact -> INSERT NEW RECORDS WHICH HAS ALL VALID DIMENSIONS */
 INSERT INTO dw.revenue_fact
@@ -1185,5 +1185,3 @@ AND   EXISTS (SELECT 1
              WHERE
                    a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
              AND   a.transaction_line_id = dw_prestage.revenue_fact_update.transaction_line_id);
-
-COMMIT;
