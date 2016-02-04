@@ -74,13 +74,13 @@ SELECT
 WHERE A.RUNID = NVL('%s',A.RUNID);
 
 /* prestage-> identify new revenue fact records */
-UPDATE DW_PRESTAGE.REVENUE_FACT_ERROR A
+UPDATE DW_PRESTAGE.REVENUE_FACT_ERROR
  SET RECORD_STATUS = 'INSERT'
  WHERE NOT EXISTS
  (SELECT 1 FROM DW_REPORT.REVENUE_FACT B
- WHERE A.TRANSACTION_ID = B.TRANSACTION_ID
- AND A.TRANSACTION_LINE_ID = B.TRANSACTION_LINE_ID
- AND A.SUBSIDIARY_KEY = B.SUBSIDIARY_KEY );
+ WHERE DW_PRESTAGE.REVENUE_FACT_ERROR.TRANSACTION_ID = B.TRANSACTION_ID
+ AND DW_PRESTAGE.REVENUE_FACT_ERROR.TRANSACTION_LINE_ID = B.TRANSACTION_LINE_ID
+ AND DW_PRESTAGE.REVENUE_FACT_ERROR.SUBSIDIARY_KEY = B.SUBSIDIARY_KEY );
 
 /* prestage-> no of revenue fact records reprocessed in staging*/
 SELECT count(1) FROM dw_prestage.revenue_fact_error;
@@ -204,7 +204,7 @@ AND   sysdate< date_active_to
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_error
   WHERE dw.revenue_fact.transaction_ID = dw_prestage.revenue_fact_error.transaction_id
   AND   dw.revenue_fact.transaction_LINE_ID = dw_prestage.revenue_fact_error.transaction_line_id
-  AND dw.revenue_fact.subsidiary_id = dw_prestage.revenue_fact_error.subsidiary_id
+  AND dw.revenue_fact.subsidiary_KEY = dw_prestage.revenue_fact_error.subsidiary_key
   AND dw_prestage.revenue_fact_error.RECORD_STATUS = 'PROCESSED');
   
 /* fact -> INSERT UPDATED REPROCESSED RECORDS WHICH HAVE ALL VALID DIMENSIONS*/
@@ -312,11 +312,3 @@ SELECT
  DW_PRESTAGE.REVENUE_FACT_ERROR A
  WHERE 
  RECORD_STATUS = 'PROCESSED';
-
- 
-
- 
- 
- 
- 
- 

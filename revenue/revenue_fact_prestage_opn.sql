@@ -74,7 +74,11 @@ FROM (SELECT TRANSACTION_ID,
                    CREATED_BY_ID,
                    CREATE_DATE,
                    DATE_LAST_MODIFIED
-            FROM dw_prestage.revenue_fact
+            FROM dw_prestage.revenue_fact A2
+            WHERE NOT EXISTS ( SELECT 1 FROM DW_PRESTAGE.REVENUE_FACT_INSERT B2
+                  WHERE B2.TRANSACTION_ID = A2.TRANSACTION_ID
+                  AND B2.TRANSACTION_LINE_ID = A2.TRANSACTION_LINE_ID 
+                  AND   A2.SUBSIDIARY_ID = B2.SUBSIDIARY_ID)
             MINUS
             SELECT TRANSACTION_NUMBER,
                    TRANSACTION_ID,
@@ -603,6 +607,7 @@ INSERT INTO dw.revenue_fact_error
   ,CUSTOMER_ID_ERROR
   ,ACCOUNTING_PERIOD_ID
   ,ACCOUNTING_PERIOD_ID_ERROR
+  ,TRANSACTION_TYPE
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -749,6 +754,7 @@ SELECT
          WHEN (q.accounting_period_key IS NULL AND A.ACCOUNTING_PERIOD_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
        END
+,A.TRANSACTION_TYPE
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact_insert a
@@ -998,6 +1004,7 @@ INSERT INTO dw.revenue_fact_error
   ,CUSTOMER_ID_ERROR
   ,ACCOUNTING_PERIOD_ID
   ,ACCOUNTING_PERIOD_ID_ERROR
+  ,TRANSACTION_TYPE
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -1144,6 +1151,7 @@ SELECT
          WHEN (q.accounting_period_key IS NULL AND A.ACCOUNTING_PERIOD_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
        END
+,A.TRANSACTION_TYPE
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact a
