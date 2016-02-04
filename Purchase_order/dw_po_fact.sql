@@ -6,10 +6,10 @@ CREATE TABLE dw.po_fact
 (
   PO_KEY                        BIGINT IDENTITY(0,1),
   PO_NUMBER                    VARCHAR(150),
-  PO_ID                        INTEGER,         /* ADDD */
-  PO_LINE_ID                   INTEGER,         /* ADDD */
-  REF_TRX_NUMBER               VARCHAR(200),    /* ADDD */
-  REF_TRX_TYPE                 VARCHAR(200),    /* ADDD */
+  PO_ID                        INTEGER,         
+  PO_LINE_ID                   INTEGER,        
+  REF_TRX_NUMBER               VARCHAR(200),   
+  REF_TRX_TYPE                 VARCHAR(200),   
   VENDOR_KEY                    INTEGER,
   REQUESTER_KEY                 INTEGER,
   APPROVER_LEVEL1_KEY           INTEGER,
@@ -22,20 +22,20 @@ CREATE TABLE dw.po_fact
   EXCHANGE_RATE                 DECIMAL(30,15),
   ITEM_KEY                      INTEGER,
   VENDOR_ITEM_KEY               INTEGER,
-  BILL_ADDRESS_LINE_1          VARCHAR(500),       /* ADDD */
-  BILL_ADDRESS_LINE_2          VARCHAR(500),       /* ADDD */
-  BILL_ADDRESS_LINE_3          VARCHAR(500),       /* ADDD */
-  BILL_CITY                    VARCHAR(200),       /* ADDD */
-  BILL_COUNTRY                 VARCHAR(200),       /* ADDD */
-  BILL_STATE                   VARCHAR(200),       /* ADDD */
-  BILL_ZIP                     VARCHAR(200),       /* ADDD */
-  SHIP_ADDRESS_LINE_1          VARCHAR(500),       /* ADDD */     
-  SHIP_ADDRESS_LINE_2          VARCHAR(500),       /* ADDD */     
-  SHIP_ADDRESS_LINE_3          VARCHAR(500),       /* ADDD */    
-  SHIP_CITY                    VARCHAR(200),       /* ADDD */     
-  SHIP_COUNTRY                 VARCHAR(200),       /* ADDD */     
-  SHIP_STATE                   VARCHAR(200),       /* ADDD */    
-  SHIP_ZIP                     VARCHAR(200),       /* ADDD */    
+  BILL_ADDRESS_LINE_1          VARCHAR(500),       
+  BILL_ADDRESS_LINE_2          VARCHAR(500),       
+  BILL_ADDRESS_LINE_3          VARCHAR(500),       
+  BILL_CITY                    VARCHAR(200),       
+  BILL_COUNTRY                 VARCHAR(200),      
+  BILL_STATE                   VARCHAR(200),       
+  BILL_ZIP                     VARCHAR(200),      
+  SHIP_ADDRESS_LINE_1          VARCHAR(500),       
+  SHIP_ADDRESS_LINE_2          VARCHAR(500),       
+  SHIP_ADDRESS_LINE_3          VARCHAR(500),       
+  SHIP_CITY                    VARCHAR(200),      
+  SHIP_COUNTRY                 VARCHAR(200),      
+  SHIP_STATE                   VARCHAR(200),      
+  SHIP_ZIP                     VARCHAR(200),     
   QUANTITY                      DECIMAL(18,8),
   BIH_QUANTITY                  DECIMAL(22),
   BC_QUANTITY                   DECIMAL(22),
@@ -44,9 +44,9 @@ CREATE TABLE dw.po_fact
   EDUCATION_QUANTITY            DECIMAL(22),
   SCHOOL_ESSENTIALS_QUANTITY    DECIMAL(22),
   BOOK_FAIR_QUANTITY            DECIMAL(22),
-  NUMBER_BILLED                DECIMAL(18,8),           /* ADDD */
-  QUANTITY_RECEIVED_IN_SHIPMENT DECIMAL(18,8),          /* ADDD */
-  QUANTITY_RETURNED            DECIMAL(22,8),           /* ADDD */
+  NUMBER_BILLED                DECIMAL(18,8),          
+  QUANTITY_RECEIVED_IN_SHIPMENT DECIMAL(18,8),         
+  QUANTITY_RETURNED            DECIMAL(22,8),          
   RATE                          VARCHAR(50),
   AMOUNT                        DECIMAL(20,2),
   ITEM_GROSS_AMOUNT             DECIMAL(20,2),
@@ -70,10 +70,10 @@ CREATE TABLE dw.po_fact
   CREATION_DATE                 TIMESTAMP,
   LAST_MODIFIED_DATE            TIMESTAMP,
   DATE_ACTIVE_FROM              DATE,
-  DATE_ACTIVE_TO             DATE,
-  DW_CURRENT                  INTEGER,
+  DATE_ACTIVE_TO                DATE,
+  DW_CURRENT                    INTEGER,
   CURRENCY_KEY                  INTEGER,
-  CLASS_KEY                      INTEGER,
-  PRIMARY KEY (PO_KEY,PO_NUMBER))
-DISTSTYLE ALL INTERLEAVED SORTKEY (PO_KEY,PO_NUMBER);
+  CLASS_KEY                     INTEGER,
+  PRIMARY KEY (PO_KEY))
+DISTKEY(ITEM_KEY) INTERLEAVED SORTKEY (CREATE_DATE_KEY,SUBSIDIARY_KEY,PO_NUMBER,PO_ID,PO_LINE_ID);
 
