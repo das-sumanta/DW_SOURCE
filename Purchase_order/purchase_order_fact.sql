@@ -40,11 +40,6 @@ SELECT
        REPLACE(REPLACE(TRANSACTIONS.STATUS,CHR (10),' '),CHR (13),' ') AS PO_STATUS,
        TO_CHAR(TRANSACTIONS.PAYMENT_TERMS_ID) AS PAYMENT_TERMS_ID,
        TRANSACTION_LINES.FRIGHT_RATE,
-       DECODE(CUSTOM_FORM_ID,
-             199,'INTL Inventory Purchase Order',
-             201,'INTL Drop Ship Purchase Order',
-             202,'INTL Non-Inventory Purchase Order'
-       ) AS PO_TYPE,
        TO_CHAR(TRANSACTION_LINES.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
        TO_CHAR(TRANSACTION_LINES.DEPARTMENT_ID) AS DEPARTMENT_ID,
        TO_CHAR(TRANSACTION_LINES.ITEM_ID) AS ITEM_ID,
@@ -88,7 +83,11 @@ FROM TRANSACTION_LINES
   INNER JOIN transactions d ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN transactions f ON (d.created_from_id = f.transaction_id)
 WHERE transactions.transaction_type = 'Purchase Order'
-AND   (TRANSACTION_LINES.DATE_LAST_MODIFIED >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS') OR TRANSACTIONS.DATE_LAST_MODIFIED >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
-AND   transaction_lines.subsidiary_id = 27
+AND   transaction_lines.subsidiary_id = '%s'
+AND EXISTS (SELECT 1
+              FROM transactions i
+              WHERE i.transaction_id = TRANSACTION_LINES.transaction_id
+              AND   i.transaction_type = 'Purchase Order'
+	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
 ORDER BY TRANSACTION_LINES.transaction_id,
-         TRANSACTION_LINES.transaction_line_id
+         TRANSACTION_LINES.transaction_line_id;
