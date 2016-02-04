@@ -1,0 +1,1 @@
+This folder contains the flat files which are created by Java program. These files are nothing but the DB extract of the NetSuite ERP.

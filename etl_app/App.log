@@ -1,0 +1,86 @@
+Jan 13, 2016 8:50:10 PM com.etl.Utility writeLog
+SEVERE: Connection exceptionCommunications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. Stage = Application Start Entity:
+Jan 14, 2016 3:22:25 PM com.etl.Utility writeLog
+SEVERE: Connection exceptionCommunications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. Stage = Application Start Entity:
+Jan 14, 2016 3:25:55 PM com.etl.Utility writeLog
+SEVERE: Connection exceptionCommunications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. Stage = Application Start Entity:
+Jan 18, 2016 12:45:16 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Jan 19, 2016 1:42:28 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Jan 19, 2016 1:44:56 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Jan 20, 2016 3:48:15 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. Communications link failure
+
+The last packet successfully received from the server was 26,684 milliseconds ago.  The last packet sent successfully to the server was 26,684 milliseconds ago. Stage = LoadRedshift Entity:carrier
+Jan 20, 2016 6:26:10 PM com.etl.Utility writeLog
+SEVERE: Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> Stage = Application StartUp Entity:
+Jan 20, 2016 6:27:52 PM com.etl.Utility writeLog
+SEVERE: 
+Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> Stage = Application StartUp Entity:
+Jan 20, 2016 6:29:25 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Jan 20, 2016 6:38:23 PM com.etl.Utility writeLog
+SEVERE: Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> Stage = Application StartUp Entity:
+Jan 25, 2016 12:51:47 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Jan 25, 2016 3:54:48 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Jan 25, 2016 7:07:15 PM com.etl.Utility writeLog
+SEVERE: Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> Stage = Application StartUp Entity:
+Jan 25, 2016 7:07:46 PM com.etl.Utility writeLog
+SEVERE: Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> Stage = Application StartUp Entity:
+Jan 25, 2016 7:08:50 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = ScriptRunner Startup Entity:
+Jan 25, 2016 7:08:50 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Ends Entity:
+Jan 25, 2016 7:10:48 PM com.etl.Utility writeLog
+SEVERE: Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> Stage = Application StartUp Entity:
+Jan 29, 2016 5:13:51 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Feb 01, 2016 4:59:18 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. Can't call commit when autocommit=true Stage = Employee_Hierarchy_Startup Entity:Employee
+Feb 01, 2016 5:12:50 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INSERT INTO message_log(runid,message_desc,target_table,message_stage,message_ty' at line 1 Stage = Employee_Hierarchy_Startup Entity:Employee
+Feb 02, 2016 2:53:48 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = ScriptRunner Startup Entity:
+Feb 02, 2016 2:53:48 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Ends Entity:
+Feb 02, 2016 2:56:26 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. null Stage = Application Start Entity:
+Feb 02, 2016 8:46:25 PM com.etl.Utility writeLog
+SEVERE: Please provide valid arguments:
+ 1. For NORMAL mode provide: <subsidirayId> 
+ 2. For RE-RUN mode provide: 
+"Re-Process" <subsidirayId> <comma separated dimension and facts name> <RunID> 
+ 3. For RUN STATISTICS mode provide: 
+"RunStat" <Optional : comma separated dimension and facts name> Stage = Application StartUp Entity:
+Feb 03, 2016 7:57:56 PM com.etl.Utility writeLog
+SEVERE: Error in writing message_log!!  Hence terminating the program. Communications link failure
+
+The last packet successfully received from the server was 29,322 milliseconds ago.  The last packet sent successfully to the server was 29,321 milliseconds ago. Stage = DataExtraction Entity:customers

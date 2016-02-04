@@ -1,0 +1,1 @@
+This folder contains the flat files which are created by Java program. These files are originally located at a remote URL and Java program fetch these files from that remote URL.
