@@ -38,7 +38,7 @@ CREATE TABLE dw.opportunity_fact
   EXCHANGE_RATE           DECIMAL(30,15),
   ROLL_SIZE               INTEGER,
   PROJECTED_TOTAL         DECIMAL(20,2),
-  WEIGHTED_TOTAL          INTEGER,
+  WEIGHTED_TOTAL          DECIMAL(20,2),
   AMOUNT                  DECIMAL(20,2),
   LOCATION_KEY            INTEGER,
   CLASS_KEY               INTEGER,
