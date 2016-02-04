@@ -326,4 +326,8 @@ SELECT
  WHERE 
  RECORD_STATUS = 'PROCESSED'; 
                             
-                                                                                                 
+  /* fact -> UPDATE THE ERROR TABLE TO SET THE SATUS AS PROCESSED */
+UPDATE dw.opportunity_fact_error SET RECORD_STATUS = 'PROCESSED'
+where exists ( select 1 from dw_prestage.opportunity_fact_error b
+  WHERE dw.opportunity_fact_error.RUNID = b.RUNID
+  AND dw.opportunity_fact_error.transaction_id = b.transaction_id);                                                                                                
