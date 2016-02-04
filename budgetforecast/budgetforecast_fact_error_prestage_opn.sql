@@ -154,3 +154,9 @@ SELECT
  DW_PRESTAGE.BUDGETFORECAST_FACT_ERROR A
  WHERE 
  RECORD_STATUS = 'PROCESSED';
+ 
+  /* fact -> UPDATE THE ERROR TABLE TO SET THE SATUS AS PROCESSED */
+UPDATE dw.budgetforecast_fact_error SET RECORD_STATUS = 'PROCESSED'
+where exists ( select 1 from dw_prestage.budgetforecast_fact_error b
+  WHERE dw.budgetforecast_fact_error.RUNID = b.RUNID
+  AND dw.budgetforecast_fact_error.budgetforecast_id = b.transaction_id);
