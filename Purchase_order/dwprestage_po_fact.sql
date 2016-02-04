@@ -46,7 +46,6 @@ CREATE TABLE dw_prestage.po_fact
   PO_STATUS                    VARCHAR(1000),
   PAYMENT_TERMS_ID             INTEGER,
   FRIGHT_RATE                  DECIMAL(22,0),
-  PO_TYPE                      VARCHAR(4000),
   SUBSIDIARY_ID                INTEGER,
   DEPARTMENT_ID                INTEGER,
   ITEM_ID                      INTEGER,
