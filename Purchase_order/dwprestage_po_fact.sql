@@ -9,7 +9,7 @@ CREATE TABLE dw_prestage.po_fact
   PO_NUMBER                    VARCHAR(200),
   TRANSACTION_LINE_ID          INTEGER,
   REF_TRX_NUMBER               VARCHAR(200),   
-  REF_TRX_TYPE                 VARCHAR(200),    
+  REF_CUSTOM_FORM_ID           INTEGER,    
   VENDOR_ID                    INTEGER,
   APPROVER_LEVEL_ONE_ID        INTEGER,
   APPROVER_LEVEL_TWO_ID        INTEGER,
