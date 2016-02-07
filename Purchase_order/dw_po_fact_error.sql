@@ -108,6 +108,7 @@ CREATE TABLE dw.po_fact_error
   PO_TYPE_ERROR                 VARCHAR(100),
   REF_CUSTOM_FORM_ID            INTEGER,
   REF_TRX_TYPE_ERROR            VARCHAR(100),
+  PO_STATUS                     VARCHAR(1000),
   RECORD_STATUS                 VARCHAR,
   DW_CREATION_DATE              TIMESTAMP,
   PRIMARY KEY (PO_ERROR_KEY)
