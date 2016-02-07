@@ -778,6 +778,7 @@ INSERT INTO dw.po_fact_error
  ,po_type_error
  ,ref_custom_form_id
  ,ref_trx_type_error
+ ,po_status
  ,record_status
  ,dw_creation_date
 )
@@ -964,6 +965,7 @@ CASE
          WHEN (U.transaction_type_key IS NULL AND A.ref_custom_form_id IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
        END,
+A.PO_STATUS,
 'ERROR' AS RECORD_STATUS,
 SYSDATE AS DW_CREATION_DATE
 FROM dw_prestage.po_fact_insert A
@@ -1292,6 +1294,7 @@ INSERT INTO dw.po_fact_error
  ,po_type_error
  ,ref_custom_form_id
  ,ref_trx_type_error
+ ,po_status
  ,record_status
  ,dw_creation_date
 )
@@ -1478,6 +1481,7 @@ CASE
          WHEN (U.transaction_type_key IS NULL AND A.ref_custom_form_id IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
        END,
+A.PO_STATUS,
 'ERROR' AS RECORD_STATUS,
 SYSDATE AS DW_CREATION_DATE
 FROM dw_prestage.po_fact A
