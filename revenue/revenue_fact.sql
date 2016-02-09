@@ -279,8 +279,8 @@ SELECT b.transaction_number AS document_number,
        TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
        Decode(c.name,
              'AR-General','JN_HDR',
-             NULL,'JN_OTH',
-             decode(d.transaction_line_id,NULL,'JN_TAX',DECODE(c.name,'Revenue-Product','JN_LINE','JN_OTH'))
+             'Revenue-Product','JN_LINE',
+             'JN_OTH'
        )  AS line_type 
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
