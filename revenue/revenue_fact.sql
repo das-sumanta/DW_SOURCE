@@ -49,10 +49,10 @@ SELECT b.transaction_number AS document_number,
        TO_CHAR(b.created_by_ID) AS created_by_ID,
        TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
        TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       Decode(c.name,
+       DECODE(c.name,
              'AR-General','INV_HDR',
-             decode(d.transaction_line_id,NULL,'INV_TAX',DECODE(c.name,'Revenue-Product','INV_LINE','INV_FRT'))
-       )  AS line_type 
+             decode(a.transaction_line_id,0,'INV_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'INV_LINE','INV_TAX'),'INV_LINE'))
+       ) AS line_type
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -62,12 +62,9 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
+  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Invoice'
-AND   EXISTS (SELECT 1
-              FROM transactions g
-              WHERE g.transaction_id = b.created_from_id
-              AND   g.transaction_type = 'Sales Order')
 AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
@@ -125,11 +122,10 @@ SELECT b.transaction_number AS document_number,
        TO_CHAR(b.created_by_ID) AS created_by_ID,
        TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
        TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       Decode(c.name,
+       DECODE(c.name,
              'Return Authorizations','RA_HDR',
-             NULL,'RA_OTH',
-             decode(d.transaction_line_id,NULL,'RA_TAX',DECODE(c.name,'Revenue-Product','RA_LINE','RA_FRT'))
-       )  AS line_type 
+             decode(a.transaction_line_id,0,'RA_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'RA_LINE','RA_TAX'),'RA_LINE'))
+       ) AS line_type
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -139,11 +135,9 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
+  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Return Authorization' 
-AND EXISTS ( select 1 from transactions g
-						 WHERE g.transaction_id = b.created_from_id
-						 AND g.transaction_type IN ('Sales Order','Invoice') )
 AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
@@ -201,11 +195,10 @@ SELECT b.transaction_number AS document_number,
        TO_CHAR(b.created_by_ID) AS created_by_ID,
        TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
        TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       Decode(c.name,
+       DECODE(c.name,
              'AR-General','CN_HDR',
-             NULL,'CN_OTH',
-             decode(d.transaction_line_id,NULL,'CN_TAX',DECODE(c.name,'Revenue-Product','CN_LINE','CN_OTH'))
-       )  AS line_type 
+             decode(a.transaction_line_id,0,'CN_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'CN_LINE','CN_TAX'),'CN_LINE'))
+       ) AS line_type
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -215,11 +208,9 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
+  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Credit Memo'
-AND EXISTS ( select 1 from transactions g
-						 WHERE g.transaction_id = b.created_from_id
-						 AND g.transaction_type IN ('Sales Order','Invoice') )
 AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
@@ -277,11 +268,10 @@ SELECT b.transaction_number AS document_number,
        TO_CHAR(b.created_by_ID) AS created_by_ID,
        TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
        TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       Decode(c.name,
+       DECODE(c.name,
              'AR-General','JN_HDR',
-             'Revenue-Product','JN_LINE',
-             'JN_OTH'
-       )  AS line_type 
+             decode(a.transaction_line_id,0,'JN_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'JN_LINE','JN_TAX'),'JN_LINE'))
+       ) AS line_type
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -291,6 +281,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
+  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Journal'
 AND   c.accountnumber = '4000001'

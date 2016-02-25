@@ -505,7 +505,7 @@ TRANSACTION_NUMBER
  ,m.customer_key
  ,q.accounting_period_key
  ,SYSDATE AS DATE_ACTIVE_FROM
- ,'9999-12-31 11:59:59' AS DATE_ACTIVE_TO
+ ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
  from dw_prestage.revenue_fact_insert a
  INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
@@ -514,7 +514,7 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
  INNER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
  INNER JOIN DW_REPORT.ITEMS g ON (A.ITEM_ID = g.ITEM_ID)
- INNER JOIN DW_REPORT.TAX_ITEMS h ON (A.TAX_ITEM_ID = h.ITEM_ID)
+ INNER JOIN DW_REPORT.TAX_ITEMS h ON (NVL(A.TAX_ITEM_ID,-99) = h.ITEM_ID)
  INNER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)
  INNER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
  INNER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID)
@@ -524,7 +524,75 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
-where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' );
+where trx_type in ('INV_LINE','RA_LINE','CN_LINE' )
+UNION ALL
+select
+TRANSACTION_NUMBER
+,TRANSACTION_ID
+,TRANSACTION_LINE_ID
+,REF_DOC_NUMBER
+,n.transaction_type_key AS REF_DOC_TYPE_KEY
+,b.PAYMENT_TERM_KEY AS TERMS_KEY
+,REVENUE_COMMITMENT_STATUS
+,REVENUE_STATUS
+,r.employee_key
+,c.territory_key
+,BILL_ADDRESS_LINE_1
+,BILL_ADDRESS_LINE_2
+,BILL_ADDRESS_LINE_3
+,BILL_CITY
+,BILL_COUNTRY
+,BILL_STATE
+,BILL_ZIP
+,SHIP_ADDRESS_LINE_1
+,SHIP_ADDRESS_LINE_2
+,SHIP_ADDRESS_LINE_3
+,SHIP_CITY
+,SHIP_COUNTRY
+,SHIP_STATE
+,SHIP_ZIP
+,o.transaction_status_key  as DOCUMENT_STATUS_KEY
+,p.transaction_type_key    as DOCUMENT_TYPE_KEY
+,d.currency_key
+,e.date_key as TRANSACTION_DATE_KEY
+,EXCHANGE_RATE
+,f.account_key
+,AMOUNT
+,AMOUNT_FOREIGN
+,GROSS_AMOUNT
+,NET_AMOUNT
+,NET_AMOUNT_FOREIGN
+,QUANTITY
+ ,g.item_key
+ ,ITEM_UNIT_PRICE        as rate
+ ,h.TAX_ITEM_KEY
+ ,TAX_AMOUNT
+ ,k.location_key
+ ,l.class_key
+ ,j.subsidiary_key
+ ,m.customer_key
+ ,q.accounting_period_key
+ ,SYSDATE AS DATE_ACTIVE_FROM
+ ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
+ ,1 AS DW_CURRENT
+ from dw_prestage.revenue_fact_insert a
+ INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
+ INNER JOIN DW_REPORT.territories c ON (NVL (A.sales_territory_ID,-99) = c.territory_ID)
+ INNER JOIN DW_REPORT.CURRENCIES d ON (A.CURRENCY_ID = d.CURRENCY_ID)
+ INNER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
+ INNER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
+ INNER JOIN DW_REPORT.ITEMS g ON (NVL(A.ITEM_ID,-99) = g.ITEM_ID)
+ INNER JOIN DW_REPORT.TAX_ITEMS h ON (NVL(A.TAX_ITEM_ID,-99) = h.ITEM_ID)
+ INNER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)
+ INNER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
+ INNER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID)
+ INNER JOIN DW_REPORT.customers m ON (NVL(A.customer_ID,-99) = m.customer_ID)
+ INNER JOIN DW_REPORT.transaction_type n ON (NVL(A.ref_custom_form_id,-99) = n.transaction_type_id)
+ INNER JOIN DW_REPORT.transaction_status o ON (NVL(A.STATUS,'NA_GDW') = o.status AND NVL(A.TRANSACTION_TYPE,'NA_GDW') = o.DOCUMENT_TYPE)
+ INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
+ INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
+ INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
+where trx_type in ('JN_LINE' );
 
 /* fact -> INSERT NEW RECORDS IN ERROR TABLE WHICH DOES NOT HAVE VALID DIMENSIONS */
 INSERT INTO dw.revenue_fact_error
@@ -774,13 +842,13 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
-where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' ) AND
+where (trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
  (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
  D.CURRENCY_KEY IS NULL OR
  E.DATE_KEY IS NULL OR
  (F.ACCOUNT_KEY IS NULL AND A.account_ID IS NOT NULL ) OR
- G.ITEM_KEY IS NULL OR
+ (G.ITEM_KEY IS NULL AND A.ITEM_ID IS NOT NULL ) OR
  H.TAX_ITEM_KEY IS NULL OR
  J.SUBSIDIARY_KEY IS NULL OR
  (K.LOCATION_KEY IS NULL AND A.LOCATION_ID IS NOT NULL ) OR
@@ -788,9 +856,27 @@ where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' ) AND
  M.CUSTOMER_KEY IS NULL OR
  ( N.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL ) OR
  ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
- ( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL ) OR
+ (( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
- (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL));
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL)))   
+ OR
+ (trx_type in ('JN_LINE' ) AND
+((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
+ (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
+ D.CURRENCY_KEY IS NULL OR
+ E.DATE_KEY IS NULL OR
+ (F.ACCOUNT_KEY IS NULL AND A.account_ID IS NOT NULL ) OR
+ (G.ITEM_KEY IS NULL AND A.ITEM_ID IS NOT NULL ) OR
+ (H.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NOT NULL ) OR
+ J.SUBSIDIARY_KEY IS NULL OR
+ (K.LOCATION_KEY IS NULL AND A.LOCATION_ID IS NOT NULL ) OR
+ ( L.CLASS_KEY IS NULL AND A.CLASS_ID IS NOT NULL ) OR
+ (M.CUSTOMER_KEY IS NULL AND A.customer_ID IS NOT NULL ) OR
+ ( N.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL ) OR
+ ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
+ ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
+ (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL)));
 
 /* fact -> UPDATE THE OLD RECORDS SETTING THE CURRENT FLAG VALUE TO 0 */
 UPDATE dw.revenue_fact SET dw_current = 0,DATE_ACTIVE_TO = (sysdate -1) WHERE dw_current = 1
@@ -899,7 +985,7 @@ TRANSACTION_NUMBER
  ,m.customer_key
  ,q.accounting_period_key
  ,SYSDATE AS DATE_ACTIVE_FROM
- ,'9999-12-31 11:59:59' AS DATE_ACTIVE_TO
+ ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
  from dw_prestage.revenue_fact a
  INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
@@ -908,7 +994,7 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
  INNER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
  INNER JOIN DW_REPORT.ITEMS g ON (A.ITEM_ID = g.ITEM_ID)
- INNER JOIN DW_REPORT.TAX_ITEMS h ON (A.TAX_ITEM_ID = h.ITEM_ID)
+ INNER JOIN DW_REPORT.TAX_ITEMS h ON (NVL(A.TAX_ITEM_ID,-99) = h.ITEM_ID)
  INNER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)
  INNER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
  INNER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID)
@@ -918,7 +1004,78 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
-where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' )
+where trx_type in ('INV_LINE','RA_LINE','CN_LINE')
+AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
+ WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
+ AND   a.transaction_line_id = dw_prestage.revenue_fact_update.transaction_line_id)
+ UNION ALL
+ select
+TRANSACTION_NUMBER
+,TRANSACTION_ID
+,TRANSACTION_LINE_ID
+,REF_DOC_NUMBER
+,n.transaction_type_key AS REF_DOC_TYPE_KEY
+,b.PAYMENT_TERM_KEY AS TERMS_KEY
+,REVENUE_COMMITMENT_STATUS
+,REVENUE_STATUS
+,r.employee_key
+,c.territory_key
+,BILL_ADDRESS_LINE_1
+,BILL_ADDRESS_LINE_2
+,BILL_ADDRESS_LINE_3
+,BILL_CITY
+,BILL_COUNTRY
+,BILL_STATE
+,BILL_ZIP
+,SHIP_ADDRESS_LINE_1
+,SHIP_ADDRESS_LINE_2
+,SHIP_ADDRESS_LINE_3
+,SHIP_CITY
+,SHIP_COUNTRY
+,SHIP_STATE
+,SHIP_ZIP
+,o.transaction_status_key  as DOCUMENT_STATUS_KEY
+,p.transaction_type_key    as DOCUMENT_TYPE_KEY
+,d.currency_key
+,e.date_key as TRANSACTION_DATE_KEY
+,EXCHANGE_RATE
+,f.account_key
+,AMOUNT
+,AMOUNT_FOREIGN
+,GROSS_AMOUNT
+,NET_AMOUNT
+,NET_AMOUNT_FOREIGN
+,QUANTITY
+ ,g.item_key
+ ,ITEM_UNIT_PRICE        as rate
+ ,h.TAX_ITEM_KEY
+ ,TAX_AMOUNT
+ ,k.location_key
+ ,l.class_key
+ ,j.subsidiary_key
+ ,m.customer_key
+ ,q.accounting_period_key
+ ,SYSDATE AS DATE_ACTIVE_FROM
+ ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
+ ,1 AS DW_CURRENT
+ from dw_prestage.revenue_fact a
+ INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMENT_TERMS_ID)
+ INNER JOIN DW_REPORT.territories c ON (NVL (A.sales_territory_ID,-99) = c.territory_ID)
+ INNER JOIN DW_REPORT.CURRENCIES d ON (A.CURRENCY_ID = d.CURRENCY_ID)
+ INNER JOIN DW_REPORT.DWDATE e ON (TO_CHAR (A.tranDATE,'YYYYMMDD') = e.DATE_ID)
+ INNER JOIN DW_REPORT.ACCOUNTS F ON (NVL (A.account_ID,-99) = f.account_ID)
+ INNER JOIN DW_REPORT.ITEMS g ON (NVL(A.ITEM_ID,-99) = g.ITEM_ID)
+ INNER JOIN DW_REPORT.TAX_ITEMS h ON (NVL(A.TAX_ITEM_ID,-99) = h.ITEM_ID)
+ INNER JOIN DW_REPORT.SUBSIDIARIES j ON (A.SUBSIDIARY_ID = j.SUBSIDIARY_ID)
+ INNER JOIN DW_REPORT.LOCATIONS k ON (NVL (A.LOCATION_ID,-99) = k.LOCATION_ID)
+ INNER JOIN DW_REPORT.CLASSES l ON (NVL(A.CLASS_ID,-99) = l.CLASS_ID)
+ INNER JOIN DW_REPORT.customers m ON (NVL(A.customer_ID,-99) = m.customer_ID)
+ INNER JOIN DW_REPORT.transaction_type n ON (NVL(A.ref_custom_form_id,-99) = n.transaction_type_id)
+ INNER JOIN DW_REPORT.transaction_status o ON (NVL(A.STATUS,'NA_GDW') = o.status AND NVL(A.TRANSACTION_TYPE,'NA_GDW') = o.DOCUMENT_TYPE)
+ INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
+ INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
+ INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
+where trx_type in ('JN_LINE' )
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
  WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
  AND   a.transaction_line_id = dw_prestage.revenue_fact_update.transaction_line_id);
@@ -1171,23 +1328,41 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
-where trx_type in ('INV_LINE','RA_LINE','CN_LINE','JN_LINE' ) AND
+where ((trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
  (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
  D.CURRENCY_KEY IS NULL OR
  E.DATE_KEY IS NULL OR
  (F.ACCOUNT_KEY IS NULL AND A.account_ID IS NOT NULL ) OR
  G.ITEM_KEY IS NULL OR
- H.TAX_ITEM_KEY IS NULL OR
+ (H.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NOT NULL ) OR
  J.SUBSIDIARY_KEY IS NULL OR
  (K.LOCATION_KEY IS NULL AND A.LOCATION_ID IS NOT NULL ) OR
  ( L.CLASS_KEY IS NULL AND A.CLASS_ID IS NOT NULL ) OR
  M.CUSTOMER_KEY IS NULL OR
  ( N.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL ) OR
  ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
- ( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL ) OR
+ ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
- (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL))
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL)))
+ OR
+ (trx_type in ('JN_LINE' ) AND
+((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
+ (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
+ D.CURRENCY_KEY IS NULL OR
+ E.DATE_KEY IS NULL OR
+ (F.ACCOUNT_KEY IS NULL AND A.account_ID IS NOT NULL ) OR
+ (G.ITEM_KEY IS NULL AND A.ITEM_ID IS NOT NULL ) OR
+ (H.TAX_ITEM_KEY IS NULL AND A.TAX_ITEM_ID IS NOT NULL ) OR
+ J.SUBSIDIARY_KEY IS NULL OR
+ (K.LOCATION_KEY IS NULL AND A.LOCATION_ID IS NOT NULL ) OR
+ ( L.CLASS_KEY IS NULL AND A.CLASS_ID IS NOT NULL ) OR
+ (M.CUSTOMER_KEY IS NULL AND A.customer_ID IS NOT NULL ) OR
+ ( N.transaction_type_key IS NULL AND A.ref_custom_form_id IS NOT NULL ) OR
+ ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
+ ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
+ (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL))))
 AND   EXISTS (SELECT 1
              FROM dw_prestage.revenue_fact_update
              WHERE

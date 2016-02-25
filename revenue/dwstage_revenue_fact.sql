@@ -5,6 +5,7 @@ DROP TABLE if exists dw_stage.revenue_fact;
 CREATE TABLE dw_stage.revenue_fact 
 (
   RUNID                       INTEGER,
+  DOCUMENT_NUMBER             VARCHAR(500),
   TRANSACTION_NUMBER          VARCHAR(150),
   TRANSACTION_ID              INTEGER,
   TRANSACTION_LINE_ID         INTEGER,
@@ -41,6 +42,8 @@ CREATE TABLE dw_stage.revenue_fact
   GROSS_AMOUNT                DECIMAL(22,2),
   NET_AMOUNT                  DECIMAL(22,2),
   NET_AMOUNT_FOREIGN          DECIMAL(22,2),
+  RRP                         DECIMAL(22,2),
+  AVG_COST                    DECIMAL(30,15),
   QUANTITY                    DECIMAL(18,8),
   ITEM_ID                     INTEGER,
   ITEM_UNIT_PRICE             VARCHAR(42),
