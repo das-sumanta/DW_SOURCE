@@ -42,3 +42,45 @@ SELECT 'NA_ERR' AS document_type,
        SYSDATE AS DATE_ACTIVE_FROM,
        '9999-12-31 23:59:59' AS DATE_ACTIVE_TO,
        'A' AS dw_active;
+       
+INSERT INTO dw.transaction_status
+(
+  document_type,
+  status,
+  DATE_ACTIVE_FROM,
+  DATE_ACTIVE_TO,
+  DW_ACTIVE
+)
+SELECT 'Check' AS document_type,
+       'Undefined' AS status,
+       SYSDATE AS DATE_ACTIVE_FROM,
+       '9999-12-31 23:59:59' AS DATE_ACTIVE_TO,
+       'A' AS dw_active;
+       
+INSERT INTO dw.transaction_status
+(
+  document_type,
+  status,
+  DATE_ACTIVE_FROM,
+  DATE_ACTIVE_TO,
+  DW_ACTIVE
+)
+SELECT 'Deposit' AS document_type,
+       'Undefined' AS status,
+       SYSDATE AS DATE_ACTIVE_FROM,
+       '9999-12-31 23:59:59' AS DATE_ACTIVE_TO,
+       'A' AS dw_active;
+       
+INSERT INTO dw.transaction_status
+(
+  document_type,
+  status,
+  DATE_ACTIVE_FROM,
+  DATE_ACTIVE_TO,
+  DW_ACTIVE
+)
+SELECT 'Bill' AS document_type,
+       'Pending Approval' AS status,
+       SYSDATE AS DATE_ACTIVE_FROM,
+       '9999-12-31 23:59:59' AS DATE_ACTIVE_TO,
+       'A' AS dw_active;
