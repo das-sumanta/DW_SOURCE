@@ -185,6 +185,20 @@ where class_id <> 0) a,
 (select subsidiary_key , name subsidiary from dw_report.subsidiaries
 where subsidiary_id <> 0) c;
 
+drop view if exists dw_report.sales_timeline cascade;
+
+create view dw_report.sales_timeline as
+select d.territory_key , d.territory,c.subsidiary_key , c.subsidiary , a.class_key , a.line_of_business , b.calendar_month_number,b.calendar_year,b.FISCAL_WEEK_NUMBER, b.FISCAL_MONTH_NUMBER, b.FISCAL_YEAR 
+from
+(select class_key , name line_of_business from dw_report.classes
+where class_id <> 0) a,
+(SELECT DISTINCT FISCAL_WEEK_NUMBER , FISCAL_MONTH_NUMBER, FISCAL_YEAR, calendar_month_number, calendar_year FROM DW_report.DWDATE 
+/*WHERE FISCAL_YEAR = 2016*/ ) b,
+(select subsidiary_key , name subsidiary from dw_report.subsidiaries
+where subsidiary_id <> 0) c,
+(select territory_key , territory from dw_report.territories
+where territory_id <> 0) d;
+
 
 commit;
 
