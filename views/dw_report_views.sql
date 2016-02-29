@@ -199,6 +199,33 @@ where subsidiary_id <> 0) c,
 (select territory_key , territory from dw_report.territories
 where territory_id <> 0) d;
 
+CREATE VIEW dw_report.sales_actual 
+AS
+SELECT f.class_key,
+       f.subsidiary_key,
+       f.territory_key,
+       g.fiscal_week_number,
+       g.fiscal_month_number,
+       g.fiscal_year,
+       g.fiscal_year + 1 AS previous_fiscal_year,
+       g.calendar_week_number,
+       g.calendar_month_number,
+       g.calendar_year,
+       g.calendar_year + 1 AS previous_calendar_year,
+       SUM(NVL (f.net_amount,0)) AS actual
+FROM dw.revenue_fact f
+  JOIN dw_report.dwdate g ON f.transaction_date_key = g.date_key
+GROUP BY f.class_key,
+       f.subsidiary_key,
+       f.territory_key,
+       g.fiscal_week_number,
+       g.fiscal_month_number,
+       g.fiscal_year,
+       g.fiscal_year + 1,
+       g.calendar_week_number,
+       g.calendar_month_number,
+       g.calendar_year,
+       g.calendar_year + 1;
 
 commit;
 
