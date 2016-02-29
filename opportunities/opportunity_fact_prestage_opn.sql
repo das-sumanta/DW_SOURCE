@@ -980,5 +980,33 @@ and ( d.fair_status = 'Feedback Taken')
 and c.document_type = 'Opportunity'
 and c.transaction_type = 'INTL Book Fairs Form' ;
 
+/* dw - drop book fair avg revenue calculation table */
+DROP TABLE if exists dw.bookfair_avg;
+
+/* dw - create book fair avg revenue calculation table*/
+Create table dw.bookfair_avg
+as
+select a.territory_key ,d.marker, avg(projected_total) avg_amount  from  
+dw_report.opportunity_fact a
+INNER JOIN DW_REPORT.BOOK_FAIRS d ON (d.book_fair_key = a.book_fairs_key)
+INNER JOIN DW.DWDATE b ON (a.open_date_key = b.date_key)
+INNER JOIN DW_REPORT.TRANSACTION_TYPE c ON (a.opportunity_type_key = c.transaction_type_key)
+where  TO_DATE(b.date_id,'YYYYMMDD') >  TRUNC(SYSDATE)  - 180
+and projected_total > 0.01
+and c.document_type = 'Opportunity'
+and c.transaction_type = 'INTL Book Fairs Form'
+group by a.territory_key ,d.marker;
+
+/* dw - update revenue for book fairs with 0 amount*/
+UPDATE dw.bookfair_stat 
+SET AMOUNT =  dw.bookfair_avg.avg_amount
+FROM dw.bookfair_avg
+WHERE EXISTS ( SELECT 1 FROM
+               DW_REPORT.BOOK_FAIRS
+               where
+               DW_REPORT.BOOK_FAIRS.book_fair_key = dw.bookfair_stat.book_fairs_key
+               and dw.bookfair_avg.marker = DW_REPORT.BOOK_FAIRS.marker)
+AND dw.bookfair_stat.AMOUNT = 0;
+
 
 
