@@ -135,7 +135,12 @@ create view dw_report.dwdate
 AS select * from dw.dwdate;
 
 /****************FACT VIEWS *************************/
+DROP VIEW IF EXISTS dw_report.opportunity_fact CASCADE;
 
+CREATE VIEW dw_report.opportunity_fact
+AS 
+ SELECT * from dw.opportunity_fact
+ where DW_CURRENT = 1;
 
 
 
