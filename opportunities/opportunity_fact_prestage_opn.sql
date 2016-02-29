@@ -951,3 +951,34 @@ FROM dw_prestage.opportunity_fact_update A
   (O.CLASS_KEY IS NULL AND A.CLASS_ID IS NOT NULL ) OR
   P.SUBSIDIARY_KEY IS NULL OR
   Q.CUSTOMER_KEY IS NULL );
+  
+/* dw - drop book fair revenue calculation table */
+DROP TABLE if exists dw.bookfair_stat;
+
+/* dw - create book fair revenue calculation table*/
+create table dw.bookfair_stat
+as
+select a.* from dw_report.opportunity_fact a
+INNER JOIN DW.DWDATE b ON (a.open_date_key = b.date_key)
+INNER JOIN DW_REPORT.TRANSACTION_TYPE c ON (a.opportunity_type_key = c.transaction_type_key)
+INNER JOIN DW_REPORT.BOOK_FAIRS d ON (d.book_fair_key = a.book_fairs_key)
+WHERE b.date_id <= to_char(sysdate,'YYYYMMDD')
+and b.fiscal_year = (select fiscal_year from dw.dwdate
+where date_id = to_char(sysdate,'YYYYMMDD'))
+and (projected_total > 0 OR (projected_total = 0 AND d.fair_status NOT IN ('Feedback Taken','Complete','Cancelled')))
+and c.document_type = 'Opportunity'
+and c.transaction_type = 'INTL Book Fairs Form'
+UNION ALL
+select a.* from dw_report.opportunity_fact a
+INNER JOIN DW.DWDATE b ON (a.open_date_key = b.date_key)
+INNER JOIN DW_REPORT.TRANSACTION_TYPE c ON (a.opportunity_type_key = c.transaction_type_key)
+INNER JOIN DW_REPORT.BOOK_FAIRS d ON (d.book_fair_key = a.book_fairs_key)
+WHERE b.date_id <= to_char(sysdate,'YYYYMMDD')
+and b.fiscal_year = (select fiscal_year-1 from dw.dwdate
+where date_id = to_char(sysdate,'YYYYMMDD'))
+and ( d.fair_status = 'Feedback Taken')
+and c.document_type = 'Opportunity'
+and c.transaction_type = 'INTL Book Fairs Form' ;
+
+
+
