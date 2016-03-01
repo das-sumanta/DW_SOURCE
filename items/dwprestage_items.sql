@@ -42,7 +42,7 @@ CREATE TABLE dw_prestage.ITEMS
   ISINACTIVE                           VARCHAR(10),
   ITEM_EXTID                           VARCHAR(300),
   ITEM_ID                              INTEGER,
-  ITEM_JDE_CODE_ID                     INTEGER,
+  JDE_ITEM_CODE                        VARCHAR(4000),
   ITEM_TYPE_ID                         INTEGER,
   LOCATION_ID                          INTEGER,
   LOCATIONS                            VARCHAR(100),
@@ -69,6 +69,7 @@ CREATE TABLE dw_prestage.ITEMS
   ITEM_TYPE                            VARCHAR(1000),
   PRODUCT_CLASSIFICATION               VARCHAR(5000),
   PRODUCT_TYPE                         VARCHAR(1000),
-  PRODUCT_SERIESFAMILY                 VARCHAR(1000)
+  PRODUCT_SERIESFAMILY                 VARCHAR(1000),
+  WANG_ITEM_CODE                      VARCHAR(4000)
 );
 
