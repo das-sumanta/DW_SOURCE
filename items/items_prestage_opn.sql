@@ -103,7 +103,7 @@ FROM dw_prestage.items
 			       ISBN_NAME,
 			       ISINACTIVE,
 			       ITEM_EXTID,
-			       ITEM_JDE_CODE_ID,
+			       JDE_ITEM_CODE,
 			       ISBN10,
 			       ITEM_TYPE_ID,
 			       PARENT_ID,
@@ -117,6 +117,7 @@ FROM dw_prestage.items
 			       VENDOR_ID,
 			       VENDOR_NAME,
 			       VENDRETURN_VARIANCE_ACCOUNT_ID,
+				   WANG_ITEM_CODE,
              '1' CH_TYPE
 FROM dw_prestage.items
       MINUS
@@ -151,7 +152,7 @@ FROM dw_prestage.items
              ISBN_NAME,
              ISINACTIVE,
              ITEM_EXTID,
-             ITEM_JDE_CODE_ID,
+             JDE_ITEM_CODE,
              ISBN10,
              ITEM_TYPE_ID,
              PARENT_ID,
@@ -165,6 +166,7 @@ FROM dw_prestage.items
              VENDOR_ID,
              VENDOR_NAME,
              VENDRETURN_VARIANCE_ACCOUNT_ID,
+			 WANG_ITEM_CODE,
              '1' CH_TYPE
       FROM dw_stage.items)) a
 WHERE NOT EXISTS (SELECT 1
@@ -248,7 +250,7 @@ INSERT INTO dw_stage.items
   ISINACTIVE,
   ITEM_EXTID,
   ITEM_ID,
-  ITEM_JDE_CODE_ID,
+  JDE_ITEM_CODE,
   ITEM_TYPE_ID,
   LOCATION_ID,
   LOCATIONS,
@@ -275,7 +277,8 @@ INSERT INTO dw_stage.items
 	ITEM_TYPE,
 	PRODUCT_CLASSIFICATION,
 	PRODUCT_TYPE,
-	PRODUCT_SERIESFAMILY
+	PRODUCT_SERIESFAMILY,
+	WANG_ITEM_CODE
 )
 SELECT ALLOW_DROP_SHIP,
        APPLY_FRIEGHT,
@@ -314,7 +317,7 @@ SELECT ALLOW_DROP_SHIP,
        ISINACTIVE,
        ITEM_EXTID,
        ITEM_ID,
-       ITEM_JDE_CODE_ID,
+       JDE_ITEM_CODE,
        ITEM_TYPE_ID,
        LOCATION_ID,
        LOCATIONS,
@@ -341,7 +344,8 @@ SELECT ALLOW_DROP_SHIP,
 				ITEM_TYPE,
 				PRODUCT_CLASSIFICATION,
 				PRODUCT_TYPE,
-				PRODUCT_SERIESFAMILY
+				PRODUCT_SERIESFAMILY,
+				WANG_ITEM_CODE
 FROM dw_prestage.items_insert;
 
 /* stage ->insert into stage records which have been updated */ 
@@ -384,7 +388,7 @@ INSERT INTO dw_stage.items
   ISINACTIVE,
   ITEM_EXTID,
   ITEM_ID,
-  ITEM_JDE_CODE_ID,
+  JDE_ITEM_CODE,
   ITEM_TYPE_ID,
   LOCATION_ID,
   LOCATIONS,
@@ -411,7 +415,8 @@ INSERT INTO dw_stage.items
 	ITEM_TYPE,
 	PRODUCT_CLASSIFICATION,
 	PRODUCT_TYPE,
-	PRODUCT_SERIESFAMILY
+	PRODUCT_SERIESFAMILY,
+	WANG_ITEM_CODE
 )
 SELECT ALLOW_DROP_SHIP,
        APPLY_FRIEGHT,
@@ -450,7 +455,7 @@ SELECT ALLOW_DROP_SHIP,
        ISINACTIVE,
        ITEM_EXTID,
        ITEM_ID,
-       ITEM_JDE_CODE_ID,
+       JDE_ITEM_CODE,
        ITEM_TYPE_ID,
        LOCATION_ID,
        LOCATIONS,
@@ -477,7 +482,8 @@ SELECT ALLOW_DROP_SHIP,
 				ITEM_TYPE,
 				PRODUCT_CLASSIFICATION,
 				PRODUCT_TYPE,
-				PRODUCT_SERIESFAMILY
+				PRODUCT_SERIESFAMILY,
+				WANG_ITEM_CODE
 FROM dw_prestage.items
 WHERE EXISTS (SELECT 1
               FROM dw_prestage.items_update
@@ -523,7 +529,7 @@ INSERT INTO dw.items
   ISBN_NAME,
   ISINACTIVE,
   ITEM_EXTID,
-  ITEM_JDE_CODE_ID,
+  JDE_ITEM_CODE,
   ISBN10,
   ITEM_TYPE_ID,
   LOCATION_ID,
@@ -544,6 +550,7 @@ INSERT INTO dw.items
 	PRODUCT_CLASSIFICATION,
 	PRODUCT_TYPE,
 	PRODUCT_SERIESFAMILY,  
+	WANG_ITEM_CODE,
   DATE_ACTIVE_FROM,
   DATE_ACTIVE_TO,
   DW_ACTIVE
@@ -583,7 +590,7 @@ SELECT ITEM_ID,
        NVL(ISBN_NAME,'NA_GDW'),
        NVL(ISINACTIVE,'NA_GDW'),
        NVL(ITEM_EXTID,'NA_GDW'),
-       NVL(ITEM_JDE_CODE_ID,-99),
+       NVL(JDE_ITEM_CODE,'NA_GDW'),
        NVL(ISBN10,'NA_GDW'),
        NVL(ITEM_TYPE_ID,-99),
        NVL(LOCATION_ID,-99),
@@ -604,7 +611,8 @@ SELECT ITEM_ID,
 			NVL(ITEM_TYPE,'NA_GDW'),
 			NVL(PRODUCT_CLASSIFICATION,'NA_GDW'),
 			NVL(PRODUCT_TYPE,'NA_GDW'),
-			NVL(PRODUCT_SERIESFAMILY,'NA_GDW'),  
+			NVL(PRODUCT_SERIESFAMILY,'NA_GDW'),
+            NVL(WANG_ITEM_CODE,'NA_GDW'),			
 			sysdate,
        '9999-12-31 23:59:59',
        'A'
@@ -660,7 +668,7 @@ INSERT INTO dw.items
   ISBN_NAME,
   ISINACTIVE,
   ITEM_EXTID,
-  ITEM_JDE_CODE_ID,
+  JDE_ITEM_CODE,
   ISBN10,
   ITEM_TYPE_ID,
   LOCATION_ID,
@@ -681,7 +689,8 @@ INSERT INTO dw.items
 	ITEM_TYPE,
 	PRODUCT_CLASSIFICATION,
 	PRODUCT_TYPE,
-	PRODUCT_SERIESFAMILY,  
+	PRODUCT_SERIESFAMILY,
+    WANG_ITEM_CODE,	
 	DATE_ACTIVE_FROM,
   DATE_ACTIVE_TO,
   DW_ACTIVE
@@ -721,7 +730,7 @@ SELECT ITEM_ID,
        NVL(ISBN_NAME,'NA_GDW'),
        NVL(ISINACTIVE,'NA_GDW'),
        NVL(ITEM_EXTID,'NA_GDW'),
-       NVL(ITEM_JDE_CODE_ID,-99),
+       NVL(JDE_ITEM_CODE,'NA_GDW'),
        NVL(ISBN10,'NA_GDW'),
        NVL(ITEM_TYPE_ID,-99),
        NVL(LOCATION_ID,-99),
@@ -741,7 +750,8 @@ SELECT ITEM_ID,
 			NVL(ITEM_TYPE,'NA_GDW'),
 			NVL(PRODUCT_CLASSIFICATION,'NA_GDW'),
 			NVL(PRODUCT_TYPE,'NA_GDW'),
-			NVL(PRODUCT_SERIESFAMILY,'NA_GDW'),  
+			NVL(PRODUCT_SERIESFAMILY,'NA_GDW'),
+            NVL(WANG_ITEM_CODE,'NA_GDW'),		
 			sysdate,
        '9999-12-31 23:59:59',
        'A'
@@ -787,7 +797,7 @@ UPDATE dw.items
        ISBN_NAME = NVL(dw_prestage.items.ISBN_NAME,'NA_GDW'),
        ISINACTIVE = NVL(dw_prestage.items.ISINACTIVE,'NA_GDW'),
        ITEM_EXTID = NVL(dw_prestage.items.ITEM_EXTID,'NA_GDW'),
-       ITEM_JDE_CODE_ID = NVL(dw_prestage.items.ITEM_JDE_CODE_ID,-99),
+       JDE_ITEM_CODE = NVL(dw_prestage.items.JDE_ITEM_CODE,'NA_GDW'),
        ISBN10 = NVL(dw_prestage.items.ISBN10,'NA_GDW'),
        ITEM_TYPE_ID = NVL(dw_prestage.items.ITEM_TYPE_ID,-99),
        LOCATION_ID = NVL(dw_prestage.items.LOCATION_ID,-99),
@@ -807,7 +817,8 @@ UPDATE dw.items
 			 ITEM_TYPE =	NVL(dw_prestage.items.ITEM_TYPE,'NA_GDW'),
 			 PRODUCT_CLASSIFICATION = NVL(dw_prestage.items.PRODUCT_CLASSIFICATION,'NA_GDW'),
 			 PRODUCT_TYPE =	NVL(dw_prestage.items.PRODUCT_TYPE,'NA_GDW'),
-			 PRODUCT_SERIESFAMILY =	NVL(dw_prestage.items.PRODUCT_SERIESFAMILY,'NA_GDW')  
+			 PRODUCT_SERIESFAMILY =	NVL(dw_prestage.items.PRODUCT_SERIESFAMILY,'NA_GDW') ,
+             WANG_ITEM_CODE = NVL(dw_prestage.items.WANG_ITEM_CODE,'NA_GDW') 			 
 FROM dw_prestage.items
 WHERE dw.items.item_id = dw_prestage.items.item_id
 AND   EXISTS (SELECT 1
