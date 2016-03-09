@@ -1,0 +1,40 @@
+select 
+a.bill_country country,
+b.jde_item_code jde_code,
+b.wang_item_code wang_code,
+NVL(b.isbn_name,'XXX') isbn,
+b.displayname description,
+CASE WHEN b.type_name in ('Assembly/Bill of Materials','Item Group','Kit/Package') then b.jde_item_code
+ELSE NULL END PREPACK_CODE,
+d.name royalty,
+CASE WHEN b.type_name in ('Assembly/Bill of Materials','Item Group','Kit/Package') then 'PREPACK SALES & RETURNS'
+ELSE 'SALES & RETURNS' END MOVEMENT,
+e.transaction_type,
+a.document_number,
+to_char(to_date(c.date_id,'YYYYMMDD'),'DD/MM/YY') date,
+c.fiscal_year,
+c.fiscal_month_number,
+f.customer_extid customer_code,
+f.companyname customer_name,
+a.rate list_price,
+a.quantity,
+a.net_amount,
+a.quantity*a.rate list_value,
+(a.quantity*a.rate - a.net_amount) discount
+from
+dw_report.revenue_fact a,
+dw_report.items b,
+dw_report.dwdate c,
+dw_report.classes d,
+dw_report.transaction_type e,
+dw_report.customers f
+where
+ a.item_key = b.item_key
+ and a.transaction_date_key = c.date_key
+ and d.class_key = a.class_key
+ and a.document_type_key = e.transaction_type_key
+ and f.customer_key = a.customer_key
+ and c.fiscal_year = 2016
+ and c.fiscal_month_number = 9
+ and LENGTH(b.isbn_NAME) = 13
+ AND e.document_type= 'Invoice' limit 10
