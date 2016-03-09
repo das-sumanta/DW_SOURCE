@@ -1,3 +1,28 @@
+/* prestage - drop intermediate prepack table */
+DROP TABLE if exists dw_prestage.prepack_update;
+
+/* prestage - create intermediate prepack table*/
+CREATE TABLE dw_prestage.prepack_update
+AS  
+select member_id component_id , transaction_id , transaction_line_id + rk as transaction_line_id , parent_id prepack_id
+from (
+select c.member_id, c.line_id, a.transaction_id , a.transaction_line_id , a.item_id parent_id , 
+ dense_RANK() OVER ( PARTITION BY A.transaction_id,a.transaction_line_id ORDER BY c.line_id ) as rk 
+FROM dw_prestage.revenue_fact a
+  LEFT OUTER JOIN DW_REPORT.items b ON (a.item_id = b.item_id)
+  LEFT OUTER JOIN DW_stage.item_group c ON (c.parent_id = a.item_id)
+WHERE NVL(b.type_name,'xx') in ('Kit/Package','Assembly/Bill of Materials')
+AND EXISTS ( SELECT 1 FROM DW_stage.item_group d 
+             where d.parent_id = a.item_id )
+); 
+
+/* prestage - update prestage revenue with prepack*/
+update dw_prestage.revenue_fact 
+ set prepack_id = dw_prestage.prepack_update.prepack_id
+from dw_prestage.prepack_update
+ where dw_prestage.prepack_update.transaction_id = dw_prestage.revenue_fact.transaction_id
+ and dw_prestage.prepack_update.transaction_line_id = dw_prestage.revenue_fact.transaction_line_id;
+
 /* prestage - drop intermediate insert table */
 DROP TABLE if exists dw_prestage.revenue_fact_insert;
 
@@ -73,7 +98,8 @@ FROM (SELECT TRANSACTION_ID,
                    CUSTOM_FORM_ID,
                    CREATED_BY_ID,
                    CREATE_DATE,
-                   DATE_LAST_MODIFIED
+                   DATE_LAST_MODIFIED,
+                   PREPACK_ID
             FROM dw_prestage.revenue_fact A2
             WHERE NOT EXISTS ( SELECT 1 FROM DW_PRESTAGE.REVENUE_FACT_INSERT B2
                   WHERE B2.TRANSACTION_ID = A2.TRANSACTION_ID
@@ -130,7 +156,8 @@ FROM (SELECT TRANSACTION_ID,
                    CUSTOM_FORM_ID,
                    CREATED_BY_ID,
                    CREATE_DATE,
-                   DATE_LAST_MODIFIED
+                   DATE_LAST_MODIFIED,
+                   PREPACK_ID
             FROM dw_stage.revenue_fact a1
 			WHERE EXISTS ( select 1 from dw_prestage.revenue_fact b1
 where b1.TRANSACTION_ID = a1.TRANSACTION_ID
@@ -234,7 +261,8 @@ INSERT INTO dw_stage.revenue_fact(runid
  ,created_by_id
  ,create_date
  ,price_type_id
- ,date_last_modified)
+ ,date_last_modified
+ ,prepack_id)
 SELECT runid
  ,transaction_number
  ,transaction_id
@@ -288,6 +316,7 @@ SELECT runid
  ,create_date
  ,price_type_id
  ,date_last_modified
+ ,prepack_id
 FROM dw_prestage.revenue_fact_insert;
 
 /* stage -> insert into stage records which have been updated */
@@ -344,7 +373,8 @@ INSERT INTO dw_stage.revenue_fact
  ,created_by_id
  ,create_date
  ,price_type_id
- ,date_last_modified)
+ ,date_last_modified
+ ,prepack_id)
 SELECT runid
  ,transaction_number
  ,transaction_id
@@ -398,13 +428,12 @@ SELECT runid
  ,create_date
  ,price_type_id
  ,date_last_modified
+ ,prepack_id
 FROM dw_prestage.revenue_fact
 WHERE EXISTS (SELECT 1
               FROM dw_prestage.revenue_fact_update
               WHERE dw_prestage.revenue_fact_update.transaction_id = dw_prestage.revenue_fact.transaction_id
               AND   dw_prestage.revenue_fact_update.transaction_line_id = dw_prestage.revenue_fact.transaction_line_id);
-
-
 
 /* fact -> INSERT NEW RECORDS WHICH HAS ALL VALID DIMENSIONS */
 INSERT INTO dw.revenue_fact
@@ -454,6 +483,7 @@ DOCUMENT_NUMBER
 ,SUBSIDIARY_KEY
 ,CUSTOMER_KEY
 ,ACCOUNTING_PERIOD_KEY
+,PREPACK_KEY
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_CURRENT
@@ -504,6 +534,7 @@ TRANSACTION_NUMBER
  ,j.subsidiary_key
  ,m.customer_key
  ,q.accounting_period_key
+ ,s.item_key prepack_key
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -524,6 +555,7 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
+ INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE' )
 UNION ALL
 select
@@ -572,6 +604,7 @@ TRANSACTION_NUMBER
  ,j.subsidiary_key
  ,m.customer_key
  ,q.accounting_period_key
+ ,s.item_key prepack_key
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -592,6 +625,7 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
+ INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
 where trx_type in ('JN_LINE' );
 
 /* fact -> INSERT NEW RECORDS IN ERROR TABLE WHICH DOES NOT HAVE VALID DIMENSIONS */
@@ -676,6 +710,8 @@ INSERT INTO dw.revenue_fact_error
   ,ACCOUNTING_PERIOD_ID
   ,ACCOUNTING_PERIOD_ID_ERROR
   ,TRANSACTION_TYPE
+  ,PREPACK_ID
+  ,PREPACK_ID_ERROR
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -823,6 +859,12 @@ SELECT
          ELSE 'OK'
        END
 ,A.TRANSACTION_TYPE
+,A.PREPACK_ID
+,CASE
+         WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+  END
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact_insert a
@@ -842,6 +884,7 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
+ LEFT OUTER JOIN DW_REPORT.ITEMS s ON (A.PREPACK_ID = s.ITEM_ID)
 where (trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
  (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
@@ -858,7 +901,8 @@ where (trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
  ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
  (( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
- (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL)))   
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
+ (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL)))   
  OR
  (trx_type in ('JN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
@@ -934,6 +978,7 @@ DOCUMENT_NUMBER
 ,SUBSIDIARY_KEY
 ,CUSTOMER_KEY
 ,ACCOUNTING_PERIOD_KEY
+,PREPACK_KEY
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_CURRENT
@@ -984,6 +1029,7 @@ TRANSACTION_NUMBER
  ,j.subsidiary_key
  ,m.customer_key
  ,q.accounting_period_key
+ ,S.ITEM_KEY PREPACK_KEY
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -1004,6 +1050,7 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
+ INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE')
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
  WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
@@ -1055,6 +1102,7 @@ TRANSACTION_NUMBER
  ,j.subsidiary_key
  ,m.customer_key
  ,q.accounting_period_key
+ ,S.ITEM_KEY PREPACK_KEY
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -1075,6 +1123,7 @@ TRANSACTION_NUMBER
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
+ INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
 where trx_type in ('JN_LINE' )
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
  WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
@@ -1162,6 +1211,8 @@ INSERT INTO dw.revenue_fact_error
   ,ACCOUNTING_PERIOD_ID
   ,ACCOUNTING_PERIOD_ID_ERROR
   ,TRANSACTION_TYPE
+  ,PREPACK_ID
+  ,PREPACK_ID_ERROR
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -1309,6 +1360,12 @@ SELECT
          ELSE 'OK'
        END
 ,A.TRANSACTION_TYPE
+,A.PREPACK_ID
+,CASE
+         WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+  END
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact a
@@ -1328,6 +1385,7 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
+ LEFT OUTER JOIN DW_REPORT.ITEMS s ON (A.PREPACK_ID = s.ITEM_ID)
 where ((trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
  (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
@@ -1344,7 +1402,8 @@ where ((trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
  ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
  ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
- (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL)))
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
+ (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL)))
  OR
  (trx_type in ('JN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR

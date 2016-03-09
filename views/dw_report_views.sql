@@ -153,7 +153,20 @@ SELECT *
 FROM dw.book_fairs
 WHERE dw_active = 'A';
 
-DROP VIEW if exists dw_report.revenue_fact;
+DROP VIEW if exists dw_report.dwdate;
+
+create view dw_report.dwdate
+AS select * from dw.dwdate;
+
+DROP VIEW if exists dw_report.product_catalogue;
+
+create view dw_report.product_catalogue
+AS select * from dw.product_catalogue
+where dw_active = 'A';
+
+/****************FACT VIEWS *************************/
+ 
+ DROP VIEW if exists dw_report.revenue_fact;
 
 CREATE VIEW dw_report.revenue_fact 
 AS

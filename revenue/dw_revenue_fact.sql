@@ -53,6 +53,7 @@ CREATE TABLE dw.revenue_fact
   SUBSIDIARY_KEY              INTEGER,
   CUSTOMER_KEY                INTEGER, 
   ACCOUNTING_PERIOD_KEY       INTEGER,
+  PREPACK_KEY                 INTEGER,
   DATE_ACTIVE_FROM            TIMESTAMP,
   DATE_ACTIVE_TO              TIMESTAMP,
   DW_CURRENT                  INTEGER,
