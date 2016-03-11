@@ -4,17 +4,15 @@ DROP TABLE if exists dw_stage.inventory_snapshot_fact;
 
 CREATE TABLE dw_stage.inventory_snapshot_fact
 (
-  PRODUCT_CATALOGUE_ID                   INTEGER,
-  CLASS_ID                               INTEGER,
+  RUNID                                  INTEGER,
   SUBSIDIARY_ID                          INTEGER,
   LOCATION_ID                            INTEGER,
-  PUBLISHER_ID                           INTEGER,
-  PARENT_ID                              INTEGER,
-  COMPONENT_ID                           INTEGER, 
-  PREPACK_QTY                            DECIMAL(12,5),
-  ON_HAND_COUNT QTY_ON_HAND              DECIMAL(21,11),
-  ON_ORDER_COUNT QTY_ON_ORDER            DECIMAL(21,11),
-  QUANTITYBACKORDERED QTY_BACKORDERED    DECIMAL(22,0)
-  PRIMARY KEY (SUBSIDIARY_ID,CLASS_ID,LOCATION_ID,PRODUCT_CATALOGUE_ID,PARENT_ID,COMPONENT_ID)
+  ITEM_ID                                INTEGER,
+  AVG_COST                               DECIMAL(30,15),
+  QTY_AVAILABLE                          DECIMAL(22),
+  QTY_ON_HAND                            DECIMAL(21,11),
+  QTY_ON_ORDER                           DECIMAL(21,11),
+  QTY_BACKORDERED                        DECIMAL(22),
+  PRIMARY KEY (SUBSIDIARY_ID,LOCATION_ID,ITEM_ID)
 )
-DISTKEY(PARENT_ID) INTERLEAVED SORTKEY (SUBSIDIARY_ID,CLASS_ID,LOCATION_ID,PRODUCT_CATALOGUE_ID,PARENT_ID,COMPONENT_ID);
+DISTKEY(ITEM_ID) INTERLEAVED SORTKEY (SUBSIDIARY_ID,LOCATION_ID,ITEM_ID);
