@@ -29,5 +29,8 @@ CREATE TABLE dw_prestage.standing_order_schedule_fact
   STO_ITEM_ID                    INTEGER,
   STO_NO_TEXT                    VARCHAR(4000),
   STO_NO__ID                     INTEGER,
-  SUBSIDIARY_ID                  INTEGER);
+  SUBSIDIARY_ID                  INTEGER,
+  STO_START_DATE                 TIMESTAMP,
+  STO_END_DATE                   TIMESTAMP)
+;
 
