@@ -26,7 +26,12 @@ g.name as PAYMENT_TERMS,
 to_char(g.payment_terms_id) as payment_terms_id,
 j.name as PARENT,
 to_char(j.customer_id) as parent_id,
-h.title as TERRITORY
+h.title as TERRITORY,
+to_char(k.list_id) ABCDO_MARKER_ID,
+k.list_item_name ABCDO_MARKER,
+to_char(l.decile_id) decile_id,
+l.decile_name decile,
+to_char(a.roll_size) roll_size
 FROM 
 CUSTOMERS	a
 LEFT OUTER JOIN countries b ON (CUSTOMERS.country = countries.short_name)
@@ -37,6 +42,8 @@ LEFT OUTER JOIN customer_types f ON (CUSTOMERS.customer_type_id = customer_types
 LEFT OUTER JOIN payment_terms g ON (CUSTOMERS.payment_terms_id = payment_terms.payment_terms_id)
 LEFT OUTER JOIN crmgroup h ON (CUSTOMERS.sales_rep_id = crmgroup.group_id)
 LEFT OUTER JOIN customers j ON (CUSTOMERS.parent_id = j.customer_id)
+LEFT OUTER JOIN BOOK_FAIR_ABCDO_MARKER_LIST k ON (CUSTOMERS.abcdo_marker_id = k.list_id)
+LEFT OUTER JOIN DECILE l ON (CUSTOMERS.decile_id = l.decile_id)
 WHERE a.CATEGORY_0 = 'CUSTOMER' 
 and a.ISINACTIVE = 'No' 
-ORDER BY a.CUSTOMER_ID , a.NAME 
+ORDER BY a.CUSTOMER_ID , a.NAME;

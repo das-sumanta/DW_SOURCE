@@ -78,6 +78,11 @@ FROM (SELECT customer_id,
                    ,COUNTRY
                    ,COMPANYNAME
                    ,ISINACTIVE
+                   ,ABCDO_MARKER_ID
+                   ,ABCDO_MARKER
+                   ,DECILE_ID
+                   ,DECILE
+                   ,ROLL_SIZE
                    ,'1' CH_TYPE
             FROM dw_prestage.customers
             MINUS
@@ -95,6 +100,11 @@ FROM (SELECT customer_id,
                    ,COUNTRY
                    ,COMPANYNAME
                    ,ISINACTIVE
+                   ,ABCDO_MARKER_ID
+                   ,ABCDO_MARKER
+                   ,DECILE_ID
+                   ,DECILE
+                   ,ROLL_SIZE
                    ,'1' CH_TYPE
             FROM dw_stage.customers)) a
 WHERE NOT EXISTS (SELECT 1
@@ -168,7 +178,12 @@ INSERT INTO dw_stage.customers
   ,PAYMENT_TERM_ID           
   ,PARENT                    
   ,PARENT_ID                 
-  ,TERRITORY 
+  ,TERRITORY
+  ,ABCDO_MARKER_ID
+  ,ABCDO_MARKER
+  ,DECILE_ID
+  ,DECILE
+  ,ROLL_SIZE 
 )
 SELECT  
    CUSTOMER_ID
@@ -199,6 +214,11 @@ SELECT
   ,PARENT                    
   ,PARENT_ID                 
   ,TERRITORY 
+  ,ABCDO_MARKER_ID
+  ,ABCDO_MARKER
+  ,DECILE_ID
+  ,DECILE
+  ,ROLL_SIZE
 FROM dw_prestage.customers_insert;
 
 /* stage -> insert into stage records which have been updated */ 
@@ -232,6 +252,11 @@ INSERT INTO dw_stage.customers
   ,PARENT                    
   ,PARENT_ID                 
   ,TERRITORY 
+  ,ABCDO_MARKER_ID
+  ,ABCDO_MARKER
+  ,DECILE_ID
+  ,DECILE
+  ,ROLL_SIZE
 )
 SELECT 
    CUSTOMER_ID
@@ -262,6 +287,11 @@ SELECT
   ,PARENT                    
   ,PARENT_ID                 
   ,TERRITORY 
+  ,ABCDO_MARKER_ID
+  ,ABCDO_MARKER
+  ,DECILE_ID
+  ,DECILE
+  ,ROLL_SIZE
 FROM dw_prestage.customers
 WHERE EXISTS (SELECT 1
               FROM dw_prestage.customers_update
@@ -301,6 +331,11 @@ INSERT INTO dw.customers
   ,PARENT                    
   ,PARENT_ID                 
   ,TERRITORY 
+  ,ABCDO_MARKER_ID
+  ,ABCDO_MARKER
+  ,DECILE_ID
+  ,DECILE
+  ,ROLL_SIZE
   ,DATE_ACTIVE_FROM
   ,DATE_ACTIVE_TO
   ,DW_ACTIVE
@@ -333,6 +368,11 @@ SELECT customer_ID,
        NVL(PARENT,'NA_GDW') ,
        NVL(PARENT_ID,-99),
        NVL(TERRITORY,'NA_GDW') ,
+       NVL(ABCDO_MARKER_ID,-99)  ,
+       NVL(ABCDO_MARKER,'NA_GDW')    ,
+       NVL(DECILE_ID,-99)       ,
+       NVL(DECILE,'NA_GDW')          ,
+       NVL(ROLL_SIZE,-99)       ,
        sysdate,
        '9999-12-31 23:59:59',
        'A'
@@ -381,6 +421,11 @@ INSERT INTO dw.customers
   ,PARENT                    
   ,PARENT_ID                 
   ,TERRITORY 
+  ,ABCDO_MARKER_ID
+  ,ABCDO_MARKER
+  ,DECILE_ID
+  ,DECILE
+  ,ROLL_SIZE
   ,DATE_ACTIVE_FROM
   ,DATE_ACTIVE_TO
   ,DW_ACTIVE
@@ -413,6 +458,11 @@ SELECT customer_ID,
        NVL(PARENT,'NA_GDW') ,
        NVL(PARENT_ID,-99),
        NVL(TERRITORY,'NA_GDW') ,
+       NVL(ABCDO_MARKER_ID,-99)  ,
+       NVL(ABCDO_MARKER,'NA_GDW')    ,
+       NVL(DECILE_ID,-99)       ,
+       NVL(DECILE,'NA_GDW')          ,
+       NVL(ROLL_SIZE,-99)       ,
        sysdate,
        '9999-12-31 23:59:59',
        'A'
@@ -437,7 +487,12 @@ UPDATE dw.customers
        STATE = NVL(dw_prestage.customers.STATE,'NA_GDW'),
        COUNTRY = NVL(dw_prestage.customers.COUNTRY,'NA_GDW'),
        COMPANYNAME = NVL(dw_prestage.customers.COMPANYNAME,'NA_GDW'),
-       ISINACTIVE = NVL(dw_prestage.customers.ISINACTIVE,'NA_GDW')
+       ISINACTIVE = NVL(dw_prestage.customers.ISINACTIVE,'NA_GDW'),
+       ABCDO_MARKER_ID = NVL(dw_prestage.customers.ABCDO_MARKER_ID,-99)  ,
+       ABCDO_MARKER = NVL(dw_prestage.customers.ABCDO_MARKER,'NA_GDW')    ,
+       DECILE_ID = NVL(dw_prestage.customers.DECILE_ID,-99)       ,
+       DECILE = NVL(dw_prestage.customers.DECILE,'NA_GDW')          ,
+       ROLL_SIZE = NVL(dw_prestage.customers.ROLL_SIZE,-99)       
 FROM dw_prestage.customers
 WHERE dw.customers.customer_id = dw_prestage.customers.customer_id
 AND   EXISTS (SELECT 1

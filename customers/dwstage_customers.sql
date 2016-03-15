@@ -32,6 +32,11 @@ CREATE TABLE dw_stage.customers
   PARENT                     VARCHAR(100),
   PARENT_ID                  INTEGER,
   TERRITORY                  VARCHAR(500),
+  ABCDO_MARKER_ID            INTEGER,
+  ABCDO_MARKER               VARCHAR(1000),
+  DECILE_ID                  INTEGER,
+  DECILE                     VARCHAR(1000),
+  ROLL_SIZE                  INTEGER,
   PRIMARY KEY (CUSTOMER_ID,NAME)
 )
 DISTSTYLE ALL INTERLEAVED SORTKEY (CUSTOMER_ID,NAME);

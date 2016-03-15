@@ -32,7 +32,12 @@ CREATE TABLE dw_prestage.customers
   PAYMENT_TERM_ID            INTEGER,
   PARENT                     VARCHAR(100),
   PARENT_ID                  INTEGER,
-  TERRITORY                  VARCHAR(500)
+  TERRITORY                  VARCHAR(500),
+  ABCDO_MARKER_ID            INTEGER,
+  ABCDO_MARKER               VARCHAR(1000),
+  DECILE_ID                  INTEGER,
+  DECILE                     VARCHAR(1000),
+  ROLL_SIZE                  INTEGER
 );
 
 
