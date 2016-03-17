@@ -29,5 +29,4 @@ AND A.Quarter = 'No'
 AND A.year_0 = 'No'
 AND E.Quarter = 'No'
 AND E.YEAR_0 = 'Yes'
-AND A.ISINACTIVE = 'No'
 ORDER BY A.ACCOUNTING_PERIOD_ID,A.NAME
