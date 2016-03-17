@@ -6,6 +6,5 @@ SELECT TO_CHAR(a.SALES_TERRITORY_CUSTOM_ID) AS TERRITORY_ID,
      FROM sales_territory_custom a,
      subsidiaries b
 WHERE a.subsidiary_id = b.subsidiary_id
-AND IS_INACTIVE = 'F'
 ORDER BY a.SALES_TERRITORY_CUSTOM_ID,a.SALES_TERRITORY_CUSTOM_NAME;
 
