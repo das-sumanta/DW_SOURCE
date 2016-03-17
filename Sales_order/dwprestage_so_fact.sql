@@ -4,7 +4,8 @@ DROP TABLE if exists dw_prestage.so_fact;
 
 CREATE TABLE dw_prestage.so_fact 
 (
-  RUNID				                 INTEGER,
+  RUNID				          INTEGER,
+  DOCUMENT_NUMBER             VARCHAR(500),
   TRANSACTION_NUMBER          VARCHAR(150),
   TRANSACTION_ID              INTEGER,
   TRANSACTION_LINE_ID         INTEGER,
@@ -41,8 +42,13 @@ CREATE TABLE dw_prestage.so_fact
   GROSS_AMOUNT                DECIMAL(22,2),
   NET_AMOUNT                  DECIMAL(22,2),
   NET_AMOUNT_FOREIGN          DECIMAL(22,2),
+  RRP                         DECIMAL(22,2),
+  AVG_COST                    DECIMAL(30,15),
   QUANTITY                    DECIMAL(18,8),
+  committed_quantity          DECIMAL(18,8),
   ITEM_ID                     INTEGER,
+  rewards_earn                VARCHAR(4000),
+  reward_balance              VARCHAR(4000),
   ITEM_UNIT_PRICE             VARCHAR(42),
   TAX_ITEM_ID                 INTEGER,
   TAX_AMOUNT                  DECIMAL(20,2),
@@ -52,11 +58,19 @@ CREATE TABLE dw_prestage.so_fact
   ACCOUNTING_PERIOD_ID        INTEGER,
   CUSTOMER_ID                 INTEGER,
   PRICE_TYPE_ID               INTEGER,
+  PRICE_TYPE                  VARCHAR(100),
   CUSTOM_FORM_ID              INTEGER,
   CREATED_BY_ID               INTEGER,
+  OFFER_ID                    INTEGER,
+  PRODUCT_CATALOGUE_ID        INTEGER,
+  BROCHURE_CODE               INTEGER,
+  TEACHER_ID                  INTEGER,
+  BOOK_FAIRS_CONSULTANT_ID    INTEGER,
+  NEXT_ACTION                 VARCHAR(1000),
   CREATE_DATE                 TIMESTAMP,
   DATE_LAST_MODIFIED          TIMESTAMP,
   TRX_TYPE                    VARCHAR(50),
+  PREPACK_ID                  INTEGER,
   PRIMARY KEY (TRANSACTION_ID,TRANSACTION_LINE_ID)
 )
 DISTKEY(ITEM_ID) INTERLEAVED SORTKEY (TRANSACTION_ID,TRANSACTION_LINE_ID);
