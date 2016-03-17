@@ -45,5 +45,4 @@ LEFT OUTER JOIN customers j ON (CUSTOMERS.parent_id = j.customer_id)
 LEFT OUTER JOIN BOOK_FAIR_ABCDO_MARKER_LIST k ON (CUSTOMERS.abcdo_marker_id = k.list_id)
 LEFT OUTER JOIN DECILE l ON (CUSTOMERS.decile_id = l.decile_id)
 WHERE a.CATEGORY_0 = 'CUSTOMER' 
-and a.ISINACTIVE = 'No' 
 ORDER BY a.CUSTOMER_ID , a.NAME;
