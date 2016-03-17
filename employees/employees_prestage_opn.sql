@@ -30,9 +30,9 @@ select employee_id , SUPERVISOR_NAME,SUPERVISOR_ID,APPROVER_ID,APPROVER_NAME, '2
 union all
 SELECT employee_id , CH_TYPE FROM 
 (  
-select employee_id,JOBTITLE,EMAIL,LINE1,LINE2,LINE3,ZIPCODE,CITY,STATE,COUNTRY,SUBSIDIARY,SUBSIDIARY_ID,LINE_OF_BUSINESS,LINE_OF_BUSINESS_ID,LOCATION,LOCATION_ID,COST_CENTER,DEPARTMENT_ID,HIREDDATE	,RELEASEDATE, '1' CH_TYPE from dw_prestage.employees
+select employee_id,JOBTITLE,EMAIL,LINE1,LINE2,LINE3,ZIPCODE,CITY,STATE,COUNTRY,SUBSIDIARY,SUBSIDIARY_ID,LINE_OF_BUSINESS,LINE_OF_BUSINESS_ID,LOCATION,LOCATION_ID,COST_CENTER,DEPARTMENT_ID,HIREDDATE	,RELEASEDATE,ISINACTIVE, '1' CH_TYPE from dw_prestage.employees
 MINUS
-select employee_id,JOBTITLE,EMAIL,LINE1,LINE2,LINE3,ZIPCODE,CITY,STATE,COUNTRY,SUBSIDIARY,SUBSIDIARY_ID,LINE_OF_BUSINESS,LINE_OF_BUSINESS_ID,LOCATION,LOCATION_ID,COST_CENTER,DEPARTMENT_ID,HIREDDATE	,RELEASEDATE, '1' CH_TYPE from dw_stage.employees
+select employee_id,JOBTITLE,EMAIL,LINE1,LINE2,LINE3,ZIPCODE,CITY,STATE,COUNTRY,SUBSIDIARY,SUBSIDIARY_ID,LINE_OF_BUSINESS,LINE_OF_BUSINESS_ID,LOCATION,LOCATION_ID,COST_CENTER,DEPARTMENT_ID,HIREDDATE	,RELEASEDATE,ISINACTIVE, '1' CH_TYPE from dw_stage.employees
 )
 ) a where not exists ( select 1 from dw_prestage.employees_insert
 where dw_prestage.employees_insert.employee_id = a.employee_id) group by employee_id;
@@ -81,9 +81,6 @@ where exists ( select 1 from
 dw_prestage.employees_update
 where dw_prestage.employees_update.employee_id = dw_prestage.employees.employee_id);
 
-
-
-
 /* dimension ->insert new records in dim employees */
 
 insert into dw.employees ( 
@@ -116,6 +113,7 @@ insert into dw.employees (
 ,COST_CENTER_ID
 ,HIRE_DATE
 ,RELEASE_DATE
+,ISINACTIVE
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_ACTIVE  )
@@ -149,6 +147,7 @@ select
  ,NVL(DEPARTMENT_ID , -99) 
  ,NVL(HIREDDATE,'1900-12-31 00:00:00') 
  ,NVL(RELEASEDATE,'1900-12-31 00:00:00') 
+ ,NVL(ISINACTIVE,'NA_GDW')
  ,sysdate
  ,'9999-12-31 23:59:59'
  ,'A'
@@ -198,6 +197,7 @@ insert into dw.employees (
 ,COST_CENTER_ID
 ,HIRE_DATE
 ,RELEASE_DATE
+,ISINACTIVE
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_ACTIVE  )
@@ -230,7 +230,8 @@ select
  ,DECODE(LENGTH(COST_CENTER),0,'NA_GDW', COST_CENTER) 
  ,NVL(DEPARTMENT_ID , -99) 
  ,NVL(HIREDDATE,'1900-12-31 00:00:00') 
- ,NVL(RELEASEDATE,'1900-12-31 00:00:00') 
+ ,NVL(RELEASEDATE,'1900-12-31 00:00:00')
+ ,NVL(ISINACTIVE,'NA_GDW') 
  ,sysdate
  ,'9999-12-31 23:59:59'
  ,'A'
@@ -262,7 +263,8 @@ UPDATE dw.employees
       ,COST_CENTER          =   DECODE(LENGTH(dw_prestage.employees.COST_CENTER),0,'NA_GDW', dw_prestage.employees.COST_CENTER) 
       ,COST_CENTER_ID       =   NVL(DEPARTMENT_ID , -99) 
       ,HIRE_DATE            =   NVL(HIREDDATE,'1900-12-31 00:00:00') 
-      ,RELEASE_DATE         =   NVL(RELEASEDATE,'1900-12-31 00:00:00')   
+      ,RELEASE_DATE         =   NVL(RELEASEDATE,'1900-12-31 00:00:00')
+      ,ISINACTIVE           =   NVL(dw_prestage.employees.ISINACTIVE,'NA_GDW')	  
    FROM dw_prestage.employees
 WHERE dw.employees.employee_id = dw_prestage.employees.employee_id
 and exists (select 1 from dw_prestage.employees_update
