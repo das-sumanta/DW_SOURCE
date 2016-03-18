@@ -639,7 +639,7 @@ select
      ,PRICE_TYPE                                           
      ,t.PRODUCT_CATALOGUE_KEY      
      ,BROCHURE_CODE              
-     ,u.VENDOR_KEY TEACHER_KEY                
+     ,u.CUSTOMER_KEY TEACHER_KEY                
      ,v.EMPLOYEE_KEY BOOK_FAIRS_CONSULTANT_KEY  
      ,NEXT_ACTION                
      ,s.item_key prepack_key        
@@ -665,7 +665,7 @@ select
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
  INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
  INNER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (NVL(A.PRODUCT_CATALOGUE_ID,-99) = t.PRODUCT_CATALOGUE_ID)
- INNER JOIN DW_REPORT.VENDORS u ON (NVL(A.teacher_ID,-99) = u.VENDOR_ID)
+ INNER JOIN DW_REPORT.CUSTOMERS u ON (NVL(A.teacher_ID,-99) = u.CUSTOMER_ID)
  INNER JOIN DW_REPORT.employees v ON (NVL(A.BOOK_FAIRS_CONSULTANT_id,-99) = v.employee_id)
 where trx_type = 'SO_LINE';
 
@@ -833,7 +833,7 @@ SELECT
  ,PRICE_TYPE
  ,t.PRODUCT_CATALOGUE_KEY      
  ,BROCHURE_CODE              
- ,u.VENDOR_KEY TEACHER_KEY                
+ ,u.CUSTOMER_KEY TEACHER_KEY                
  ,v.EMPLOYEE_KEY BOOK_FAIRS_CONSULTANT_KEY  
  ,NEXT_ACTION                
  ,s.item_key prepack_key 
@@ -948,8 +948,8 @@ SELECT
   END
 ,A.TEACHER_ID
 ,CASE
-         WHEN (u.vendor_key IS NULL AND A.teacher_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
-         WHEN (u.vendor_key IS NULL AND A.teacher_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         WHEN (u.customer_key IS NULL AND A.teacher_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (u.customer_key IS NULL AND A.teacher_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
   END
 ,A.BOOK_FAIRS_CONSULTANT_ID
@@ -979,7 +979,7 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
  LEFT OUTER JOIN DW_REPORT.ITEMS s ON (A.PREPACK_ID = s.ITEM_ID)
  LEFT OUTER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (A.PRODUCT_CATALOGUE_ID = t.PRODUCT_CATALOGUE_ID)
- LEFT OUTER JOIN DW_REPORT.VENDORS u ON (A.teacher_ID = u.VENDOR_ID)
+ LEFT OUTER JOIN DW_REPORT.CUSTOMERS u ON (A.teacher_ID = u.CUSTOMER_ID)
  LEFT OUTER JOIN DW_REPORT.employees v ON (A.BOOK_FAIRS_CONSULTANT_id = v.employee_id)
 where (trx_type = 'SO_LINE') AND
 (
@@ -1001,7 +1001,7 @@ where (trx_type = 'SO_LINE') AND
  (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
  (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL) OR
  (t.PRODUCT_CATALOGUE_key IS NULL AND A.PRODUCT_CATALOGUE_id IS NOT NULL) OR
- (u.vendor_key IS NULL AND A.teacher_id IS NOT NULL) OR
+ (u.customer_key IS NULL AND A.teacher_id IS NOT NULL) OR
  (v.employee_key IS NULL AND A.BOOK_FAIRS_CONSULTANT_id IS NOT NULL)
  );
 
@@ -1135,7 +1135,7 @@ select
      ,PRICE_TYPE                                           
      ,t.PRODUCT_CATALOGUE_KEY      
      ,BROCHURE_CODE              
-     ,u.VENDOR_KEY TEACHER_KEY                
+     ,u.CUSTOMER_KEY TEACHER_KEY                
      ,v.EMPLOYEE_KEY BOOK_FAIRS_CONSULTANT_KEY  
      ,NEXT_ACTION                
      ,s.item_key prepack_key        
@@ -1161,7 +1161,7 @@ select
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
  INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
  INNER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (NVL(A.PRODUCT_CATALOGUE_ID,-99) = t.PRODUCT_CATALOGUE_ID)
- INNER JOIN DW_REPORT.VENDORS u ON (NVL(A.teacher_ID,-99) = u.VENDOR_ID)
+ INNER JOIN DW_REPORT.CUSTOMERS u ON (NVL(A.teacher_ID,-99) = u.CUSTOMER_ID)
  INNER JOIN DW_REPORT.employees v ON (NVL(A.BOOK_FAIRS_CONSULTANT_id,-99) = v.employee_id)
 where trx_type = 'SO_LINE'
 AND   EXISTS (SELECT 1 FROM dw_prestage.so_fact_update
@@ -1332,7 +1332,7 @@ SELECT
  ,PRICE_TYPE
  ,t.PRODUCT_CATALOGUE_KEY      
  ,BROCHURE_CODE              
- ,u.VENDOR_KEY TEACHER_KEY                
+ ,u.CUSTOMER_KEY TEACHER_KEY                
  ,v.EMPLOYEE_KEY BOOK_FAIRS_CONSULTANT_KEY  
  ,NEXT_ACTION                
  ,s.item_key prepack_key 
@@ -1447,8 +1447,8 @@ SELECT
   END
 ,A.TEACHER_ID
 ,CASE
-         WHEN (u.vendor_key IS NULL AND A.teacher_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
-         WHEN (u.vendor_key IS NULL AND A.teacher_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         WHEN (u.customer_key IS NULL AND A.teacher_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (u.customer_key IS NULL AND A.teacher_ID IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
   END
 ,A.BOOK_FAIRS_CONSULTANT_ID
@@ -1478,7 +1478,7 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
  LEFT OUTER JOIN DW_REPORT.ITEMS s ON (A.PREPACK_ID = s.ITEM_ID)
  LEFT OUTER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (A.PRODUCT_CATALOGUE_ID = t.PRODUCT_CATALOGUE_ID)
- LEFT OUTER JOIN DW_REPORT.VENDORS u ON (A.teacher_ID = u.VENDOR_ID)
+ LEFT OUTER JOIN DW_REPORT.CUSTOMERS u ON (A.teacher_ID = u.CUSTOMER_ID)
  LEFT OUTER JOIN DW_REPORT.employees v ON (A.BOOK_FAIRS_CONSULTANT_id = v.employee_id)
 where (trx_type = 'SO_LINE') AND
 (
@@ -1500,7 +1500,7 @@ where (trx_type = 'SO_LINE') AND
  (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
  (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL) OR
  (t.PRODUCT_CATALOGUE_key IS NULL AND A.PRODUCT_CATALOGUE_id IS NOT NULL) OR
- (u.vendor_key IS NULL AND A.teacher_id IS NOT NULL) OR
+ (u.customer_key IS NULL AND A.teacher_id IS NOT NULL) OR
  (v.employee_key IS NULL AND A.BOOK_FAIRS_CONSULTANT_id IS NOT NULL)
  )
 AND   EXISTS (SELECT 1
