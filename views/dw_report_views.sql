@@ -198,6 +198,14 @@ SELECT *
 FROM dw.opportunity_fact
 WHERE DW_CURRENT = 1;
 
+DROP VIEW IF EXISTS dw_report.so_fact CASCADE;
+
+CREATE VIEW dw_report.so_fact 
+AS
+SELECT *
+FROM dw.so_fact
+WHERE DW_CURRENT = 1;
+
 /****************REPORT VIEWS ********************/ 
 DROP VIEW IF EXISTS dw_report.actual CASCADE;
 
