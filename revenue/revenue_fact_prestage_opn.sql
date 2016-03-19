@@ -1,8 +1,8 @@
 /* prestage - drop intermediate prepack table */
-DROP TABLE if exists dw_prestage.prepack_update;
+DROP TABLE if exists dw_prestage.revenue_prepack_update;
 
 /* prestage - create intermediate prepack table*/
-CREATE TABLE dw_prestage.prepack_update
+CREATE TABLE dw_prestage.revenue_prepack_update
 AS  
 select member_id component_id , transaction_id , transaction_line_id + rk as transaction_line_id , parent_id prepack_id
 from (
@@ -18,10 +18,10 @@ AND EXISTS ( SELECT 1 FROM DW_stage.item_group d
 
 /* prestage - update prestage revenue with prepack*/
 update dw_prestage.revenue_fact 
- set prepack_id = dw_prestage.prepack_update.prepack_id
-from dw_prestage.prepack_update
- where dw_prestage.prepack_update.transaction_id = dw_prestage.revenue_fact.transaction_id
- and dw_prestage.prepack_update.transaction_line_id = dw_prestage.revenue_fact.transaction_line_id;
+ set prepack_id = dw_prestage.revenue_prepack_update.prepack_id
+from dw_prestage.revenue_prepack_update
+ where dw_prestage.revenue_prepack_update.transaction_id = dw_prestage.revenue_fact.transaction_id
+ and dw_prestage.revenue_prepack_update.transaction_line_id = dw_prestage.revenue_fact.transaction_line_id;
 
 /* prestage - drop intermediate insert table */
 DROP TABLE if exists dw_prestage.revenue_fact_insert;
