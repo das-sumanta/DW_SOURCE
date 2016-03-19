@@ -71,7 +71,7 @@ INNER JOIN DW_REPORT.PAYMENT_TERMS b ON (NVL (A.PAYMENT_TERMS_ID,-99) = b.PAYMEN
  INNER JOIN DW_REPORT.transaction_type p ON (A.custom_form_id = p.transaction_type_id)
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
-WHERE A.RUNID = NVL('%RUNID_ERR',A.RUNID);
+WHERE A.RUNID = NVL(RUNID_ERR,A.RUNID);
 
 /* prestage-> identify new revenue fact records */
 UPDATE DW_PRESTAGE.REVENUE_FACT_ERROR
