@@ -42,6 +42,7 @@ CREATE TABLE dw.opportunity_fact_error
   CURRENCY_KEY                     INTEGER,
   CURRENCY_ID_ERROR                VARCHAR(100),
   TRANSACTION_DATE_KEY             INTEGER,
+  TRANSACTION_DATE_ERROR           VARCHAR(100),
   OPEN_DATE_KEY                    INTEGER,
   OPEN_DATE_ERROR                  VARCHAR(100),
   SHIP_DATE_KEY                    INTEGER,
