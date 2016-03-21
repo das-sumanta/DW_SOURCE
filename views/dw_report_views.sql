@@ -189,6 +189,14 @@ AS
 SELECT *
 FROM dw.dwdate;
 
+DROP VIEW IF EXISTS dw_report.standing_order_schedule_fact CASCADE;
+
+CREATE VIEW dw_report.standing_order_schedule_fact
+AS
+SELECT *
+FROM dw.standing_order_schedule_fact
+WHERE DW_CURRENT = 1;
+
 /****************FACT VIEWS *************************/ 
 DROP VIEW IF EXISTS dw_report.opportunity_fact CASCADE;
 
