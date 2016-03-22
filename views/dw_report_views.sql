@@ -376,19 +376,22 @@ GROUP BY d.fiscal_week_id,
          d.subsidiary_key,
          d.territory_key;
          
+DROP VIEW dw_report.deferred_revenue;
+
 CREATE OR REPLACE VIEW dw_report.deferred_revenue
 as
-SELECT b.clublevelreading_level_name,
+SELECT b.clublevelreading_level_name nzso_level,
        d.customer_extid,
+       d.companyname name,
        d.companyname,
-       c.product_catalogue_year,
-       c.offer_description,
+       c.product_catalogue_year nzso_year,
+       c.offer_description nzso_offer,
        TO_CHAR(TO_DATE(c.yearmonth_yyyymm,'yyyymm'),'dd/mm/yyyy') release_date,
        e.calendar_week_number release_week,
        e.fiscal_year,
-       e.fiscal_month_number,
+       e.fiscal_month_number fiscal_month,
        a.amortization_value_excl_gst nett_value
-FROM dw.standing_order_schedule_fact_A A,
+FROM dw.standing_order_schedule_fact A,
      dw.product_catalogue b,
      (SELECT clublevelreading_level_name,
              yearmonth_yyyymm,
