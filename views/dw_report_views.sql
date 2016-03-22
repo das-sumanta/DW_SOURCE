@@ -399,8 +399,7 @@ FROM dw.standing_order_schedule_fact_A A,
      dw_report.customers d,
      dw.dwdate e,
      dw.dwdate f
-WHERE /*a.customer_key = 50964
-AND   */  a.PRODUCT_CATALOGUE_key = b.PRODUCT_CATALOGUE_key
+WHERE a.PRODUCT_CATALOGUE_key = b.PRODUCT_CATALOGUE_key
 AND   b.clublevelreading_level_name = c.clublevelreading_level_name
 AND   a.customer_key = d.customer_key
 AND   c.yearmonth_yyyymm|| '01' = e.date_id
