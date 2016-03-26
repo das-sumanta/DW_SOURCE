@@ -99,7 +99,8 @@ FROM (SELECT TRANSACTION_ID,
                    CREATED_BY_ID,
                    CREATE_DATE,
                    DATE_LAST_MODIFIED,
-                   PREPACK_ID
+                   PREPACK_ID,
+                   PRODUCT_CATALOGUE_ID
             FROM dw_prestage.revenue_fact A2
             WHERE NOT EXISTS ( SELECT 1 FROM DW_PRESTAGE.REVENUE_FACT_INSERT B2
                   WHERE B2.TRANSACTION_ID = A2.TRANSACTION_ID
@@ -157,7 +158,8 @@ FROM (SELECT TRANSACTION_ID,
                    CREATED_BY_ID,
                    CREATE_DATE,
                    DATE_LAST_MODIFIED,
-                   PREPACK_ID
+                   PREPACK_ID,
+                   PRODUCT_CATALOGUE_ID
             FROM dw_stage.revenue_fact a1
 			WHERE EXISTS ( select 1 from dw_prestage.revenue_fact b1
 where b1.TRANSACTION_ID = a1.TRANSACTION_ID
@@ -262,7 +264,8 @@ INSERT INTO dw_stage.revenue_fact(runid
  ,create_date
  ,price_type_id
  ,date_last_modified
- ,prepack_id)
+ ,prepack_id
+ ,PRODUCT_CATALOGUE_ID)
 SELECT runid
  ,transaction_number
  ,transaction_id
@@ -317,6 +320,7 @@ SELECT runid
  ,price_type_id
  ,date_last_modified
  ,prepack_id
+ ,PRODUCT_CATALOGUE_ID
 FROM dw_prestage.revenue_fact_insert;
 
 /* stage -> insert into stage records which have been updated */
@@ -374,7 +378,8 @@ INSERT INTO dw_stage.revenue_fact
  ,create_date
  ,price_type_id
  ,date_last_modified
- ,prepack_id)
+ ,prepack_id
+ ,PRODUCT_CATALOGUE_ID)
 SELECT runid
  ,transaction_number
  ,transaction_id
@@ -429,6 +434,7 @@ SELECT runid
  ,price_type_id
  ,date_last_modified
  ,prepack_id
+ ,PRODUCT_CATALOGUE_ID
 FROM dw_prestage.revenue_fact
 WHERE EXISTS (SELECT 1
               FROM dw_prestage.revenue_fact_update
@@ -485,6 +491,7 @@ DOCUMENT_NUMBER
 ,CUSTOMER_KEY
 ,ACCOUNTING_PERIOD_KEY
 ,PREPACK_KEY
+,PRODUCT_CATALOGUE_KEY
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_CURRENT
@@ -537,6 +544,7 @@ DOCUMENT_NUMBER
  ,m.customer_key
  ,q.accounting_period_key
  ,s.item_key prepack_key
+ ,t.product_catalogue_key
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -558,6 +566,7 @@ DOCUMENT_NUMBER
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
  INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
+ INNER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (NVL(A.PRODUCT_CATALOGUE_ID,-99) = t.PRODUCT_CATALOGUE_ID)
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE' )
 UNION ALL
 select
@@ -608,6 +617,7 @@ DOCUMENT_NUMBER
  ,m.customer_key
  ,q.accounting_period_key
  ,s.item_key prepack_key
+ ,t.product_catalogue_key
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -629,6 +639,7 @@ DOCUMENT_NUMBER
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
  INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
+ INNER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (NVL(A.PRODUCT_CATALOGUE_ID,-99) = t.PRODUCT_CATALOGUE_ID)
 where trx_type in ('JN_LINE' );
 
 /* fact -> INSERT NEW RECORDS IN ERROR TABLE WHICH DOES NOT HAVE VALID DIMENSIONS */
@@ -715,7 +726,11 @@ INSERT INTO dw.revenue_fact_error
   ,ACCOUNTING_PERIOD_ID_ERROR
   ,TRANSACTION_TYPE
   ,PREPACK_ID
+  ,PREPACK_KEY
   ,PREPACK_ID_ERROR
+  ,PRODUCT_CATALOGUE_ID
+  ,PRODUCT_CATALOGUE_KEY
+  ,PRODUCT_CATALOGUE_ID_ERROR
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -865,9 +880,17 @@ SELECT
        END
 ,A.TRANSACTION_TYPE
 ,A.PREPACK_ID
+,s.item_key prepack_key
 ,CASE
          WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+  END
+,A.product_catalogue_id
+,t.product_catalogue_key
+,CASE
+         WHEN (t.product_catalogue_key IS NULL AND A.product_catalogue_id IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (t.product_catalogue_key IS NULL AND A.product_catalogue_id IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
   END
 ,'ERROR' AS RECORD_STATUS
@@ -890,6 +913,7 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
  LEFT OUTER JOIN DW_REPORT.ITEMS s ON (A.PREPACK_ID = s.ITEM_ID)
+ LEFT OUTER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (A.PRODUCT_CATALOGUE_ID = t.PRODUCT_CATALOGUE_ID)
 where (trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
  (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
@@ -907,7 +931,8 @@ where (trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
  (( P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
  (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
- (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL)))   
+ (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL) OR
+ (t.product_catalogue_key IS NULL AND A.PRODUCT_CATALOGUE_ID IS NOT NULL)))   
  OR
  (trx_type in ('JN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
@@ -925,7 +950,9 @@ where (trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
  ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
  ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
- (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL)));
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
+ (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL) OR
+ (t.product_catalogue_key IS NULL AND A.PRODUCT_CATALOGUE_ID IS NOT NULL)));
 
 /* fact -> UPDATE THE OLD RECORDS SETTING THE CURRENT FLAG VALUE TO 0 */
 UPDATE dw.revenue_fact SET dw_current = 0,DATE_ACTIVE_TO = (sysdate -1) WHERE dw_current = 1
@@ -985,6 +1012,7 @@ DOCUMENT_NUMBER
 ,CUSTOMER_KEY
 ,ACCOUNTING_PERIOD_KEY
 ,PREPACK_KEY
+,PRODUCT_CATALOGUE_KEY
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_CURRENT
@@ -1037,6 +1065,7 @@ DOCUMENT_NUMBER
  ,m.customer_key
  ,q.accounting_period_key
  ,S.ITEM_KEY PREPACK_KEY
+ ,t.product_catalogue_key
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -1058,6 +1087,7 @@ DOCUMENT_NUMBER
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
  INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
+ INNER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (NVL(A.PRODUCT_CATALOGUE_ID,-99) = t.PRODUCT_CATALOGUE_ID)
 where trx_type in ('INV_LINE','RA_LINE','CN_LINE')
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
  WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
@@ -1111,6 +1141,7 @@ DOCUMENT_NUMBER
  ,m.customer_key
  ,q.accounting_period_key
  ,S.ITEM_KEY PREPACK_KEY
+ ,t.product_catalogue_key
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -1132,6 +1163,7 @@ DOCUMENT_NUMBER
  INNER JOIN DW_REPORT.accounting_period q ON (NVL(A.accounting_period_id,-99) = q.accounting_period_id)
  INNER JOIN DW_REPORT.employees r ON (NVL(A.sales_rep_id,-99) = r.employee_id)
  INNER JOIN DW_REPORT.ITEMS s ON (NVL(A.PREPACK_ID,-99) = s.ITEM_ID)
+ INNER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (NVL(A.PRODUCT_CATALOGUE_ID,-99) = t.PRODUCT_CATALOGUE_ID)
 where trx_type in ('JN_LINE' )
 AND   EXISTS (SELECT 1 FROM dw_prestage.revenue_fact_update
  WHERE a.transaction_id = dw_prestage.revenue_fact_update.transaction_id
@@ -1221,7 +1253,11 @@ INSERT INTO dw.revenue_fact_error
   ,ACCOUNTING_PERIOD_ID_ERROR
   ,TRANSACTION_TYPE
   ,PREPACK_ID
+  ,PREPACK_KEY
   ,PREPACK_ID_ERROR
+  ,PRODUCT_CATALOGUE_ID
+  ,PRODUCT_CATALOGUE_KEY
+  ,PRODUCT_CATALOGUE_ID_ERROR
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -1371,9 +1407,17 @@ SELECT
        END
 ,A.TRANSACTION_TYPE
 ,A.PREPACK_ID
+,s.item_key prepack_key
 ,CASE
          WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NOT NULL) THEN ' DIM LOOKUP FAILED '
          WHEN (s.item_key IS NULL AND A.PREPACK_ID IS NULL) THEN ' NO DIM FROM SOURCE '
+         ELSE 'OK'
+  END
+,A.product_catalogue_id
+,t.product_catalogue_key
+,CASE
+         WHEN (t.product_catalogue_key IS NULL AND A.product_catalogue_id IS NOT NULL) THEN ' DIM LOOKUP FAILED '
+         WHEN (t.product_catalogue_key IS NULL AND A.product_catalogue_id IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
   END
 ,'ERROR' AS RECORD_STATUS
@@ -1396,6 +1440,7 @@ SELECT
  LEFT OUTER JOIN DW_REPORT.accounting_period q ON (A.accounting_period_id = q.accounting_period_id)
  LEFT OUTER JOIN DW_REPORT.employees r ON (A.sales_rep_id = r.employee_id)
  LEFT OUTER JOIN DW_REPORT.ITEMS s ON (A.PREPACK_ID = s.ITEM_ID)
+ LEFT OUTER JOIN DW_REPORT.PRODUCT_CATALOGUE t ON (A.PRODUCT_CATALOGUE_ID = t.PRODUCT_CATALOGUE_ID)
 where ((trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
  (C.TERRITORY_KEY IS NULL AND A.sales_territory_ID IS NOT NULL ) OR
@@ -1413,7 +1458,8 @@ where ((trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
  ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
  (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
- (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL)))
+ (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL) OR
+ (t.product_catalogue_key IS NULL AND A.PRODUCT_CATALOGUE_ID IS NOT NULL)))
  OR
  (trx_type in ('JN_LINE' ) AND
 ((B.PAYMENT_TERM_KEY IS NULL AND A.PAYMENT_TERMS_ID IS NOT NULL )OR
@@ -1431,7 +1477,9 @@ where ((trx_type in ('INV_LINE','RA_LINE','CN_LINE' ) AND
  ( O.transaction_status_key IS NULL AND A.STATUS IS NOT NULL AND A.TRANSACTION_TYPE IS NOT NULL )OR
  ( (P.transaction_type_key IS NULL AND A.custom_form_id IS NOT NULL) OR A.custom_form_id IS NULL ) OR
  (Q.ACCOUNTING_PERIOD_KEY IS NULL AND A.accounting_period_id IS NOT NULL ) OR 
- (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL))))
+ (r.employee_KEY IS NULL AND A.sales_rep_id IS NOT NULL) OR
+ (s.item_KEY IS NULL AND A.prepack_id IS NOT NULL) OR
+ (t.product_catalogue_key IS NULL AND A.PRODUCT_CATALOGUE_ID IS NOT NULL))))
 AND   EXISTS (SELECT 1
              FROM dw_prestage.revenue_fact_update
              WHERE
