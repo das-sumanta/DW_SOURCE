@@ -419,6 +419,29 @@ AND   c.yearmonth_yyyymm >= CAST(TO_CHAR(TO_DATE(f.date_id,'YYYYMMDD'),'YYYYMM')
 AND   NVL (a.shipment_no,1) = 1
 AND   a.order_type = 'SUB';
 
+DROP VIEW dw_report.inventory_snapshot;
+
+CREATE VIEW dw_report.inventory_snapshot 
+AS
+SELECT b.name AS SUBSIDIARY,
+       c.name AS LOCATION,
+       NVL(e.companyname,TRIM(REPLACE(e.full_name,e.name,''))) AS PUBLISHER,
+       e.country AS COUNTRY,
+       d.jde_item_code ITEM_CODE,
+       d.displayname DESCRIPTION,
+       a.qty_on_hand ON_HAND_QUANTITY,
+       a.avg_cost AVERAGE_COST,
+       a.qty_on_hand*a.avg_cost TOTAL_COST,
+       TO_DATE(f.date_id,'YYYYMMDD') AS SNAPSHOT_DATE
+FROM dw_report.inventory_snapshot_fact a
+  LEFT OUTER JOIN dw_report.subsidiaries b ON (a.subsidiary_key = b.subsidiary_key)
+  LEFT OUTER JOIN dw_report.locations c ON (a.location_key = c.location_key)
+  LEFT OUTER JOIN dw_report.items d ON (a.item_key = d.item_key)
+  LEFT OUTER JOIN dw_report.vendors e ON (d.publisher_id = e.vendor_id)
+  LEFT OUTER JOIN dw_report.dwdate f
+               ON (a.date_active_from <= TO_DATE (f.date_id,'YYYYMMDD')
+              AND a.date_active_to >= TO_DATE (f.date_id,'YYYYMMDD'));
+
 
 COMMIT;
 
