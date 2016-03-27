@@ -440,7 +440,8 @@ FROM dw_report.inventory_snapshot_fact a
   LEFT OUTER JOIN dw_report.vendors e ON (d.publisher_id = e.vendor_id)
   LEFT OUTER JOIN dw_report.dwdate f
                ON (a.date_active_from <= TO_DATE (f.date_id,'YYYYMMDD')
-              AND a.date_active_to >= TO_DATE (f.date_id,'YYYYMMDD'));
+              AND a.date_active_to >= TO_DATE (f.date_id,'YYYYMMDD'))
+  WHERE e.vendor_type = 'Intercompany';
 
 
 COMMIT;
