@@ -213,6 +213,7 @@ AND   dw_stage.revenue_fact.subsidiary_id = dw_prestage.revenue_fact_update.subs
 /* stage -> insert into stage records which have been created */
 INSERT INTO dw_stage.revenue_fact(runid
  ,transaction_number
+  ,document_number
  ,transaction_id
  ,transaction_line_id
  ,transaction_order
@@ -268,6 +269,7 @@ INSERT INTO dw_stage.revenue_fact(runid
  ,PRODUCT_CATALOGUE_ID)
 SELECT runid
  ,transaction_number
+  ,document_number
  ,transaction_id
  ,transaction_line_id
  ,transaction_order
@@ -327,6 +329,7 @@ FROM dw_prestage.revenue_fact_insert;
 INSERT INTO dw_stage.revenue_fact
 (runid
  ,transaction_number
+  ,document_number
  ,transaction_id
  ,transaction_line_id
  ,transaction_order
@@ -382,6 +385,7 @@ INSERT INTO dw_stage.revenue_fact
  ,PRODUCT_CATALOGUE_ID)
 SELECT runid
  ,transaction_number
+  ,document_number
  ,transaction_id
  ,transaction_line_id
  ,transaction_order
