@@ -84,6 +84,8 @@ FROM (SELECT TRANSACTION_ID,
                    GROSS_AMOUNT,
                    NET_AMOUNT,
                    NET_AMOUNT_FOREIGN,
+				   RRP,
+                   AVG_COST,
                    QUANTITY,
                    ITEM_ID,
                    ITEM_UNIT_PRICE,
@@ -100,7 +102,8 @@ FROM (SELECT TRANSACTION_ID,
                    CREATE_DATE,
                    DATE_LAST_MODIFIED,
                    PREPACK_ID,
-                   PRODUCT_CATALOGUE_ID
+                   PRODUCT_CATALOGUE_ID,
+				   PRICE_TYPE
             FROM dw_prestage.revenue_fact A2
             WHERE NOT EXISTS ( SELECT 1 FROM DW_PRESTAGE.REVENUE_FACT_INSERT B2
                   WHERE B2.TRANSACTION_ID = A2.TRANSACTION_ID
@@ -143,6 +146,8 @@ FROM (SELECT TRANSACTION_ID,
                    GROSS_AMOUNT,
                    NET_AMOUNT,
                    NET_AMOUNT_FOREIGN,
+				   RRP,
+                   AVG_COST,
                    QUANTITY,
                    ITEM_ID,
                    ITEM_UNIT_PRICE,
@@ -159,7 +164,8 @@ FROM (SELECT TRANSACTION_ID,
                    CREATE_DATE,
                    DATE_LAST_MODIFIED,
                    PREPACK_ID,
-                   PRODUCT_CATALOGUE_ID
+                   PRODUCT_CATALOGUE_ID,
+				   PRICE_TYPE
             FROM dw_stage.revenue_fact a1
 			WHERE EXISTS ( select 1 from dw_prestage.revenue_fact b1
 where b1.TRANSACTION_ID = a1.TRANSACTION_ID
@@ -249,6 +255,8 @@ INSERT INTO dw_stage.revenue_fact(runid
  ,gross_amount
  ,net_amount
  ,net_amount_foreign
+ ,RRP
+ ,AVG_COST
  ,quantity
  ,item_id
  ,item_unit_price
@@ -266,7 +274,8 @@ INSERT INTO dw_stage.revenue_fact(runid
  ,price_type_id
  ,date_last_modified
  ,prepack_id
- ,PRODUCT_CATALOGUE_ID)
+ ,PRODUCT_CATALOGUE_ID
+ ,PRICE_TYPE)
 SELECT runid
  ,transaction_number
   ,document_number
@@ -305,6 +314,8 @@ SELECT runid
  ,gross_amount
  ,net_amount
  ,net_amount_foreign
+ ,RRP
+ ,AVG_COST
  ,quantity
  ,item_id
  ,item_unit_price
@@ -323,6 +334,7 @@ SELECT runid
  ,date_last_modified
  ,prepack_id
  ,PRODUCT_CATALOGUE_ID
+ ,PRICE_TYPE
 FROM dw_prestage.revenue_fact_insert;
 
 /* stage -> insert into stage records which have been updated */
@@ -365,6 +377,8 @@ INSERT INTO dw_stage.revenue_fact
  ,gross_amount
  ,net_amount
  ,net_amount_foreign
+ ,RRP
+ ,AVG_COST
  ,quantity
  ,item_id
  ,item_unit_price
@@ -382,7 +396,8 @@ INSERT INTO dw_stage.revenue_fact
  ,price_type_id
  ,date_last_modified
  ,prepack_id
- ,PRODUCT_CATALOGUE_ID)
+ ,PRODUCT_CATALOGUE_ID
+ ,PRICE_TYPE)
 SELECT runid
  ,transaction_number
   ,document_number
@@ -421,6 +436,8 @@ SELECT runid
  ,gross_amount
  ,net_amount
  ,net_amount_foreign
+ ,RRP
+ ,AVG_COST
  ,quantity
  ,item_id
  ,item_unit_price
@@ -439,6 +456,7 @@ SELECT runid
  ,date_last_modified
  ,prepack_id
  ,PRODUCT_CATALOGUE_ID
+ ,PRICE_TYPE
 FROM dw_prestage.revenue_fact
 WHERE EXISTS (SELECT 1
               FROM dw_prestage.revenue_fact_update
@@ -484,6 +502,8 @@ DOCUMENT_NUMBER
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
 ,ITEM_KEY
 ,RATE
@@ -496,6 +516,7 @@ DOCUMENT_NUMBER
 ,ACCOUNTING_PERIOD_KEY
 ,PREPACK_KEY
 ,PRODUCT_CATALOGUE_KEY
+,PRICE_TYPE
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_CURRENT
@@ -537,6 +558,8 @@ DOCUMENT_NUMBER
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
  ,g.item_key
  ,ITEM_UNIT_PRICE        as rate
@@ -549,6 +572,7 @@ DOCUMENT_NUMBER
  ,q.accounting_period_key
  ,s.item_key prepack_key
  ,t.product_catalogue_key
+ ,PRICE_TYPE
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -610,6 +634,8 @@ DOCUMENT_NUMBER
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
  ,g.item_key
  ,ITEM_UNIT_PRICE        as rate
@@ -622,6 +648,7 @@ DOCUMENT_NUMBER
  ,q.accounting_period_key
  ,s.item_key prepack_key
  ,t.product_catalogue_key
+ ,PRICE_TYPE
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -686,6 +713,8 @@ INSERT INTO dw.revenue_fact_error
   ,GROSS_AMOUNT
   ,NET_AMOUNT
   ,NET_AMOUNT_FOREIGN
+  ,RRP
+  ,AVG_COST
   ,QUANTITY
   ,ITEM_KEY
   ,RATE
@@ -735,6 +764,7 @@ INSERT INTO dw.revenue_fact_error
   ,PRODUCT_CATALOGUE_ID
   ,PRODUCT_CATALOGUE_KEY
   ,PRODUCT_CATALOGUE_ID_ERROR
+  ,PRICE_TYPE
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -776,6 +806,8 @@ SELECT
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
  ,g.item_key
  ,ITEM_UNIT_PRICE        as rate
@@ -897,6 +929,7 @@ SELECT
          WHEN (t.product_catalogue_key IS NULL AND A.product_catalogue_id IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
   END
+,PRICE_TYPE
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact_insert a
@@ -1005,6 +1038,8 @@ DOCUMENT_NUMBER
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
 ,ITEM_KEY
 ,RATE
@@ -1017,6 +1052,7 @@ DOCUMENT_NUMBER
 ,ACCOUNTING_PERIOD_KEY
 ,PREPACK_KEY
 ,PRODUCT_CATALOGUE_KEY
+,PRICE_TYPE
 ,DATE_ACTIVE_FROM
 ,DATE_ACTIVE_TO
 ,DW_CURRENT
@@ -1058,6 +1094,8 @@ DOCUMENT_NUMBER
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
  ,g.item_key
  ,ITEM_UNIT_PRICE        as rate
@@ -1070,6 +1108,7 @@ DOCUMENT_NUMBER
  ,q.accounting_period_key
  ,S.ITEM_KEY PREPACK_KEY
  ,t.product_catalogue_key
+ ,PRICE_TYPE
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -1134,6 +1173,8 @@ DOCUMENT_NUMBER
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
  ,g.item_key
  ,ITEM_UNIT_PRICE        as rate
@@ -1146,6 +1187,7 @@ DOCUMENT_NUMBER
  ,q.accounting_period_key
  ,S.ITEM_KEY PREPACK_KEY
  ,t.product_catalogue_key
+ ,PRICE_TYPE
  ,SYSDATE AS DATE_ACTIVE_FROM
  ,TO_DATE('9999-12-31 11:59:59','YYYY-MM-DD HH24:MI:SS') AS DATE_ACTIVE_TO
  ,1 AS DW_CURRENT
@@ -1213,6 +1255,8 @@ INSERT INTO dw.revenue_fact_error
   ,GROSS_AMOUNT
   ,NET_AMOUNT
   ,NET_AMOUNT_FOREIGN
+  ,RRP
+  ,AVG_COST
   ,QUANTITY
   ,ITEM_KEY
   ,RATE
@@ -1262,6 +1306,7 @@ INSERT INTO dw.revenue_fact_error
   ,PRODUCT_CATALOGUE_ID
   ,PRODUCT_CATALOGUE_KEY
   ,PRODUCT_CATALOGUE_ID_ERROR
+  ,PRICE_TYPE
   ,RECORD_STATUS
   ,DW_CREATION_DATE
 )
@@ -1303,6 +1348,8 @@ SELECT
 ,GROSS_AMOUNT
 ,NET_AMOUNT
 ,NET_AMOUNT_FOREIGN
+,RRP
+,AVG_COST
 ,QUANTITY
  ,g.item_key
  ,ITEM_UNIT_PRICE        as rate
@@ -1424,6 +1471,7 @@ SELECT
          WHEN (t.product_catalogue_key IS NULL AND A.product_catalogue_id IS NULL) THEN ' NO DIM FROM SOURCE '
          ELSE 'OK'
   END
+,PRICE_TYPE
 ,'ERROR' AS RECORD_STATUS
 ,SYSDATE AS DW_CREATION_DATE
  from dw_prestage.revenue_fact a
