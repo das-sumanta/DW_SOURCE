@@ -1,0 +1,128 @@
+OCL-Misc-Invty Rec'd Not Billed
+
+select * from accounts
+where account_id = 115
+
+
+select count(1),a.subsidiary_id,d.name 
+from transaction_lines a
+INNER JOIN transactions b on ( a.transaction_id = b.transaction_id)
+Left outer join transactions c on ( b.created_from_id = c.transaction_id)
+Left outer join accounts d on ( a.account_id = d.account_id)
+Left outer join items e on ( a.item_id = e.item_id)
+where
+/*a.subsidiary_id = 27
+and*/ b.transaction_type = 'Item Receipt'
+and c.transaction_type = 'Purchase Order'
+and a.transaction_line_id = 0
+group by a.subsidiary_id,d.name
+
+
+sale by LOB by publisher
+
+select 
+d.name LINE_OF_BUSINESS,
+g.companyname PUBLISHER,
+g.country COUNTRY
+NULL PROPERTY,
+b.jde_item_code ITEM_CODE,
+b.wang_item_code WANG_CODE,
+NVL(b.isbn_name,'XXX') ISBN13,
+b.displayname DESCRIPTION,
+h.jde_item_code PREPACK_CODE,
+NVL(h.isbn_name,'XXX') PREPACK_ISBN,
+h.displayname REPACK_DESCRIPTION,
+'0' PREPACK_PERCENT,
+CASE WHEN UPPER(f.companyname) like '%SCHOLASTIC%' AND customer_category = 'Intercompany' THEN 'AFFILIATES'
+     WHEN UPPER(f.companyname) like '%SAMPLES%' THEN 'SAMPLES'
+     WHEN customer_category = 'Non-Revenue' AND f.companyname NOT like '%COMPLIMENTARY%' AND f.companyname NOT like '%SAMPLES%' THEN 'NON REVENUE'
+     WHEN f.companyname like '%COMPLIMENTARY%' THEN 'COMPLIMENTARIES'
+     WHEN d.name = 'Book Clubs' THEN 'BOOK CLUB'
+     WHEN d.name = 'Book Fairs' THEN 'BOOK FAIRS'
+     WHEN d.name = 'Standing Orders' THEN 'NZSO'
+     WHEN d.name = 'Trade' THEN 'TRADE'
+     WHEN d.name = 'School Essentials' THEN 'SCHOOL ESSENTIALS'
+     WHEN (d.name = 'Education' or d.parent_name = 'Education') AND d.name <> 'School Essentials' THEN 'EDUCATION'
+ELSE f.companyname END ROYALTY,
+CASE WHEN h.jde_item_code IS NOT NULL then 'PREPACK SALES & RETURNS'
+ELSE 'SALES & RETURNS' END MOVEMENT,
+CASE WHEN f.companyname like '%SCHOLASTIC%' THEN 'INTERCOMPANY SALES'
+     WHEN d.name = 'Book Clubs' AND a.quantity > 0 THEN 'BOOK CLUB -STOCK CREDIT ORDER'
+     WHEN d.name = 'Book Clubs' AND a.quantity <= 0 THEN 'SALES ORDER - BOOK CLUB'
+     WHEN d.name = 'Book Fairs' AND f.companyname = 'BOOKFAIR CHC STOCK TAKE' THEN 'BOOK FAIRS CHRISTCHURCH STOCK'
+     WHEN d.name = 'Book Fairs' AND f.companyname <> 'BOOKFAIR CHC STOCK TAKE' THEN f.companyname
+ELSE f.companyname END DOCUMENT_DESCRIPTION,
+j.product_catalogue_name product_catalogue,
+f.customer_extid customer_code,
+f.companyname customer_name,
+e.transaction_type,
+a.document_number,
+to_char(to_date(c.date_id,'YYYYMMDD'),'DD/MM/YY') date,
+c.fiscal_year,
+c.fiscal_month_number,
+a.rate list_price,
+a.quantity,
+a.net_amount,
+a.quantity*a.rate list_value,
+(a.quantity*a.rate - a.net_amount) discount
+from
+dw_report.revenue_fact a
+LEFT OUTER JOIN dw_report.items b ON (a.item_key = b.item_key)
+LEFT OUTER JOIN dw_report.dwdate c ON (a.transaction_date_key = c.date_key)
+LEFT OUTER JOIN dw_report.classes d ON (d.class_key = a.class_key)
+LEFT OUTER JOIN dw_report.transaction_type e ON (a.document_type_key = e.transaction_type_key)
+LEFT OUTER JOIN dw_report.customers f ON (f.customer_key = a.customer_key)
+LEFT OUTER JOIN dw_report.vendors g ON (b.publisher_id = a.vendor_id)
+LEFT OUTER JOIN dw_report.items h ON (a.prepack_key = b.item_key)
+LEFT OUTER JOIN dw_report.accounts i ON (a.account_key = b.account_key)
+LEFT OUTER JOIN dw_report.product_catalogue j ON (a.product_catalogue_key = j.product_catalogue_key)
+WHERE e.document_type= 'Invoice' 
+ and LENGTH(b.isbn_NAME) = 13
+AND NVL(a.name,'Revenue-Product') = 'Revenue-Product'
+
+inventory snapshot
+
+select 
+b.name as SUBSIDIARY,
+c.name as LOCATION,
+NVL(e.companyname ,TRIM(REPLACE(e.full_name,e.name,''))) as PUBLISHER,
+e.country as COUNTRY,
+d.jde_item_code ITEM_CODE,
+d.displayname DESCRIPTION,
+a.qty_on_hand ON_HAND_QUANTITY,
+a.avg_cost AVERAGE_COST,
+a.qty_on_hand * a.avg_cost TOTAL_COST,
+to_date(f.date_id,'YYYYMMDD') as SNAPSHOT_DATE
+ from
+dw_report.inventory_snapshot_fact a 
+LEFT OUTER JOIN dw_report.subsidiaries b ON (a.subsidiary_key = b.subsidiary_key)
+LEFT OUTER JOIN dw_report.locations c ON (a.location_key = c.location_key)
+LEFT OUTER JOIN dw_report.items d ON (a.item_key = d.item_key)
+LEFT OUTER JOIN dw_report.vendors e ON (d.publisher_id = e.vendor_id)
+LEFT OUTER JOIN dw_report.dwdate f ON (a.date_active_from <= to_date(f.date_id,'YYYYMMDD') AND 
+                                       a.date_active_to >= to_date(f.date_id,'YYYYMMDD'))  
+                                       
+                                       
+actual
+
+CREATE VIEW dw_report.actual 
+AS
+SELECT f.class_key,
+       f.subsidiary_key,
+       g.fiscal_week_number,
+       g.fiscal_month_number,
+       g.fiscal_year,
+       g.fiscal_year + 1 AS previous_year,
+       SUM(NVL (f.net_amount,0)) AS actual
+FROM dw.revenue_fact f
+  INNER JOIN dw_report.dwdate g ON (f.transaction_date_key = g.date_key)
+  INNER JOIN dw_report.transaction_type h ON ( f.document_type_key = h.transaction_type_key)
+  INNER JOIN dw_report.accounts j ON ( f.account_key = j.account_key)
+WHERE ((h.document_type IN ('Invoice','Credit Memo') and j.name IN ('Revenue-Product','Revenue-Discounts'))
+         OR
+        (h.document_type IN ('Return Authorization','Journal') and j.name IN ('Revenue-Product'))) 
+GROUP BY f.class_key,
+         f.subsidiary_key,
+         g.fiscal_week_number,
+         g.fiscal_month_number,
+         g.fiscal_year;                    
