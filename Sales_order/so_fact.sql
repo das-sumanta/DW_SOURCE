@@ -1,324 +1,89 @@
-SELECT b.tranid AS document_number,
-       b.transaction_number AS transaction_number,
-       to_char(a.transaction_id) as transaction_id,
-       to_char(a.transaction_line_id) as transaction_line_id,
-       to_char(a.transaction_order) as transaction_order,
-       f.transaction_number AS REF_DOC_NUMBER,
-       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
-       TO_CHAR(b.payment_terms_id) AS payment_terms_id,
-       b.revenue_commitment_status,
-       b.revenue_status,
-       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
+   SELECT B.TRANID AS DOCUMENT_NUMBER,
+       B.TRANSACTION_NUMBER AS TRANSACTION_NUMBER,
+       TO_CHAR(A.TRANSACTION_ID) AS TRANSACTION_ID,
+       TO_CHAR(A.TRANSACTION_LINE_ID) AS TRANSACTION_LINE_ID,
+       TO_CHAR(A.TRANSACTION_ORDER) AS TRANSACTION_ORDER,
+       F.TRANSACTION_NUMBER AS REF_DOC_NUMBER,
+       TO_CHAR(F.CUSTOM_FORM_ID) AS REF_CUSTOM_FORM_ID,
+       TO_CHAR(B.PAYMENT_TERMS_ID) AS PAYMENT_TERMS_ID,
+       B.REVENUE_COMMITMENT_STATUS,
+       B.REVENUE_STATUS,
+       TO_CHAR(NVL(B.SALES_REP_ID,H.SALES_REP_ID)) AS SALES_REP_ID,
        TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
-       e.BILL_ADDRESS_LINE_1,
-       e.BILL_ADDRESS_LINE_2,
-       e.BILL_ADDRESS_LINE_3,
-       e.BILL_CITY,
-       e.BILL_COUNTRY,
-       e.BILL_STATE,
-       e.BILL_ZIP,
-       e.SHIP_ADDRESS_LINE_1,
-       e.SHIP_ADDRESS_LINE_2,
-       e.SHIP_ADDRESS_LINE_3,
-       e.SHIP_CITY,
-       e.SHIP_COUNTRY,
-       e.SHIP_STATE,
-       e.SHIP_ZIP,
-       status AS document_status,
-       b.transaction_type AS transaction_type,
-       TO_CHAR(b.currency_id) as currency_id,
-       TO_CHAR(b.trandate,'YYYY-MM-DD HH24:MI:SS') AS trandate,
-       b.EXCHANGE_RATE,
-       to_char(a.account_id) as account_id,
-       to_char(a.AMOUNT) as AMOUNT,
-       to_char(a.AMOUNT_FOREIGN) as AMOUNT_FOREIGN,
-       to_char(a.GROSS_AMOUNT) as GROSS_AMOUNT,
-       to_char(a.NET_AMOUNT) as NET_AMOUNT,
-       to_char(a.NET_AMOUNT_FOREIGN) as NET_AMOUNT_FOREIGN,
-       to_char(a.rrp) as rrp,
-       to_char(j.average_cost) as avg_cost,
-       to_char(a.item_count) as quantity,
-       to_char(a.item_id) as item_id,
-       TO_CHAR(a.ITEM_UNIT_PRICE) AS ITEM_UNIT_PRICE,
-       TO_CHAR(a.TAX_ITEM_ID) AS TAX_ITEM_ID,
-       TO_CHAR(d.AMOUNT) AS TAX_AMOUNT,
-       TO_CHAR(b.LOCATION_ID) AS LOCATION_ID,
-       TO_CHAR(a.CLASS_ID) as CLASS_ID,
-       TO_CHAR(a.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
-       TO_CHAR(B.accounting_period_ID) AS accounting_period_ID,
-       TO_CHAR(B.entity_ID) AS customer_ID,
-       TO_CHAR(a.price_type_ID) AS price_type_ID,
-       TO_CHAR(B.custom_form_ID) AS custom_form_ID,
-       TO_CHAR(b.created_by_ID) AS created_by_ID,
-       TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
-       TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
+       E.BILL_ADDRESS_LINE_1,
+       E.BILL_ADDRESS_LINE_2,
+       E.BILL_ADDRESS_LINE_3,
+       E.BILL_CITY,
+       E.BILL_COUNTRY,
+       E.BILL_STATE,
+       E.BILL_ZIP,
+       E.SHIP_ADDRESS_LINE_1,
+       E.SHIP_ADDRESS_LINE_2,
+       E.SHIP_ADDRESS_LINE_3,
+       E.SHIP_CITY,
+       E.SHIP_COUNTRY,
+       E.SHIP_STATE,
+       E.SHIP_ZIP,
+       B.STATUS ,
+       B.TRANSACTION_TYPE AS TRANSACTION_TYPE,
+       TO_CHAR(B.CURRENCY_ID) AS CURRENCY_ID,
+       TO_CHAR(B.TRANDATE,'YYYY-MM-DD HH24:MI:SS') AS TRANDATE,
+       B.EXCHANGE_RATE,
+       TO_CHAR(A.ACCOUNT_ID) AS ACCOUNT_ID,
+       TO_CHAR(A.AMOUNT) AS AMOUNT,
+       TO_CHAR(A.AMOUNT_FOREIGN) AS AMOUNT_FOREIGN,
+       TO_CHAR(A.GROSS_AMOUNT) AS GROSS_AMOUNT,
+       TO_CHAR(A.NET_AMOUNT) AS NET_AMOUNT,
+       TO_CHAR(A.NET_AMOUNT_FOREIGN) AS NET_AMOUNT_FOREIGN,
+       TO_CHAR(A.RRP) AS RRP,
+       TO_CHAR(J.AVERAGE_COST) AS AVG_COST,
+       TO_CHAR(A.ITEM_COUNT) AS QUANTITY,
+       TO_CHAR(A.QUANTITY_COMMITTED) AS COMMITTED_QUANTITY,
+       TO_CHAR(A.ITEM_ID) AS ITEM_ID,
+       B.REWARDS_EARN,
+	   B.REWARD_BALANCE,
+       TO_CHAR(A.ITEM_UNIT_PRICE) AS ITEM_UNIT_PRICE,
+       TO_CHAR(A.TAX_ITEM_ID) AS TAX_ITEM_ID,
+       TO_CHAR(D.AMOUNT) AS TAX_AMOUNT,
+       TO_CHAR(B.LOCATION_ID) AS LOCATION_ID,
+       TO_CHAR(A.CLASS_ID) AS CLASS_ID,
+       TO_CHAR(A.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
+       TO_CHAR(B.ACCOUNTING_PERIOD_ID) AS ACCOUNTING_PERIOD_ID,
+       TO_CHAR(B.ENTITY_ID) AS CUSTOMER_ID,
+       TO_CHAR(A.PRICE_TYPE_ID) AS PRICE_TYPE_ID,
+	   L.NAME PRICE_TYPE,
+       TO_CHAR(B.CUSTOM_FORM_ID) AS CUSTOM_FORM_ID,
+       TO_CHAR(B.CREATED_BY_ID) AS CREATED_BY_ID,
+       TO_CHAR(B.OFFER_ID) AS OFFER_ID,
+       TO_CHAR(A.PRODUCT_CATALOGUE_ID) AS  PRODUCT_CATALOGUE_ID,
+       TO_CHAR(A.BROCHURE_CODE) AS BROCHURE_CODE,
+       TO_CHAR(A.TEACHER_ID) AS TEACHER_ID,
+       TO_CHAR(BOOK_FAIRS_CONSULTANT_ID) AS BOOK_FAIRS_CONSULTANT_ID,
+	   K.LIST_ITEM_NAME NEXT_ACTION,
+       TO_CHAR(B.CREATE_DATE,'YYYY-MM-DD HH24:MI:SS') AS CREATE_DATE,
+       TO_CHAR(A.DATE_LAST_MODIFIED,'YYYY-MM-DD HH24:MI:SS') AS DATE_LAST_MODIFIED,
        DECODE(c.name,
-             'AR-General','INV_HDR',
-             decode(a.transaction_line_id,0,'INV_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'INV_LINE','INV_TAX'),'INV_LINE'))
-       ) AS line_type,
-       NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id,
-	   L.NAME PRICE_TYPE
-FROM transaction_lines a
-  INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
-  LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
-  LEFT OUTER JOIN transaction_tax_detail d
-               ON (TRANSACTION_LINES.transaction_id = transaction_tax_detail.transaction_id
-              AND TRANSACTION_LINES.transaction_line_id = transaction_tax_detail.transaction_line_id)
-  LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
-  LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
-  LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
-  LEFT OUTER JOIN item_location_map j ON (a.item_id = j.item_id AND a.location_id = j.location_id)
+             'Sales Orders','SO_HDR',
+             decode(a.transaction_line_id,0,'SO_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'SO_LINE','SO_TAX'),'SO_LINE'))
+       ) AS trx_type,
+	  NULL prepack_id
+FROM TRANSACTION_LINES A
+  INNER JOIN TRANSACTIONS B ON (TRANSACTION_LINES.TRANSACTION_ID = TRANSACTIONS.TRANSACTION_ID)
+  LEFT OUTER JOIN ACCOUNTS C ON (TRANSACTION_LINES.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID)
+  LEFT OUTER JOIN TRANSACTION_TAX_DETAIL D
+               ON (TRANSACTION_LINES.TRANSACTION_ID = TRANSACTION_TAX_DETAIL.TRANSACTION_ID
+              AND TRANSACTION_LINES.TRANSACTION_LINE_ID = TRANSACTION_TAX_DETAIL.TRANSACTION_LINE_ID)
+  LEFT OUTER JOIN TRANSACTION_ADDRESS E ON (TRANSACTION_LINES.TRANSACTION_ID = TRANSACTION_ADDRESS.TRANSACTION_ID)
+  LEFT OUTER JOIN TRANSACTIONS F ON (B.CREATED_FROM_ID = F.TRANSACTION_ID)
+  LEFT OUTER JOIN CUSTOMERS H ON (B.ENTITY_ID = H.CUSTOMER_ID)
+  LEFT OUTER JOIN TAX_ITEMS I ON (A.ITEM_ID = I.ITEM_ID)
+  LEFT OUTER JOIN ITEM_LOCATION_MAP J ON (A.ITEM_ID = J.ITEM_ID AND A.LOCATION_ID = J.LOCATION_ID)
+  LEFT OUTER JOIN BC_NEXT_ACTION K ON (A.NEXT_ACTION_TAKEN_ID = K.LIST_ID )
   LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
-WHERE a.subsidiary_id = '%s'
-AND   b.transaction_type = 'Invoice'
+WHERE A.SUBSIDIARY_ID = '%s'
+AND   b.transaction_type = 'Sales Order'
 AND EXISTS (SELECT 1
               FROM transactions i
               WHERE i.transaction_id = a.transaction_id
-              AND   i.transaction_type = 'Invoice'
-	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
-UNION ALL
-SELECT b.tranid AS document_number,
-       b.transaction_number AS transaction_number,
-       to_char(a.transaction_id) as transaction_id,
-       to_char(a.transaction_line_id) as transaction_line_id,
-       to_char(a.transaction_order) as transaction_order,
-       f.transaction_number AS REF_DOC_NUMBER,
-       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
-       TO_CHAR(b.payment_terms_id) AS payment_terms_id,
-       b.revenue_commitment_status,
-       b.revenue_status,
-       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
-       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
-       e.BILL_ADDRESS_LINE_1,
-       e.BILL_ADDRESS_LINE_2,
-       e.BILL_ADDRESS_LINE_3,
-       e.BILL_CITY,
-       e.BILL_COUNTRY,
-       e.BILL_STATE,
-       e.BILL_ZIP,
-       e.SHIP_ADDRESS_LINE_1,
-       e.SHIP_ADDRESS_LINE_2,
-       e.SHIP_ADDRESS_LINE_3,
-       e.SHIP_CITY,
-       e.SHIP_COUNTRY,
-       e.SHIP_STATE,
-       e.SHIP_ZIP,
-       status AS document_status,
-       b.transaction_type AS transaction_type,
-       TO_CHAR(b.currency_id) as currency_id,
-       TO_CHAR(b.trandate,'YYYY-MM-DD HH24:MI:SS') AS trandate,
-       b.EXCHANGE_RATE,
-       to_char(a.account_id) as account_id,
-       to_char(a.AMOUNT) as AMOUNT,
-       to_char(a.AMOUNT_FOREIGN) as AMOUNT_FOREIGN,
-       to_char(a.GROSS_AMOUNT) as GROSS_AMOUNT,
-       to_char(a.NET_AMOUNT) as NET_AMOUNT,
-       to_char(a.NET_AMOUNT_FOREIGN) as NET_AMOUNT_FOREIGN,
-       to_char(a.rrp) as rrp,
-       to_char(j.average_cost) as avg_cost,
-       to_char(a.item_count) as quantity,
-       to_char(a.item_id) as item_id,
-       TO_CHAR(a.ITEM_UNIT_PRICE) AS ITEM_UNIT_PRICE,
-       TO_CHAR(a.TAX_ITEM_ID) AS TAX_ITEM_ID,
-       TO_CHAR(d.AMOUNT) AS TAX_AMOUNT,
-       TO_CHAR(b.LOCATION_ID) AS LOCATION_ID,
-       TO_CHAR(a.CLASS_ID) as CLASS_ID,
-       TO_CHAR(a.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
-       TO_CHAR(B.accounting_period_ID) AS accounting_period_ID,
-       TO_CHAR(B.entity_ID) AS customer_ID,
-       TO_CHAR(a.price_type_ID) AS price_type_ID,
-       TO_CHAR(B.custom_form_ID) AS custom_form_ID,
-       TO_CHAR(b.created_by_ID) AS created_by_ID,
-       TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
-       TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       DECODE(c.name,
-             'Return Authorizations','RA_HDR',
-             decode(a.transaction_line_id,0,'RA_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'RA_LINE','RA_TAX'),'RA_LINE'))
-       ) AS line_type,
-       NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id,
-	   L.NAME PRICE_TYPE
-FROM transaction_lines a
-  INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
-  LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
-  LEFT OUTER JOIN transaction_tax_detail d
-               ON (TRANSACTION_LINES.transaction_id = transaction_tax_detail.transaction_id
-              AND TRANSACTION_LINES.transaction_line_id = transaction_tax_detail.transaction_line_id)
-  LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
-  LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
-  LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
-  LEFT OUTER JOIN item_location_map j ON (a.item_id = j.item_id AND a.location_id = j.location_id)
-  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
-WHERE a.subsidiary_id = '%s'
-AND   b.transaction_type = 'Return Authorization' 
-AND EXISTS (SELECT 1
-              FROM transactions i
-              WHERE i.transaction_id = a.transaction_id
-              AND   i.transaction_type = 'Return Authorization' 
-	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
-UNION ALL
-SELECT b.tranid AS document_number,
-       b.transaction_number AS transaction_number,
-       to_char(a.transaction_id) as transaction_id,
-       to_char(a.transaction_line_id) as transaction_line_id,
-       to_char(a.transaction_order) as transaction_order,
-       f.transaction_number AS REF_DOC_NUMBER,
-       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
-       TO_CHAR(b.payment_terms_id) AS payment_terms_id,
-       b.revenue_commitment_status,
-       b.revenue_status,
-       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
-       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
-       e.BILL_ADDRESS_LINE_1,
-       e.BILL_ADDRESS_LINE_2,
-       e.BILL_ADDRESS_LINE_3,
-       e.BILL_CITY,
-       e.BILL_COUNTRY,
-       e.BILL_STATE,
-       e.BILL_ZIP,
-       e.SHIP_ADDRESS_LINE_1,
-       e.SHIP_ADDRESS_LINE_2,
-       e.SHIP_ADDRESS_LINE_3,
-       e.SHIP_CITY,
-       e.SHIP_COUNTRY,
-       e.SHIP_STATE,
-       e.SHIP_ZIP,
-       status AS document_status,
-       b.transaction_type AS transaction_type,
-       TO_CHAR(b.currency_id) as currency_id,
-       TO_CHAR(b.trandate,'YYYY-MM-DD HH24:MI:SS') AS trandate,
-       b.EXCHANGE_RATE,
-       to_char(a.account_id) as account_id,
-       to_char(a.AMOUNT) as AMOUNT,
-       to_char(a.AMOUNT_FOREIGN) as AMOUNT_FOREIGN,
-       to_char(a.GROSS_AMOUNT) as GROSS_AMOUNT,
-       to_char(a.NET_AMOUNT) as NET_AMOUNT,
-       to_char(a.NET_AMOUNT_FOREIGN) as NET_AMOUNT_FOREIGN,
-       to_char(a.rrp) as rrp,
-       to_char(j.average_cost) as avg_cost,
-       to_char(a.item_count) as quantity,
-       to_char(a.item_id) as item_id,
-       TO_CHAR(a.ITEM_UNIT_PRICE) AS ITEM_UNIT_PRICE,
-       TO_CHAR(a.TAX_ITEM_ID) AS TAX_ITEM_ID,
-       TO_CHAR(d.AMOUNT) AS TAX_AMOUNT,
-       TO_CHAR(b.LOCATION_ID) AS LOCATION_ID,
-       TO_CHAR(a.CLASS_ID) as CLASS_ID,
-       TO_CHAR(a.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
-       TO_CHAR(B.accounting_period_ID) AS accounting_period_ID,
-       TO_CHAR(B.entity_ID) AS customer_ID,
-       TO_CHAR(a.price_type_ID) AS price_type_ID,
-       TO_CHAR(B.custom_form_ID) AS custom_form_ID,
-       TO_CHAR(b.created_by_ID) AS created_by_ID,
-       TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
-       TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       DECODE(c.name,
-             'AR-General','CN_HDR',
-             decode(a.transaction_line_id,0,'CN_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'CN_LINE','CN_TAX'),'CN_LINE'))
-       ) AS line_type,
-       NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id,
-	   L.NAME PRICE_TYPE
-FROM transaction_lines a
-  INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
-  LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
-  LEFT OUTER JOIN transaction_tax_detail d
-               ON (TRANSACTION_LINES.transaction_id = transaction_tax_detail.transaction_id
-              AND TRANSACTION_LINES.transaction_line_id = transaction_tax_detail.transaction_line_id)
-  LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
-  LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
-  LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
-  LEFT OUTER JOIN item_location_map j ON (a.item_id = j.item_id AND a.location_id = j.location_id)
-  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
-WHERE a.subsidiary_id = '%s'
-AND   b.transaction_type = 'Credit Memo'
-AND EXISTS (SELECT 1
-              FROM transactions i
-              WHERE i.transaction_id = a.transaction_id
-              AND   i.transaction_type = 'Credit Memo'
-	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'))
-UNION ALL
-SELECT b.tranid AS document_number,
-       b.transaction_number AS transaction_number,
-       to_char(a.transaction_id) as transaction_id,
-       to_char(a.transaction_line_id) as transaction_line_id,
-       to_char(a.transaction_order) as transaction_order,
-       f.transaction_number AS REF_DOC_NUMBER,
-       TO_CHAR(f.custom_form_id) as ref_custom_form_id,
-       TO_CHAR(b.payment_terms_id) AS payment_terms_id,
-       b.revenue_commitment_status,
-       b.revenue_status,
-       TO_CHAR(NVL(b.sales_rep_id,h.sales_rep_id)) AS sales_rep_id,
-       TO_CHAR(B.SALES_TERRITORY_ID) AS SALES_TERRITORY_ID,
-       e.BILL_ADDRESS_LINE_1,
-       e.BILL_ADDRESS_LINE_2,
-       e.BILL_ADDRESS_LINE_3,
-       e.BILL_CITY,
-       e.BILL_COUNTRY,
-       e.BILL_STATE,
-       e.BILL_ZIP,
-       e.SHIP_ADDRESS_LINE_1,
-       e.SHIP_ADDRESS_LINE_2,
-       e.SHIP_ADDRESS_LINE_3,
-       e.SHIP_CITY,
-       e.SHIP_COUNTRY,
-       e.SHIP_STATE,
-       e.SHIP_ZIP,
-       status AS document_status,
-       b.transaction_type AS transaction_type,
-       TO_CHAR(b.currency_id) as currency_id,
-       TO_CHAR(b.trandate,'YYYY-MM-DD HH24:MI:SS') AS trandate,
-       b.EXCHANGE_RATE,
-       to_char(a.account_id) as account_id,
-       to_char(a.AMOUNT) as AMOUNT,
-       to_char(a.AMOUNT_FOREIGN) as AMOUNT_FOREIGN,
-       to_char(a.GROSS_AMOUNT) as GROSS_AMOUNT,
-       to_char(a.NET_AMOUNT) as NET_AMOUNT,
-       to_char(a.NET_AMOUNT_FOREIGN) as NET_AMOUNT_FOREIGN,
-       to_char(a.rrp) as rrp,
-       NULL as avg_cost,
-       to_char(a.item_count) as quantity,
-       to_char(a.item_id) as item_id,
-       TO_CHAR(a.ITEM_UNIT_PRICE) AS ITEM_UNIT_PRICE,
-       TO_CHAR(a.TAX_ITEM_ID) AS TAX_ITEM_ID,
-       TO_CHAR(d.AMOUNT) AS TAX_AMOUNT,
-       TO_CHAR(b.LOCATION_ID) AS LOCATION_ID,
-       TO_CHAR(a.CLASS_ID) as CLASS_ID,
-       TO_CHAR(a.SUBSIDIARY_ID) AS SUBSIDIARY_ID,
-       TO_CHAR(B.accounting_period_ID) AS accounting_period_ID,
-       TO_CHAR(B.entity_ID) AS customer_ID,
-       TO_CHAR(a.price_type_ID) AS price_type_ID,
-       TO_CHAR(B.custom_form_ID) AS custom_form_ID,
-       TO_CHAR(b.created_by_ID) AS created_by_ID,
-       TO_CHAR(B.create_date,'YYYY-MM-DD HH24:MI:SS') AS create_date,
-       TO_CHAR(a.date_last_modified,'YYYY-MM-DD HH24:MI:SS') AS date_last_modified,
-       DECODE(c.name,
-             'AR-General','JN_HDR',
-             decode(a.transaction_line_id,0,'JN_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'JN_LINE','JN_TAX'),'JN_LINE'))
-       ) AS line_type,
-       NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id,
-	   L.NAME PRICE_TYPE
-FROM transaction_lines a
-  INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
-  LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
-  LEFT OUTER JOIN transaction_tax_detail d
-               ON (TRANSACTION_LINES.transaction_id = transaction_tax_detail.transaction_id
-              AND TRANSACTION_LINES.transaction_line_id = transaction_tax_detail.transaction_line_id)
-  LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
-  LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
-  LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
-  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
-  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
-WHERE a.subsidiary_id = '%s'
-AND   b.transaction_type = 'Journal'
-AND   c.accountnumber = '4000001'
-AND c.full_name = 'Product Revenue : Revenue-Product'
-AND EXISTS (SELECT 1
-              FROM transactions i
-              WHERE i.transaction_id = a.transaction_id
-              AND   i.transaction_type = 'Journal'
-	      AND  i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS'));
+              AND   i.transaction_type = 'Sales Order'
+	      AND i.date_last_modified >= to_timestamp('%s','YYYY-MM-DD HH24:MI:SS')); 
