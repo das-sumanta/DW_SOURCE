@@ -57,7 +57,8 @@ SELECT b.tranid AS document_number,
              decode(a.transaction_line_id,0,'INV_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'INV_LINE','INV_TAX'),'INV_LINE'))
        ) AS line_type,
        NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id
+       to_char(a.product_catalogue_id) product_catalogue_id,
+	   L.NAME PRICE_TYPE
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -69,6 +70,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
   LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
   LEFT OUTER JOIN item_location_map j ON (a.item_id = j.item_id AND a.location_id = j.location_id)
+  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Invoice'
 AND EXISTS (SELECT 1
@@ -136,7 +138,8 @@ SELECT b.tranid AS document_number,
              decode(a.transaction_line_id,0,'RA_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'RA_LINE','RA_TAX'),'RA_LINE'))
        ) AS line_type,
        NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id
+       to_char(a.product_catalogue_id) product_catalogue_id,
+	   L.NAME PRICE_TYPE
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -148,6 +151,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
   LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
   LEFT OUTER JOIN item_location_map j ON (a.item_id = j.item_id AND a.location_id = j.location_id)
+  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Return Authorization' 
 AND EXISTS (SELECT 1
@@ -215,7 +219,8 @@ SELECT b.tranid AS document_number,
              decode(a.transaction_line_id,0,'CN_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'CN_LINE','CN_TAX'),'CN_LINE'))
        ) AS line_type,
        NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id
+       to_char(a.product_catalogue_id) product_catalogue_id,
+	   L.NAME PRICE_TYPE
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -227,6 +232,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
   LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
   LEFT OUTER JOIN item_location_map j ON (a.item_id = j.item_id AND a.location_id = j.location_id)
+  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Credit Memo'
 AND EXISTS (SELECT 1
@@ -294,7 +300,8 @@ SELECT b.tranid AS document_number,
              decode(a.transaction_line_id,0,'JN_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'JN_LINE','JN_TAX'),'JN_LINE'))
        ) AS line_type,
        NULL prepack_id,
-       to_char(a.product_catalogue_id) product_catalogue_id
+       to_char(a.product_catalogue_id) product_catalogue_id,
+	   L.NAME PRICE_TYPE
 FROM transaction_lines a
   INNER JOIN transactions b ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN accounts c ON (TRANSACTION_LINES.account_id = accounts.account_id)
@@ -305,6 +312,7 @@ FROM transaction_lines a
   LEFT OUTER JOIN transactions f ON (b.created_from_id = f.transaction_id)
   LEFT OUTER JOIN customers h ON (b.ENTITY_ID = h.customer_id)
   LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
+  LEFT OUTER JOIN PRICE_TYPES L ON (A.PRICE_TYPE_ID = L.PRICE_TYPE_ID )
 WHERE a.subsidiary_id = '%s'
 AND   b.transaction_type = 'Journal'
 AND   c.accountnumber = '4000001'
