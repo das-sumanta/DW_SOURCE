@@ -55,6 +55,7 @@ CREATE TABLE dw.revenue_fact
   ACCOUNTING_PERIOD_KEY       INTEGER,
   PREPACK_KEY                 INTEGER,
   PRODUCT_CATALOGUE_KEY       INTEGER,
+  PRICE_TYPE                  VARCHAR(100),
   DATE_ACTIVE_FROM            TIMESTAMP,
   DATE_ACTIVE_TO              TIMESTAMP,
   DW_CURRENT                  INTEGER,
