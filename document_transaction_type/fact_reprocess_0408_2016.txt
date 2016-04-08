@@ -1,0 +1,58 @@
+REVENUE
+
+1. NZ subsidiary id - 27
+   Return Authorizations and Credit Memos are not associated with Custom forms although it is a mandatory field in Netsuite transaction form
+
+2. Groelier Malaysia - subsidiary id 3
+   CN line posted to "G/L-Realized-General","IC Rec - Sch AU","IC Rec - Gr IN" has no item associated (283)
+   No customer/item associated with lines posted to "Revenue-Product" account (218)  Journals -- Latest opn file was not present in EC2
+   Date lookup failed for 2011, 2012 , 2013  - Date dim to be filled up (409)
+   
+3. Scholastic education Intl - subsidiary id 4
+   No customer/item associated with lines posted to "Revenue-Product" account (659)  Journals -- Latest opn file was not present in EC2
+   Date lookup failed for 2013  - Date dim to be filled up (659)
+   
+4. subsidiary id - 25
+   Date lookup failed for 2010,2011, 2012 , 2013  - Date dim to be filled up (57)
+   
+5. subsidiary id - 8
+   Date lookup failed for 2013  - Date dim to be filled up (223)
+   No customer/item associated with lines posted to "Revenue-Product" account (223)  Journals -- Latest opn file was not present in EC2
+   
+6. subsidiary id - 5,6,7,9
+   Date lookup failed for 2013  - Date dim to be filled up (192)
+   No customer/item associated with lines posted to "Revenue-Product" account (192)  Journals -- Latest opn file was not present in EC2
+   
+AMORTIZATION
+
+1. STO END DATE 2099-02-22 - Date dim to be filled up for 2099 (3)
+
+STANDING ORDER SCHEDULE
+
+1. STO END DATE 2099-02-22 - Date dim to be filled up for 2099 (3)
+
+SALES ORDER
+
+1. subsidiary id - 27
+   Customer lookup failed for customer_id 164453 - to be reprocessed
+2. subsidiary id - 25
+   Sales order SO-SHK1 not associated with Custom form although it is a mandatory field in Netsuite transaction form
+3. subsidiary id - 3
+   Date lookup failed for 2011,2013  - Date dim to be filled up (7)
+   
+INVENTORY SNAPSHOT
+
+1. Records failed for item id lookup - need to rewrite the reprocess logic
+
+OPPORTUNITY
+
+1. subsidiary id - 27
+   Date lookup failed for 1970  - Date dim to be filled up (6)
+   
+BUDGETFORECAST
+
+1. No error - no new budgetforecast data is being defined
+
+
+   
+   
