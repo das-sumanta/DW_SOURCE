@@ -4,8 +4,9 @@ DROP TABLE if exists dw_prestage.po_fact;
 
 CREATE TABLE dw_prestage.po_fact 
 (
-  RUNID				                 INTEGER,
+  RUNID				           INTEGER,
   TRANSACTION_ID               INTEGER,
+  DOCUMENT_NUMBER              VARCHAR(500),
   PO_NUMBER                    VARCHAR(200),
   TRANSACTION_LINE_ID          INTEGER,
   REF_TRX_NUMBER               VARCHAR(200),   
@@ -25,9 +26,10 @@ CREATE TABLE dw_prestage.po_fact
   CARRIER_ID                   INTEGER,          
   CLOSED                       TIMESTAMP,
   CREATED_BY_ID                INTEGER,
-  REQUESTOR_ID		             INTEGER,
+  REQUESTOR_ID		           INTEGER,
   CREATED_FROM_ID              INTEGER,
   CREATE_DATE                  TIMESTAMP,
+  TRANDATE                     TIMESTAMP,
   CURRENCY_ID                  INTEGER,
   CUSTOM_FORM_ID               INTEGER,
   DATE_LAST_MODIFIED           TIMESTAMP,
