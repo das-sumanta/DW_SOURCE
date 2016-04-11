@@ -6,6 +6,7 @@ CREATE TABLE dw.po_fact_error
 (
   RUNID                         BIGINT,
   PO_ERROR_KEY                  BIGINT IDENTITY(0,1),
+  DOCUMENT_NUMBER               VARCHAR(500),
   PO_NUMBER                     VARCHAR(150),
   PO_ID                        INTEGER,         
   PO_LINE_ID                   INTEGER,        
@@ -16,6 +17,7 @@ CREATE TABLE dw.po_fact_error
   APPROVER_LEVEL1_KEY           INTEGER,
   APPROVER_LEVEL2_KEY           INTEGER,
   CREATE_DATE_KEY               INTEGER,
+  TRANSACTION_DATE_KEY          INTEGER,
   SUBSIDIARY_KEY                INTEGER,
   LOCATION_KEY                  INTEGER,
   COST_CENTER_KEY               INTEGER,
@@ -108,10 +110,11 @@ CREATE TABLE dw.po_fact_error
   PO_TYPE_ERROR                 VARCHAR(100),
   REF_CUSTOM_FORM_ID            INTEGER,
   REF_TRX_TYPE_ERROR            VARCHAR(100),
+  TRANDATE                      TIMESTAMP,
+  TRANDATE_ERROR                VARCHAR(100),
   PO_STATUS                     VARCHAR(1000),
   RECORD_STATUS                 VARCHAR,
   DW_CREATION_DATE              TIMESTAMP,
   PRIMARY KEY (PO_ERROR_KEY)
 )
 DISTKEY(ITEM_ID) INTERLEAVED SORTKEY (RUNID,RECORD_STATUS,PO_NUMBER);
-
