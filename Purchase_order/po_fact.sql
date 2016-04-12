@@ -69,14 +69,14 @@ SELECT
        TO_CHAR(TRANSACTION_LINES.ACTUAL_DELIVERY_DATE,'YYYY-MM-DD HH24:MI:SS') AS ACTUAL_DELIVERY_DATE,
        TO_CHAR(TRANSACTION_LINES.TAX_ITEM_ID) AS TAX_ITEM_ID,
        TRANSACTION_LINES.TAX_TYPE,
-       C.AMOUNT_FOREIGN AS TAX_AMOUNT,
+       C.AMOUNT AS TAX_AMOUNT,
        TO_CHAR(TRANSACTION_LINES.FREIGHT_ESTIMATE_METHOD_ID) AS FREIGHT_ESTIMATE_METHOD_ID,
        Decode(b.name,
              'Purchase Orders','PO_HDR',
-             decode(a.transaction_line_id,0,'PO_HDR',decode(d.transaction_line_id,NULL,decode(i.item_id,NULL,'PO_LINE','PO_TAX'),'PO_LINE'))
+             decode(a.transaction_line_id,0,'PO_HDR',decode(c.transaction_line_id,NULL,decode(i.item_id,NULL,'PO_LINE','PO_TAX'),'PO_LINE'))
        )  AS line_type,
        TO_CHAR(TRANSACTION_LINES.CLASS_ID) as CLASS_ID
-FROM TRANSACTION_LINES
+FROM TRANSACTION_LINES a
   LEFT OUTER JOIN accounts b ON (TRANSACTION_LINES.account_id = accounts.account_id)
   LEFT OUTER JOIN transaction_tax_detail c
                ON (TRANSACTION_LINES.transaction_id = transaction_tax_detail.transaction_id
@@ -84,6 +84,7 @@ FROM TRANSACTION_LINES
   LEFT OUTER JOIN transaction_address e ON (TRANSACTION_LINES.transaction_id = transaction_address.transaction_id)
   INNER JOIN transactions d ON (TRANSACTION_LINES.transaction_id = transactions.transaction_id)
   LEFT OUTER JOIN transactions f ON (d.created_from_id = f.transaction_id)
+  LEFT OUTER JOIN tax_items i ON (a.item_id = i.item_id)
 WHERE transactions.transaction_type = 'Purchase Order'
 AND   transaction_lines.subsidiary_id = '%s'
 AND EXISTS (SELECT 1
