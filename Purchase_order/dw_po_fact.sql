@@ -68,8 +68,6 @@ CREATE TABLE dw.po_fact
   PO_TYPE_KEY                   INTEGER,
   PO_STATUS_KEY                 INTEGER,
   APPROVAL_STATUS               VARCHAR(4000),
-  CREATION_DATE                 TIMESTAMP,
-  LAST_MODIFIED_DATE            TIMESTAMP,
   DATE_ACTIVE_FROM              DATE,
   DATE_ACTIVE_TO                DATE,
   DW_CURRENT                    INTEGER,
