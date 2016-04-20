@@ -172,7 +172,7 @@ WHERE exists (select 1 from dw_prestage.TRANSACTION_STATUS_update
 /* dimension -> update records as part of SCD1 maintenance */
 
 UPDATE dw.TRANSACTION_STATUS
-   SET document_type = NVL(dw_prestage.TRANSACTION_STATUS.document_type,'NA_GDW')
+   SET document_type = NVL(dw_prestage.TRANSACTION_STATUS.document_type,'NA_GDW'),
        STATUS = NVL(dw_prestage.TRANSACTION_STATUS.STATUS,'NA_GDW')
 FROM dw_prestage.TRANSACTION_STATUS
 WHERE dw.TRANSACTION_STATUS.document_type = dw_prestage.TRANSACTION_STATUS.document_type
