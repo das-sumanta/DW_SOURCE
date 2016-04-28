@@ -222,6 +222,22 @@ SELECT *
 FROM dw.inventory_snapshot_fact
 WHERE DW_CURRENT = 1;
 
+DROP VIEW IF EXISTS dw_report.po_fact CASCADE;
+
+CREATE VIEW dw_report.po_fact 
+AS
+SELECT *
+FROM dw.po_fact
+WHERE DW_CURRENT = 1;
+
+DROP VIEW IF EXISTS dw_report.amortization_fact CASCADE;
+
+CREATE VIEW dw_report.amortization_fact 
+AS
+SELECT *
+FROM dw.amortization_fact
+WHERE DW_CURRENT = 1;
+
 /****************REPORT VIEWS ********************/ 
 DROP VIEW IF EXISTS dw_report.actual CASCADE;
 
